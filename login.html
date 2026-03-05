@@ -234,7 +234,8 @@ async function girisYap(){
         headers: {
           'Content-Type': 'application/json',
           'apikey': sbKey,
-          'Authorization': 'Bearer ' + data.access_token
+          'Authorization': 'Bearer ' + data.access_token,
+          'Prefer': 'return=minimal'
         },
         body: JSON.stringify({ email: eposta })
       });

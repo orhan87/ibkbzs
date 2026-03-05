@@ -193,7 +193,7 @@
       <button class="tab-btn"    onclick="tab('metinler',this)">📝 Metinler & Notlar</button>
       <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
       <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
-      <button class="tab-btn"    onclick="tab('girislog',this)" id="tabGirisLog">📋 Giriş Geçmişi</button>
+      <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
     </div>
 
     <!-- ÜLKELER -->
@@ -381,12 +381,7 @@
           <div class="fgg" style="margin-bottom:12px;">
             <label>Supabase Anon Key</label>
             <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-            <p class="acik">Supabase → Settings → API Keys → Legacy → <strong>anon public</strong></p>
-          </div>
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Service Role Key <span style="font-size:.7rem;color:#b91c1c;font-weight:600;">(sadece admin panelinde kullanılır)</span></label>
-            <input type="password" id="sb-service-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-            <p class="acik">Supabase → Settings → API Keys → Legacy → <strong>service_role</strong> → Reveal → Copy. Kullanıcı eklemek için gereklidir.</p>
+            <p class="acik">Supabase → Project Settings → API → anon public</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
             <button class="btn btn-primary" onclick="supabaseKaydet()">💾 Bağlantıyı Kaydet</button>
@@ -471,18 +466,17 @@
       </div>
     </div>
 
-    <!-- GİRİŞ GEÇMİŞİ TAB -->
-  <div id="tab-girislog" style="display:none;">
-    <div class="card">
-      <div class="card-header">
-        <div><h3>📋 Giriş Geçmişi</h3><p>Sisteme giriş yapan kullanıcılar ve zamanları</p></div>
-        <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
+    <div id="tab-girislog" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div><h3>📋 Giriş Geçmişi</h3><p>Sisteme giriş yapan kullanıcılar ve zamanları</p></div>
+          <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
+        </div>
+        <div id="girisLogListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
       </div>
-      <div id="girisLogListesi">Yükleniyor...</div>
     </div>
-  </div>
 
-</main>
+  </main>
 </div>
 
 <div id="toast"></div>
@@ -668,7 +662,7 @@ function cikisYap(){
 // ─── BAŞLAT ──────────────────────────────────────────────────────────────────
 function baslat(){
   const cfg = depoyuYukle();
-  ulkeler = JSON.parse(JSON.stringify(cfg ? cfg.ulkeler : VARSAYILAN_ULKELER));
+  ulkeler = JSON.parse(JSON.stringify((cfg && cfg.ulkeler && cfg.ulkeler.length>0) ? cfg.ulkeler : VARSAYILAN_ULKELER));
   ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
 
   const sab = cfg ? cfg.sabitler : VARSAYILAN_SABITLER;
@@ -691,44 +685,6 @@ function baslat(){
   });
 
   ulkeTablosuGuncelle();
-}
-
-// ─── GİRİŞ GEÇMİŞİ ─────────────────────────────────────────────────────────
-async function girisLogYukle(){
-  const sb = sbCfg(); if(!sb){ toast('⚠ Supabase yapılandırılmamış'); return; }
-  const el = document.getElementById('girisLogListesi');
-  if(!el) return;
-  el.innerHTML = '<p style="padding:20px;color:#6b7a99;">Yükleniyor...</p>';
-  try{
-    const svcKey = sb.serviceKey || sb.key;
-    const r = await fetch(sb.url + '/rest/v1/giris_log?order=giris_tarihi.desc&limit=100', {
-      headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey }
-    });
-    const d = await r.json();
-    if(!r.ok){
-      el.innerHTML = '<p style="color:#b91c1c;padding:20px;">API Hatası: ' + JSON.stringify(d) + '</p>';
-      return;
-    }
-    if(!Array.isArray(d) || d.length === 0){
-      el.innerHTML = '<p style="text-align:center;color:#6b7a99;padding:20px;">Henüz giriş kaydı yok. Lütfen siteden çıkış yapıp tekrar giriş yapın.</p>';
-      return;
-    }
-    el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">' 
-      + '<thead><tr style="background:#f0f4f8;">' 
-      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;">E-posta</th>'
-      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;">Giriş Tarihi & Saati</th>'
-      + '</tr></thead><tbody>'
-      + d.map((row,i) => {
-          const tarih = new Date(row.giris_tarihi).toLocaleString("tr-TR",{timeZone:"Europe/Istanbul"});
-          return "<tr style='border-bottom:1px solid #edf2f7;background:"+(i%2===0?"#fff":"#f8fafc")+"'>"
-            + "<td style='padding:10px 14px;color:#1e293b;font-weight:500;'>"+row.email+"</td>"
-            + "<td style='padding:10px 14px;color:#4a5568;'>"+tarih+"</td>"
-            + "</tr>";
-        }).join('')
-      + '</tbody></table>';
-  } catch(e){
-    el.innerHTML = '<p style="color:#b91c1c;padding:20px;">Hata: ' + e.message + '</p>';
-  }
 }
 
 // ─── SEKMELER ────────────────────────────────────────────────────────────────
@@ -845,8 +801,9 @@ function sbCfg(){
   try{
     const raw=localStorage.getItem('ibkb_config');
     const cfg=raw?JSON.parse(raw):{};
-    return cfg.supabase||null;
-  }catch(e){return null;}
+    const sb=cfg.supabase||{};
+    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:sb.serviceKey||''};
+  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:''};}
 }
 
 function supabaseKaydet(){
@@ -854,9 +811,8 @@ function supabaseKaydet(){
   const key = document.getElementById('sb-key').value.trim();
   if(!url||!key){ toast('⚠ URL ve Key alanları boş olamaz'); return; }
   if(!url.startsWith('https://')){ toast('⚠ URL https:// ile başlamalı'); return; }
-  const serviceKey = document.getElementById('sb-service-key').value.trim();
   const cfg = depoyuYukle() || {};
-  cfg.supabase = {url, key, serviceKey};
+  cfg.supabase = {url, key};
   depoyaKaydet(cfg);
   document.getElementById('sbDurum').textContent='Bağlı ✓';
   document.getElementById('sbDurum').style.background='#e8f5ef';
@@ -897,13 +853,10 @@ async function kullaniciEkle(){
   if(pass.length<6){toast('⚠ Parola en az 6 karakter olmalı');return;}
   el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
   el.textContent='Ekleniyor…';
-
-  // Önce service_role key ile admin endpoint dene
-  const svcKey = sb.serviceKey || sb.key;
   try{
     const r=await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
-      headers:{'Content-Type':'application/json','apikey':svcKey,'Authorization':'Bearer '+svcKey},
+      headers:{'Content-Type':'application/json','apikey':sb.key,'Authorization':'Bearer '+sb.key},
       body:JSON.stringify({email,password:pass,email_confirm:true})
     });
     const d=await r.json();
@@ -913,24 +866,9 @@ async function kullaniciEkle(){
       document.getElementById('yeni-eposta').value='';
       document.getElementById('yeni-parola').value='';
       kullanicilariYukle();
-      return;
-    }
-    // Admin endpoint başarısız — signUp ile dene
-    const r2=await fetch(sb.url+'/auth/v1/signup',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':sb.key,'Authorization':'Bearer '+sb.key},
-      body:JSON.stringify({email,password:pass})
-    });
-    const d2=await r2.json();
-    if(r2.ok && (d2.id || d2.user)){
-      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
-      el.textContent='✓ Kullanıcı eklendi: '+email;
-      document.getElementById('yeni-eposta').value='';
-      document.getElementById('yeni-parola').value='';
-      kullanicilariYukle();
     } else {
       el.style.background='#fef2f2'; el.style.color='#b91c1c';
-      const msg=d2.msg||d2.message||d2.error_description||d.msg||d.message||'Bilinmeyen hata';
+      const msg=d.msg||d.message||d.error_description||JSON.stringify(d);
       el.textContent='✗ Hata: '+(msg==='User already registered'?'Bu e-posta zaten kayıtlı.':msg);
     }
   }catch(e){
@@ -944,9 +882,8 @@ async function kullanicilariYukle(){
   const el=document.getElementById('kullaniciListesi');
   el.textContent='Yükleniyor…';
   try{
-    const svcKey2 = sb.serviceKey || sb.key;
     const r=await fetch(sb.url+'/auth/v1/admin/users?per_page=50',{
-      headers:{'apikey':svcKey2,'Authorization':'Bearer '+svcKey2}
+      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key}
     });
     const d=await r.json();
     const users=d.users||d;
@@ -978,10 +915,9 @@ async function kullanicisil(id, email){
   if(!confirm(email+' kullanıcısını silmek istediğinizden emin misiniz?'))return;
   const sb=sbCfg(); if(!sb)return;
   try{
-    const svcKey3 = sb.serviceKey || sb.key;
     const r=await fetch(sb.url+'/auth/v1/admin/users/'+id,{
       method:'DELETE',
-      headers:{'apikey':svcKey3,'Authorization':'Bearer '+svcKey3}
+      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key}
     });
     if(r.ok||r.status===204){
       toast('✅ Kullanıcı silindi: '+email);
@@ -997,7 +933,6 @@ function kullaniciTabYukle(){
   if(sb&&sb.url&&sb.key){
     document.getElementById('sb-url').value=sb.url;
     document.getElementById('sb-key').value=sb.key;
-    if(sb.serviceKey) document.getElementById('sb-service-key').value=sb.serviceKey;
     document.getElementById('sbDurum').textContent='Bağlı ✓';
     document.getElementById('sbDurum').style.background='#e8f5ef';
     document.getElementById('sbDurum').style.color='#1a7a4a';
@@ -1062,7 +997,7 @@ function degisiklikleriKaydet(){
 
 function degisiklikleriIptal(){
   const cfg = depoyuYukle();
-  ulkeler = JSON.parse(JSON.stringify(cfg ? cfg.ulkeler : VARSAYILAN_ULKELER));
+  ulkeler = JSON.parse(JSON.stringify((cfg && cfg.ulkeler && cfg.ulkeler.length>0) ? cfg.ulkeler : VARSAYILAN_ULKELER));
   ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
   ulkeTablosuGuncelle();
   degisimVar = false;
@@ -1118,6 +1053,35 @@ function toast(msg){
 document.getElementById('modal').addEventListener('click', function(e){
   if(e.target===this) modalKapat();
 });
+async function girisLogYukle(){
+  const sb=sbCfg();
+  const el=document.getElementById('girisLogListesi');
+  if(!el) return;
+  el.innerHTML='<p style="padding:20px;color:#6b7a99;">Yükleniyor...</p>';
+  try{
+    const key=sb.serviceKey||sb.key;
+    const r=await fetch(sb.url+'/rest/v1/giris_log?order=giris_tarihi.desc&limit=100',{
+      headers:{'apikey':key,'Authorization':'Bearer '+key}
+    });
+    const d=await r.json();
+    if(!r.ok){el.innerHTML='<p style="color:#b91c1c;padding:20px;">Hata: '+JSON.stringify(d)+'</p>';return;}
+    if(!Array.isArray(d)||d.length===0){
+      el.innerHTML='<p style="text-align:center;color:#6b7a99;padding:20px;">Kayıt yok. Siteden çıkış yapıp tekrar giriş yapın.</p>';return;
+    }
+    el.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
+      +'<thead><tr style="background:#f0f4f8;">'
+      +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">E-posta</th>'
+      +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Giriş Tarihi & Saati</th>'
+      +'</tr></thead><tbody>'
+      +d.map((row,i)=>{
+        const t=new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
+        return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
+          +'<td style="padding:10px 14px;color:#1e293b;font-weight:500;">'+row.email+'</td>'
+          +'<td style="padding:10px 14px;color:#4a5568;">'+t+'</td></tr>';
+      }).join('')+'</tbody></table>';
+  }catch(e){el.innerHTML='<p style="color:#b91c1c;padding:20px;">Hata: '+e.message+'</p>';}
+}
+
 </script>
 </body>
 </html>
