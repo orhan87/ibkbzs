@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İBKB Admin — Kontrol Paneli</title>
+<style>
+  :root{
+    --navy:#0d1f3c;--blue:#1a56a0;--blue-light:#2a6fc4;
+    --gold:#c8952a;--gold-light:#e8b84b;--cream:#f7f5f0;--white:#fff;
+    --g100:#f0f2f5;--g200:#e2e6eb;--g400:#8c97a8;--g600:#4a5568;
+    --ok:#1a7a4a;--ok-bg:#e8f5ef;--err:#b91c1c;--err-bg:#fef2f2;
+    --org:#c2410c;--org-bg:#fff7ed;--tel:#0e7490;--tel-bg:#ecfeff;
+    --text:#1a2535;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--text);}
+
+  /* LOGIN */
+  #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--navy);}
+  .login-box{background:#fff;border-radius:14px;padding:44px 40px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .login-box h2{font-size:1.4rem;color:var(--navy);margin-bottom:6px;}
+  .login-box p{font-size:.85rem;color:var(--g400);margin-bottom:28px;}
+  .login-box input{width:100%;border:1.5px solid var(--g200);border-radius:8px;padding:11px 14px;font-size:.95rem;font-family:inherit;color:var(--text);background:var(--g100);outline:none;margin-bottom:12px;}
+  .login-box input:focus{border-color:var(--blue);background:#fff;}
+  .login-box button{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;}
+  .login-box button:hover{background:var(--blue);}
+  .login-err{color:var(--err);font-size:.82rem;margin-top:8px;display:none;}
+
+  /* LAYOUT */
+  #adminPanel{display:none;}
+  header{background:var(--navy);border-bottom:3px solid var(--gold);padding:0 2rem;position:sticky;top:0;z-index:100;}
+  .hi{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .hlogo{display:flex;align-items:center;gap:12px;}
+  .hlogo-icon{width:36px;height:36px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+  .hlogo-icon svg{width:20px;height:20px;fill:var(--navy);}
+  .hlogo h1{font-size:1rem;color:#fff;font-weight:700;}
+  .hlogo span{font-size:.72rem;color:var(--gold-light);background:rgba(200,149,42,.2);padding:2px 8px;border-radius:10px;margin-left:8px;}
+  .h-actions{display:flex;gap:10px;align-items:center;}
+  .btn-export{padding:7px 14px;background:var(--gold);color:var(--navy);border:none;border-radius:6px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;}
+  .btn-logout{padding:7px 14px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:6px;font-family:inherit;font-size:.82rem;cursor:pointer;}
+  .btn-logout:hover{color:#fff;border-color:#fff;}
+
+  main{max-width:1200px;margin:0 auto;padding:32px 2rem 60px;}
+
+  /* TABS */
+  .tab-bar{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--g200);}
+  .tab-btn{padding:10px 20px;font-family:inherit;font-size:.9rem;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--g400);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+  .tab-btn:hover{color:var(--navy);}
+  .tab-btn.ak{color:var(--blue);border-bottom-color:var(--blue);}
+  .tab-content{display:none;}
+  .tab-content.ak{display:block;}
+
+  /* CARD */
+  .panel-card{background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(13,31,60,.07);overflow:hidden;margin-bottom:20px;}
+  .pc-head{background:var(--g100);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g200);}
+  .pc-head h3{font-size:.95rem;color:var(--navy);font-weight:700;}
+  .pc-head p{font-size:.78rem;color:var(--g400);}
+  .pc-body{padding:20px;}
+
+  /* FORM */
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .fg .full{grid-column:1/-1;}
+  .fgg{display:flex;flex-direction:column;gap:5px;}
+  .fgg label{font-size:.75rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;}
+  .fgg input,.fgg select,.fgg textarea{border:1.5px solid var(--g200);border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;color:var(--text);background:var(--g100);outline:none;width:100%;}
+  .fgg input:focus,.fgg select:focus,.fgg textarea:focus{border-color:var(--blue);background:#fff;}
+  .fgg textarea{resize:vertical;min-height:80px;}
+  .fgg .fnot{font-size:.73rem;color:var(--g400);}
+
+  /* BUTTONS */
+  .btn{padding:8px 16px;border:none;border-radius:7px;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s;}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:var(--blue-light);}
+  .btn-success{background:var(--ok);color:#fff;}
+  .btn-danger{background:var(--err);color:#fff;}
+  .btn-danger:hover{opacity:.85;}
+  .btn-sm{padding:5px 10px;font-size:.78rem;}
+  .btn-ghost{background:transparent;border:1.5px solid var(--g200);color:var(--g600);}
+  .btn-ghost:hover{border-color:var(--navy);color:var(--navy);}
+
+  /* ÜLKE TABLOSU */
+  .ulke-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .ulke-toolbar input{flex:1;min-width:200px;border:1.5px solid var(--g200);border-radius:7px;padding:8px 12px;font-size:.9rem;font-family:inherit;outline:none;}
+  .ulke-toolbar input:focus{border-color:var(--blue);}
+  .kat-filter{display:flex;gap:6px;flex-wrap:wrap;}
+  .kf-btn{padding:4px 12px;border:1.5px solid var(--g200);border-radius:20px;background:#fff;font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--g400);}
+  .kf-btn.ak{color:#fff;border-color:transparent;}
+  .kf-btn.k-tm {background:var(--navy);color:#fff;}
+  .kf-btn.k-std{background:var(--ok);}
+  .kf-btn.k-ek2{background:var(--err);}
+  .kf-btn.k-ek3{background:var(--org);}
+  .kf-btn.k-ozel{background:var(--tel);}
+
+  table{width:100%;border-collapse:collapse;font-size:.88rem;}
+  thead tr{background:var(--g100);}
+  th{padding:9px 12px;text-align:left;font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--g400);border-bottom:2px solid var(--g200);}
+  td{padding:9px 12px;border-bottom:1px solid var(--g100);vertical-align:middle;}
+  tr:hover td{background:rgba(26,86,160,.03);}
+  .kat-badge{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:700;}
+  .kb-std {background:rgba(26,122,74,.12);color:var(--ok);}
+  .kb-ek2 {background:rgba(185,28,28,.12);color:var(--err);}
+  .kb-ek3 {background:rgba(194,65,12,.12);color:var(--org);}
+  .kb-ozel{background:rgba(14,116,144,.12);color:var(--tel);}
+  .kb-sb  {background:rgba(107,33,168,.12);color:#6b21a8;}
+
+  /* YENİ ÜLKE FORM */
+  .add-form{background:var(--g100);border-radius:8px;padding:16px;margin-bottom:16px;border:1.5px dashed var(--g200);}
+  .add-form h4{font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em;}
+
+  /* TOAST */
+  #toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:8px;font-size:.88rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.25);display:none;z-index:9999;animation:slideUp .25s ease;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* DEĞİŞİKLİK SAYACI */
+  .degisim-bar{background:var(--gold-light);color:var(--navy);padding:10px 20px;font-size:.85rem;font-weight:600;display:none;align-items:center;justify-content:space-between;gap:12px;}
+  .degisim-bar.goster{display:flex;}
+
+  /* SAYISAL GRID */
+  .sayi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .sayi-item{background:var(--g100);border-radius:10px;padding:16px;border:1.5px solid var(--g200);}
+  .sayi-item label{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--g400);display:block;margin-bottom:6px;}
+  .sayi-item input{width:100%;border:1.5px solid var(--g200);border-radius:6px;padding:8px 11px;font-size:1rem;font-family:inherit;font-weight:700;color:var(--navy);background:#fff;outline:none;}
+  .sayi-item input:focus{border-color:var(--blue);}
+  .sayi-item .acik{font-size:.72rem;color:var(--g400);margin-top:4px;}
+
+  /* METİN ALANLARI */
+  .metin-item{margin-bottom:16px;}
+  .metin-item label{font-size:.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px;}
+  .metin-item textarea{width:100%;border:1.5px solid var(--g200);border-radius:8px;padding:10px 13px;font-size:.88rem;font-family:inherit;color:var(--text);background:var(--g100);outline:none;resize:vertical;min-height:72px;}
+  .metin-item textarea:focus{border-color:var(--blue);background:#fff;}
+  .metin-item .fnot{font-size:.73rem;color:var(--g400);margin-top:3px;}
+
+  /* SIFIRLAMA */
+  .reset-box{background:var(--err-bg);border:1px solid rgba(185,28,28,.2);border-radius:10px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .reset-box p{font-size:.88rem;color:var(--err);}
+
+  /* PAGINATION */
+  .pag{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.82rem;color:var(--g400);}
+  .pag button{padding:4px 10px;border:1.5px solid var(--g200);border-radius:6px;background:#fff;font-family:inherit;font-size:.8rem;cursor:pointer;}
+  .pag button:hover{border-color:var(--blue);color:var(--blue);}
+  .pag button:disabled{opacity:.4;cursor:default;}
+
+  @media(max-width:640px){
+    .fg,.fg3{grid-template-columns:1fr;}.fg .full{grid-column:1;}
+    main{padding:20px 1rem 40px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>🔐 Admin Girişi</h2>
+    <p>İBKB Kontrol Paneline erişmek için parolanızı giriniz.</p>
+    <input type="password" id="parolaInput" placeholder="Parola" onkeydown="if(event.key==='Enter')girisYap()">
+    <button onclick="girisYap()">Giriş Yap</button>
+    <p class="login-err" id="loginErr">⚠ Parola hatalı. Tekrar deneyin.</p>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+  <header>
+    <div class="hi">
+      <div class="hlogo">
+        <div class="hlogo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L20 8.09v7.82L12 19.82 4 15.91V8.09L12 4.18z"/></svg></div>
+        <h1>İBKB Kontrol Paneli</h1>
+        <span>Admin</span>
+      </div>
+      <div class="h-actions">
+        <a href="ibkb-sorgulama.html" class="btn-export btn" style="text-decoration:none;">← Ana Sayfa</a>
+        <button class="btn-export btn" onclick="konfigKopyala()">📋 Yapılandırmayı Kopyala</button>
+        <button class="btn-logout" onclick="cikisYap()">Çıkış</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="degisim-bar" id="degisimBar">
+    <span id="degisimMesaj">⚡ Kaydedilmemiş değişiklikler var</span>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-success btn-sm" onclick="degisiklikleriKaydet()">💾 Kaydet</button>
+      <button class="btn btn-ghost btn-sm" onclick="degisiklikleriIptal()">İptal</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="tab-bar">
+      <button class="tab-btn ak" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
+      <button class="tab-btn"    onclick="tab('sabitler',this)">⚙ Sayısal Değerler</button>
+      <button class="tab-btn"    onclick="tab('metinler',this)">📝 Metinler & Notlar</button>
+      <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
+      <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
+    </div>
+
+    <!-- ÜLKELER -->
+    <div id="tab-ulkeler" class="tab-content ak">
+      <div class="panel-card">
+        <div class="pc-head">
+          <div><h3>Yeni Ülke Ekle</h3></div>
+        </div>
+        <div class="pc-body">
+          <div class="add-form">
+            <div class="fg">
+              <div class="fgg">
+                <label>Ülke Adı</label>
+                <input type="text" id="yeniAd" placeholder="Ülke adını girin">
+              </div>
+              <div class="fgg">
+                <label>Kategori</label>
+                <select id="yeniKat">
+                  <option value="std">✅ Standart</option>
+                  <option value="ek2">⛔ EK-2 Muafiyet</option>
+                  <option value="ek3">⚠ EK-3 %50</option>
+                  <option value="ozel">🔵 Özel (Md.4/4)</option>
+                  <option value="sb">🏭 Serbest Bölge</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:12px;">
+              <button class="btn btn-primary" onclick="ulkeEkle()">+ Ülke Ekle</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="pc-head">
+          <div><h3>Ülke Listesi</h3><p id="ulkeSayacAdmin"></p></div>
+        </div>
+        <div class="pc-body">
+          <div class="ulke-toolbar">
+            <input type="text" id="adminArama" placeholder="🔍 Ülke ara…" oninput="ulkeTablosuGuncelle()">
+            <div class="kat-filter">
+              <button class="kf-btn k-tm ak" onclick="katFiltre('',this)">Tümü</button>
+              <button class="kf-btn k-std"   onclick="katFiltre('std',this)">Standart</button>
+              <button class="kf-btn k-ek2"   onclick="katFiltre('ek2',this)">EK-2</button>
+              <button class="kf-btn k-ek3"   onclick="katFiltre('ek3',this)">EK-3</button>
+              <button class="kf-btn k-ozel"  onclick="katFiltre('ozel',this)">Özel</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr><th>#</th><th>Ülke Adı</th><th>Kategori</th><th>İşlem</th></tr></thead>
+              <tbody id="ulkeTbody"></tbody>
+            </table>
+          </div>
+          <div class="pag" id="pagBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAYISAL DEĞERLER -->
+    <div id="tab-sabitler" class="tab-content">
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>TCMB & Hesaplama Değerleri</h3><p>Ana hesaplama parametrelerini güncelleyin</p></div></div>
+        <div class="pc-body">
+          <div class="sayi-grid">
+            <div class="sayi-item">
+              <label>TCMB Zorunlu Satış Oranı (%)</label>
+              <input type="number" id="s-tcmb" min="0" max="100" step="0.1" value="35">
+              <p class="acik">Şu an: %35 — 30.04.2026'ya kadar geçerli</p>
+            </div>
+            <div class="sayi-item">
+              <label>Muaf Eşik Tutarı (USD)</label>
+              <input type="number" id="s-esik" min="0" step="100" value="15000">
+              <p class="acik">İBKB zorunluluğu için alt eşik</p>
+            </div>
+            <div class="sayi-item">
+              <label>İBKB Süresi (Gün)</label>
+              <input type="number" id="s-gun" min="1" step="1" value="180">
+              <p class="acik">İhracat tarihinden itibaren gün sayısı</p>
+            </div>
+            <div class="sayi-item">
+              <label>EK-3 Yurda Getirme Oranı (%)</label>
+              <input type="number" id="s-ek3oran" min="0" max="100" step="1" value="50">
+              <p class="acik">EK-3 ülkelerinde asgari yurda getirme oranı</p>
+            </div>
+            <div class="sayi-item">
+              <label>Döviz Dönüşüm Desteği Oranı (%)</label>
+              <input type="number" id="s-destek" min="0" max="100" step="0.5" value="3">
+              <p class="acik">Şu an: %3 — TCMB 2023/5 sayılı Tebliğ</p>
+            </div>
+            <div class="sayi-item" style="grid-column:1/-1;">
+              <label>Döviz Dönüşüm Desteği Son Tarihi</label>
+              <input type="text" id="s-destek-son" placeholder="Örn: 30 Nisan 2026" value="30 Nisan 2026">
+              <p class="acik">Geçici madde kapsamındaki bitiş tarihi (metinsel)</p>
+            </div>
+          </div>
+          <div style="margin-top:18px;">
+            <button class="btn btn-primary" onclick="sabitleriKaydet()">💾 Değerleri Kaydet</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>Tahmini Kur Değerleri (USD Karşılığı)</h3><p>Eşik kontrolünde kullanılan yaklaşık kurlar</p></div></div>
+        <div class="pc-body">
+          <div class="fg3">
+            <div class="sayi-item"><label>EUR / USD</label><input type="number" id="k-EUR" step="0.001" value="1.09"></div>
+            <div class="sayi-item"><label>GBP / USD</label><input type="number" id="k-GBP" step="0.001" value="1.27"></div>
+            <div class="sayi-item"><label>JPY / USD</label><input type="number" id="k-JPY" step="0.0001" value="0.0067"></div>
+            <div class="sayi-item"><label>CHF / USD</label><input type="number" id="k-CHF" step="0.001" value="1.11"></div>
+            <div class="sayi-item"><label>TRY / USD</label><input type="number" id="k-TRY" step="0.001" value="0.031"></div>
+            <div class="sayi-item"><label>Diğer / USD</label><input type="number" id="k-OTHER" step="0.001" value="1"></div>
+          </div>
+          <div style="margin-top:18px;">
+            <button class="btn btn-primary" onclick="kurlariKaydet()">💾 Kurları Kaydet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- METİNLER -->
+    <div id="tab-metinler" class="tab-content">
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>Form Uyarı Notları</h3><p>Form alanlarının altında görünen açıklama notları</p></div></div>
+        <div class="pc-body">
+          <div class="metin-item">
+            <label>İhracat Tarihi Notu</label>
+            <textarea id="m-tarihNot" rows="2">⚠ Beyannamenin kapanma tarihini giriniz (fiili ihraç tarihi)</textarea>
+          </div>
+          <div class="metin-item">
+            <label>İhracat Bedeli Notu</label>
+            <textarea id="m-bedelNot" rows="2">📋 Beyannamenin 46. hanesinden alınız</textarea>
+          </div>
+          <div class="metin-item">
+            <label>Hedef Ülke Notu</label>
+            <textarea id="m-ulkeNot" rows="2">📋 Beyannamenin 17. hanesinden alınız</textarea>
+          </div>
+          <div class="metin-item">
+            <label>Disclaimer (Alt Bilgi)</label>
+            <textarea id="m-disclaimer" rows="3">Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.</textarea>
+          </div>
+          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Metinleri Kaydet</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>Muafiyet Açıklama Metinleri</h3><p>Her kategori için badge ve sonuç açıklamaları</p></div></div>
+        <div class="pc-body">
+          <div class="metin-item">
+            <label>EK-2 Muafiyet Metni</label>
+            <textarea id="m-ek2" rows="2">Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.</textarea>
+          </div>
+          <div class="metin-item">
+            <label>EK-3 Muafiyet Metni</label>
+            <textarea id="m-ek3" rows="2">Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.</textarea>
+          </div>
+          <div class="metin-item">
+            <label>Özel Ülke (Md.4/4) Metni</label>
+            <textarea id="m-ozel" rows="3">Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir. Standart hesaplama uygulanır.</textarea>
+          </div>
+          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Metinleri Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAROLA -->
+    <!-- KULLANICILAR & SUPABASE -->
+    <div id="tab-kullanicilar" class="tab-content">
+
+      <!-- Supabase Yapılandırma -->
+      <div class="panel-card" style="max-width:560px;">
+        <div class="pc-head">
+          <div>
+            <h3>🔗 Supabase Bağlantısı</h3>
+            <p>Kullanıcı girişi için Supabase proje bilgilerini girin</p>
+          </div>
+          <span id="sbDurum" style="font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;background:#f0f2f5;color:#8c97a8;">Yapılandırılmamış</span>
+        </div>
+        <div class="pc-body">
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Project URL</label>
+            <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
+            <p class="acik">Supabase → Project Settings → API → Project URL</p>
+          </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Anon Key</label>
+            <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            <p class="acik">Supabase → Settings → API Keys → Legacy → <strong>anon public</strong></p>
+          </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Service Role Key <span style="font-size:.7rem;color:#b91c1c;font-weight:600;">(sadece admin panelinde kullanılır)</span></label>
+            <input type="password" id="sb-service-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            <p class="acik">Supabase → Settings → API Keys → Legacy → <strong>service_role</strong> → Reveal → Copy. Kullanıcı eklemek için gereklidir.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+            <button class="btn btn-primary" onclick="supabaseKaydet()">💾 Bağlantıyı Kaydet</button>
+            <button class="btn" onclick="supabaseTest()" id="btnSbTest" style="display:none;">🔍 Bağlantıyı Test Et</button>
+          </div>
+          <div id="sbTestSonuc" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e6eb;">
+            <p style="font-size:.8rem;color:#6b7a99;line-height:1.7;">
+              <strong style="color:#4a5568;">Nasıl kurulur?</strong><br>
+              1. <a href="https://supabase.com" target="_blank" style="color:var(--blue);">supabase.com</a>'a gidin, ücretsiz hesap açın<br>
+              2. "New Project" ile proje oluşturun<br>
+              3. Authentication → Email Auth açık olduğunu doğrulayın<br>
+              4. Authentication → Email Confirm → <strong>kapatın</strong> (Confirm email: OFF)<br>
+              5. Yukarıdaki URL ve Key'i kopyalayıp yapıştırın
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kullanıcı Ekle -->
+      <div class="panel-card" style="max-width:560px;" id="sbKullanici" style="display:none;">
+        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı Ekle</h3><p>Sisteme erişim verilecek kişiyi tanımlayın</p></div></div>
+        <div class="pc-body">
+          <div class="fg" style="margin-bottom:12px;">
+            <div class="fgg">
+              <label>E-posta Adresi</label>
+              <input type="email" id="yeni-eposta" placeholder="kullanici@sirket.com">
+            </div>
+            <div class="fgg">
+              <label>Parola</label>
+              <input type="password" id="yeni-parola" placeholder="En az 6 karakter">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="kullaniciEkle()">➕ Kullanıcı Ekle</button>
+          <div id="ekleMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
+        </div>
+      </div>
+
+      <!-- Kullanıcı Listesi -->
+      <div class="panel-card" id="sbListe" style="display:none;">
+        <div class="pc-head">
+          <div><h3>👥 Kayıtlı Kullanıcılar</h3><p>Sisteme erişimi olan kullanıcılar</p></div>
+          <button class="btn" onclick="kullanicilariYukle()" style="font-size:.8rem;">↻ Yenile</button>
+        </div>
+        <div class="pc-body">
+          <div id="kullaniciListesi" style="font-size:.87rem;color:#6b7a99;">Yükleniyor…</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="tab-parola" class="tab-content">
+      <div class="panel-card" style="max-width:480px;">
+        <div class="pc-head"><div><h3>Parola Değiştir</h3></div></div>
+        <div class="pc-body">
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Mevcut Parola</label>
+            <input type="password" id="mevcutParola" placeholder="Mevcut parola">
+          </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Yeni Parola</label>
+            <input type="password" id="yeniParola" placeholder="Yeni parola (en az 6 karakter)">
+          </div>
+          <div class="fgg" style="margin-bottom:16px;">
+            <label>Yeni Parola (Tekrar)</label>
+            <input type="password" id="yeniParolaTekrar" placeholder="Yeni parolayı tekrar girin">
+          </div>
+          <button class="btn btn-primary" onclick="parolaGuncelle()">🔑 Parolayı Güncelle</button>
+          <p id="parolaMesaj" style="margin-top:10px;font-size:.82rem;"></p>
+        </div>
+      </div>
+
+      <div class="panel-card" style="max-width:480px;">
+        <div class="pc-head"><div><h3>Tehlikeli Bölge</h3></div></div>
+        <div class="pc-body">
+          <div class="reset-box">
+            <p>Tüm admin değişikliklerini sıfırlayıp fabrika ayarlarına dön.</p>
+            <button class="btn btn-danger btn-sm" onclick="tumunuSifirla()">⚠ Sıfırla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<!-- KATEGORİ DEĞİŞTİR MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:28px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <h3 style="margin-bottom:16px;font-size:1rem;color:var(--navy);" id="modalBaslik">Ülke Düzenle</h3>
+    <div class="fgg" style="margin-bottom:12px;">
+      <label>Ülke Adı</label>
+      <input type="text" id="modalAd">
+    </div>
+    <div class="fgg" style="margin-bottom:20px;">
+      <label>Kategori</label>
+      <select id="modalKat">
+        <option value="std">✅ Standart</option>
+        <option value="ek2">⛔ EK-2 Muafiyet</option>
+        <option value="ek3">⚠ EK-3 %50</option>
+        <option value="ozel">🔵 Özel (Md.4/4)</option>
+        <option value="sb">🏭 Serbest Bölge</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="modalKaydet()">Kaydet</button>
+      <button class="btn btn-ghost" onclick="modalKapat()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── VARSAYILAN PAROLA ──────────────────────────────────────────────────────
+const VARSAYILAN_PAROLA = 'ibkb2025';
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let ulkeler = [];
+let aktifKatFiltre = '';
+let aramaFiltre = '';
+let sayfa = 1;
+const SAYFA_BOYUTU = 20;
+let modalIdx = -1;
+let degisimVar = false;
+
+// ─── DEPOLAMA ────────────────────────────────────────────────────────────────
+function depoyuYukle(){
+  const raw = localStorage.getItem('ibkb_config');
+  return raw ? JSON.parse(raw) : null;
+}
+function depoyaKaydet(cfg){
+  localStorage.setItem('ibkb_config', JSON.stringify(cfg));
+}
+function mevcutParolaAl(){
+  return localStorage.getItem('ibkb_parola') || VARSAYILAN_PAROLA;
+}
+
+// ─── VARSAYILAN VERİ ─────────────────────────────────────────────────────────
+const VARSAYILAN_ULKELER = [
+  {a:"Afganistan",k:"ek2"},{a:"Angola",k:"ek2"},{a:"Belarus",k:"ek2"},
+  {a:"Benin",k:"ek2"},{a:"Cibuti",k:"ek2"},{a:"Demokratik Kongo Cumhuriyeti",k:"ek2"},
+  {a:"Etiyopya",k:"ek2"},{a:"Fildişi Sahili",k:"ek2"},{a:"Filistin",k:"ek2"},
+  {a:"Gabon",k:"ek2"},{a:"Gana",k:"ek2"},{a:"Gine",k:"ek2"},
+  {a:"Güney Sudan",k:"ek2"},{a:"İran",k:"ek2"},{a:"Kamerun",k:"ek2"},
+  {a:"Kenya",k:"ek2"},{a:"Kırgızistan",k:"ek2"},{a:"Kongo Cumhuriyeti",k:"ek2"},
+  {a:"Kuzey Kore",k:"ek2"},{a:"Küba",k:"ek2"},{a:"Liberya",k:"ek2"},
+  {a:"Lübnan",k:"ek2"},{a:"Mali",k:"ek2"},{a:"Moldova",k:"ek2"},
+  {a:"Nijerya",k:"ek2"},{a:"Senegal",k:"ek2"},{a:"Somali",k:"ek2"},
+  {a:"Sudan",k:"ek2"},{a:"Suriye",k:"ek2"},{a:"Tacikistan",k:"ek2"},
+  {a:"Tanzanya",k:"ek2"},{a:"Venezuela",k:"ek2"},{a:"Zimbabwe",k:"ek2"},
+  {a:"Azerbaycan",k:"ek3"},{a:"Cezayir",k:"ek3"},{a:"Fas",k:"ek3"},
+  {a:"Kazakistan",k:"ek3"},{a:"Özbekistan",k:"ek3"},
+  {a:"Tunus",k:"ek3"},{a:"Türkmenistan",k:"ek3"},{a:"Ukrayna",k:"ek3"},
+  {a:"Irak",k:"ozel"},{a:"Libya",k:"ozel"},{a:"Moritanya",k:"ozel"},
+  {a:"Yurt İçi Serbest Bölge",k:"sb"},
+  {a:"Almanya",k:"std"},{a:"Amerika Birleşik Devletleri",k:"std"},
+  {a:"Andorra",k:"std"},{a:"Antigua ve Barbuda",k:"std"},
+  {a:"Arjantin",k:"std"},{a:"Arnavutluk",k:"std"},
+  {a:"Avustralya",k:"std"},{a:"Avusturya",k:"std"},
+  {a:"Bahamalar",k:"std"},{a:"Bahreyn",k:"std"},
+  {a:"Bangladeş",k:"std"},{a:"Barbados",k:"std"},
+  {a:"Belçika",k:"std"},{a:"Belize",k:"std"},
+  {a:"Bhutan",k:"std"},{a:"Birleşik Arap Emirlikleri",k:"std"},
+  {a:"Bolivya",k:"std"},{a:"Bosna Hersek",k:"std"},
+  {a:"Botsvana",k:"std"},{a:"Brezilya",k:"std"},
+  {a:"Brunei",k:"std"},{a:"Bulgaristan",k:"std"},
+  {a:"Burkina Faso",k:"std"},{a:"Burundi",k:"std"},
+  {a:"Cabo Verde",k:"std"},{a:"Çad",k:"std"},
+  {a:"Çek Cumhuriyeti",k:"std"},{a:"Çin",k:"std"},
+  {a:"Danimarka",k:"std"},{a:"Doğu Timor",k:"std"},
+  {a:"Dominik Cumhuriyeti",k:"std"},{a:"Dominika",k:"std"},
+  {a:"Ekvador",k:"std"},{a:"Ekvator Ginesi",k:"std"},
+  {a:"El Salvador",k:"std"},{a:"Endonezya",k:"std"},
+  {a:"Eritre",k:"std"},{a:"Ermenistan",k:"std"},
+  {a:"Estonya",k:"std"},{a:"Esvatini",k:"std"},
+  {a:"Filipinler",k:"std"},{a:"Fiji",k:"std"},
+  {a:"Finlandiya",k:"std"},{a:"Fransa",k:"std"},
+  {a:"Gambiya",k:"std"},{a:"Gine Bissau",k:"std"},
+  {a:"Grenada",k:"std"},{a:"Guatemala",k:"std"},
+  {a:"Guyana",k:"std"},{a:"Güney Afrika",k:"std"},
+  {a:"Gürcistan",k:"std"},{a:"Haiti",k:"std"},
+  {a:"Hırvatistan",k:"std"},{a:"Hindistan",k:"std"},
+  {a:"Hollanda",k:"std"},{a:"Honduras",k:"std"},
+  {a:"Hong Kong",k:"std"},{a:"İngiltere",k:"std"},
+  {a:"İrlanda",k:"std"},{a:"İspanya",k:"std"},
+  {a:"İsrail",k:"std"},{a:"İsveç",k:"std"},
+  {a:"İsviçre",k:"std"},{a:"İtalya",k:"std"},
+  {a:"İzlanda",k:"std"},{a:"Jamaika",k:"std"},
+  {a:"Japonya",k:"std"},{a:"Kamboçya",k:"std"},
+  {a:"Kanada",k:"std"},{a:"Katar",k:"std"},
+  {a:"Karadağ",k:"std"},{a:"Kiribati",k:"std"},
+  {a:"KKTC",k:"std"},{a:"Kolombiya",k:"std"},
+  {a:"Komorlar",k:"std"},{a:"Kosova",k:"std"},
+  {a:"Kosta Rika",k:"std"},{a:"Kuveyt",k:"std"},
+  {a:"Kıbrıs",k:"std"},{a:"Laos",k:"std"},
+  {a:"Lesoto",k:"std"},{a:"Letonya",k:"std"},
+  {a:"Liechtenstein",k:"std"},{a:"Litvanya",k:"std"},
+  {a:"Lüksemburg",k:"std"},{a:"Macaristan",k:"std"},
+  {a:"Madagaskar",k:"std"},{a:"Malavi",k:"std"},
+  {a:"Maldivler",k:"std"},{a:"Malezya",k:"std"},
+  {a:"Malta",k:"std"},{a:"Marshall Adaları",k:"std"},
+  {a:"Meksika",k:"std"},{a:"Mikronezya",k:"std"},
+  {a:"Mısır",k:"std"},{a:"Moğolistan",k:"std"},
+  {a:"Mozambik",k:"std"},{a:"Myanmar",k:"std"},
+  {a:"Kuzey Makedonya",k:"std"},{a:"Namibya",k:"std"},
+  {a:"Nauru",k:"std"},{a:"Nepal",k:"std"},
+  {a:"Nijer",k:"std"},{a:"Nikaragua",k:"std"},
+  {a:"Norveç",k:"std"},{a:"Orta Afrika Cumhuriyeti",k:"std"},
+  {a:"Pakistan",k:"std"},{a:"Palau",k:"std"},
+  {a:"Panama",k:"std"},{a:"Papua Yeni Gine",k:"std"},
+  {a:"Paraguay",k:"std"},{a:"Peru",k:"std"},
+  {a:"Polonya",k:"std"},{a:"Portekiz",k:"std"},
+  {a:"Romanya",k:"std"},{a:"Ruanda",k:"std"},
+  {a:"Rusya",k:"std"},{a:"Saint Kitts ve Nevis",k:"std"},
+  {a:"Saint Lucia",k:"std"},{a:"Saint Vincent ve Grenadinler",k:"std"},
+  {a:"Samoa",k:"std"},{a:"San Marino",k:"std"},
+  {a:"Sao Tome ve Principe",k:"std"},{a:"Sırbistan",k:"std"},
+  {a:"Sierra Leone",k:"std"},{a:"Singapur",k:"std"},
+  {a:"Slovakya",k:"std"},{a:"Slovenya",k:"std"},
+  {a:"Solomon Adaları",k:"std"},{a:"Sri Lanka",k:"std"},
+  {a:"Suudi Arabistan",k:"std"},{a:"Surinam",k:"std"},
+  {a:"Tayland",k:"std"},{a:"Tayvan",k:"std"},
+  {a:"Togo",k:"std"},{a:"Tonga",k:"std"},
+  {a:"Trinidad ve Tobago",k:"std"},{a:"Türkiye",k:"std"},
+  {a:"Tuvalu",k:"std"},{a:"Uganda",k:"std"},
+  {a:"Umman",k:"std"},{a:"Uruguay",k:"std"},
+  {a:"Ürdün",k:"std"},{a:"Vanuatu",k:"std"},
+  {a:"Vatican",k:"std"},{a:"Vietnam",k:"std"},
+  {a:"Yemen",k:"std"},{a:"Yeni Zelanda",k:"std"},
+  {a:"Yunanistan",k:"std"},{a:"Zambiya",k:"std"},
+  {a:"Diğer Ülke",k:"std"},
+];
+
+const VARSAYILAN_SABITLER = {tcmb:35,esik:15000,gun:180,ek3oran:50,destek:3,destekSon:'30 Nisan 2026'};
+const VARSAYILAN_KURLAR   = {EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
+const VARSAYILAN_METINLER = {
+  tarihNot:'⚠ Beyannamenin kapanma tarihini giriniz (fiili ihraç tarihi)',
+  bedelNot:'📋 Beyannamenin 46. hanesinden alınız',
+  ulkeNot:'📋 Beyannamenin 17. hanesinden alınız',
+  disclaimer:'Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir.',
+  ek2:'Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.',
+  ek3:"Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.",
+  ozel:"Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir.",
+};
+
+// ─── GİRİŞ ───────────────────────────────────────────────────────────────────
+function girisYap(){
+  const p = document.getElementById('parolaInput').value;
+  if(p === mevcutParolaAl()){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    baslat();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('parolaInput').value='';
+    document.getElementById('parolaInput').focus();
+  }
+}
+function cikisYap(){
+  document.getElementById('adminPanel').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('parolaInput').value='';
+  document.getElementById('loginErr').style.display='none';
+}
+
+// ─── BAŞLAT ──────────────────────────────────────────────────────────────────
+function baslat(){
+  const cfg = depoyuYukle();
+  ulkeler = JSON.parse(JSON.stringify(cfg ? cfg.ulkeler : VARSAYILAN_ULKELER));
+  ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
+
+  const sab = cfg ? cfg.sabitler : VARSAYILAN_SABITLER;
+  document.getElementById('s-tcmb').value    = sab.tcmb;
+  document.getElementById('s-esik').value    = sab.esik;
+  document.getElementById('s-gun').value     = sab.gun;
+  document.getElementById('s-ek3oran').value  = sab.ek3oran;
+  document.getElementById('s-destek').value    = sab.destek     !== undefined ? sab.destek    : 3;
+  document.getElementById('s-destek-son').value= sab.destekSon  || '30 Nisan 2026';
+
+  const kur = cfg ? cfg.kurlar : VARSAYILAN_KURLAR;
+  ['EUR','GBP','JPY','CHF','TRY','OTHER'].forEach(k=>{
+    document.getElementById('k-'+k).value = kur[k];
+  });
+
+  const met = cfg ? cfg.metinler : VARSAYILAN_METINLER;
+  Object.keys(met).forEach(k=>{
+    const el = document.getElementById('m-'+k);
+    if(el) el.value = met[k];
+  });
+
+  ulkeTablosuGuncelle();
+}
+
+// ─── SEKMELER ────────────────────────────────────────────────────────────────
+function tab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('ak'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ak'));
+  if(id==='kullanicilar') kullaniciTabYukle();
+  document.getElementById('tab-'+id).classList.add('ak');
+  btn.classList.add('ak');
+}
+
+// ─── ÜLKE TABLOSU ─────────────────────────────────────────────────────────────
+const N=s=>(s||'').replace(/İ/g,'i').replace(/I/g,'ı').replace(/Ş/g,'ş').replace(/Ğ/g,'ğ').replace(/Ö/g,'ö').replace(/Ü/g,'ü').replace(/Ç/g,'ç').replace(/[A-Z]/g,x=>x.toLowerCase());
+
+const KATLBL={std:'Standart',ek2:'EK-2',ek3:'EK-3',ozel:'Özel',sb:'Serbest Bölge'};
+
+function katFiltre(kat, btn){
+  aktifKatFiltre = kat; sayfa=1;
+  document.querySelectorAll('.kf-btn').forEach(b=>b.classList.remove('ak'));
+  btn.classList.add('ak');
+  ulkeTablosuGuncelle();
+}
+
+function ulkeTablosuGuncelle(){
+  const ara = N(document.getElementById('adminArama').value);
+  const filtreli = ulkeler.filter(u=>{
+    const katOk = !aktifKatFiltre || u.k===aktifKatFiltre;
+    const araOk = !ara || N(u.a).includes(ara);
+    return katOk && araOk;
+  });
+
+  const toplam = filtreli.length;
+  const sayfaSayisi = Math.ceil(toplam/SAYFA_BOYUTU);
+  if(sayfa > sayfaSayisi) sayfa=1;
+  const bas = (sayfa-1)*SAYFA_BOYUTU;
+  const slice = filtreli.slice(bas, bas+SAYFA_BOYUTU);
+
+  document.getElementById('ulkeSayacAdmin').textContent = toplam+' ülke';
+
+  const tbody = document.getElementById('ulkeTbody');
+  tbody.innerHTML = slice.map((u, i)=>{
+    const gIdx = ulkeler.indexOf(u);
+    return `<tr>
+      <td style="color:var(--g400);font-size:.8rem">${bas+i+1}</td>
+      <td><strong>${u.a}</strong></td>
+      <td><span class="kat-badge kb-${u.k}">${KATLBL[u.k]||u.k}</span></td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn btn-ghost btn-sm" onclick="modalAc(${gIdx})">✏ Düzenle</button>
+        <button class="btn btn-danger btn-sm" onclick="ulkeSil(${gIdx})">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const pag = document.getElementById('pagBar');
+  if(sayfaSayisi <= 1){pag.innerHTML='';return;}
+  pag.innerHTML = `
+    <button onclick="sayfaDegis(${sayfa-1})" ${sayfa<=1?'disabled':''}>‹</button>
+    <span>${sayfa} / ${sayfaSayisi}</span>
+    <button onclick="sayfaDegis(${sayfa+1})" ${sayfa>=sayfaSayisi?'disabled':''}>›</button>
+    <span style="margin-left:8px;">${toplam} sonuç</span>`;
+}
+
+function sayfaDegis(s){ sayfa=s; ulkeTablosuGuncelle(); }
+
+function ulkeEkle(){
+  const ad = document.getElementById('yeniAd').value.trim();
+  const kat = document.getElementById('yeniKat').value;
+  if(!ad){ toast('⚠ Ülke adı boş olamaz'); return; }
+  if(ulkeler.find(u=>N(u.a)===N(ad))){ toast('⚠ Bu ülke zaten listede var'); return; }
+  ulkeler.push({a:ad, k:kat});
+  ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
+  document.getElementById('yeniAd').value='';
+  ulkeTablosuGuncelle();
+  degisimIsaretle();
+  toast('✅ '+ad+' eklendi');
+}
+
+function ulkeSil(idx){
+  if(!confirm(ulkeler[idx].a+' silinecek. Emin misiniz?')) return;
+  const ad = ulkeler[idx].a;
+  ulkeler.splice(idx,1);
+  ulkeTablosuGuncelle();
+  degisimIsaretle();
+  toast('🗑 '+ad+' silindi');
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function modalAc(idx){
+  modalIdx = idx;
+  document.getElementById('modalAd').value  = ulkeler[idx].a;
+  document.getElementById('modalKat').value = ulkeler[idx].k;
+  document.getElementById('modalBaslik').textContent = ulkeler[idx].a+' — Düzenle';
+  document.getElementById('modal').style.display='flex';
+}
+function modalKapat(){ document.getElementById('modal').style.display='none'; modalIdx=-1; }
+function modalKaydet(){
+  if(modalIdx<0) return;
+  const yeniAd  = document.getElementById('modalAd').value.trim();
+  const yeniKat = document.getElementById('modalKat').value;
+  if(!yeniAd){ toast('⚠ Ülke adı boş olamaz'); return; }
+  ulkeler[modalIdx] = {a:yeniAd, k:yeniKat};
+  ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
+  modalKapat();
+  ulkeTablosuGuncelle();
+  degisimIsaretle();
+  toast('✅ Kaydedildi');
+}
+
+// ─── KAYDET ──────────────────────────────────────────────────────────────────
+// ─── SUPABASE ───────────────────────────────────────────────────────────────
+function sbCfg(){
+  try{
+    const raw=localStorage.getItem('ibkb_config');
+    const cfg=raw?JSON.parse(raw):{};
+    return cfg.supabase||null;
+  }catch(e){return null;}
+}
+
+function supabaseKaydet(){
+  const url = document.getElementById('sb-url').value.trim().replace(/\/$/,'');
+  const key = document.getElementById('sb-key').value.trim();
+  if(!url||!key){ toast('⚠ URL ve Key alanları boş olamaz'); return; }
+  if(!url.startsWith('https://')){ toast('⚠ URL https:// ile başlamalı'); return; }
+  const serviceKey = document.getElementById('sb-service-key').value.trim();
+  const cfg = depoyuYukle() || {};
+  cfg.supabase = {url, key, serviceKey};
+  depoyaKaydet(cfg);
+  document.getElementById('sbDurum').textContent='Bağlı ✓';
+  document.getElementById('sbDurum').style.background='#e8f5ef';
+  document.getElementById('sbDurum').style.color='#1a7a4a';
+  document.getElementById('btnSbTest').style.display='inline-block';
+  document.getElementById('sbKullanici').style.display='block';
+  document.getElementById('sbListe').style.display='block';
+  kullanicilariYukle();
+  toast('✅ Supabase yapılandırması kaydedildi');
+}
+
+async function supabaseTest(){
+  const sb=sbCfg(); if(!sb){toast('⚠ Önce yapılandırma kaydedin');return;}
+  const el=document.getElementById('sbTestSonuc');
+  el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
+  el.textContent='Test ediliyor…';
+  try{
+    const r=await fetch(sb.url+'/auth/v1/settings',{headers:{'apikey':sb.key}});
+    if(r.ok){
+      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
+      el.textContent='✓ Bağlantı başarılı! Supabase çalışıyor.';
+    } else {
+      el.style.background='#fef2f2'; el.style.color='#b91c1c';
+      el.textContent='✗ Bağlantı hatası: ' + r.status + ' — URL veya Key hatalı olabilir.';
+    }
+  }catch(e){
+    el.style.background='#fef2f2'; el.style.color='#b91c1c';
+    el.textContent='✗ Bağlantı kurulamadı: ' + e.message;
+  }
+}
+
+async function kullaniciEkle(){
+  const sb=sbCfg(); if(!sb){toast('⚠ Supabase yapılandırılmamış');return;}
+  const email=document.getElementById('yeni-eposta').value.trim();
+  const pass=document.getElementById('yeni-parola').value;
+  const el=document.getElementById('ekleMsg');
+  if(!email||!pass){toast('⚠ E-posta ve parola zorunludur');return;}
+  if(pass.length<6){toast('⚠ Parola en az 6 karakter olmalı');return;}
+  el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
+  el.textContent='Ekleniyor…';
+
+  // Önce service_role key ile admin endpoint dene
+  const svcKey = sb.serviceKey || sb.key;
+  try{
+    const r=await fetch(sb.url+'/auth/v1/admin/users',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':svcKey,'Authorization':'Bearer '+svcKey},
+      body:JSON.stringify({email,password:pass,email_confirm:true})
+    });
+    const d=await r.json();
+    if(r.ok && d.id){
+      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
+      el.textContent='✓ Kullanıcı eklendi: '+email;
+      document.getElementById('yeni-eposta').value='';
+      document.getElementById('yeni-parola').value='';
+      kullanicilariYukle();
+      return;
+    }
+    // Admin endpoint başarısız — signUp ile dene
+    const r2=await fetch(sb.url+'/auth/v1/signup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':sb.key,'Authorization':'Bearer '+sb.key},
+      body:JSON.stringify({email,password:pass})
+    });
+    const d2=await r2.json();
+    if(r2.ok && (d2.id || d2.user)){
+      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
+      el.textContent='✓ Kullanıcı eklendi: '+email;
+      document.getElementById('yeni-eposta').value='';
+      document.getElementById('yeni-parola').value='';
+      kullanicilariYukle();
+    } else {
+      el.style.background='#fef2f2'; el.style.color='#b91c1c';
+      const msg=d2.msg||d2.message||d2.error_description||d.msg||d.message||'Bilinmeyen hata';
+      el.textContent='✗ Hata: '+(msg==='User already registered'?'Bu e-posta zaten kayıtlı.':msg);
+    }
+  }catch(e){
+    el.style.background='#fef2f2'; el.style.color='#b91c1c';
+    el.textContent='✗ Bağlantı hatası: '+e.message;
+  }
+}
+
+async function kullanicilariYukle(){
+  const sb=sbCfg(); if(!sb) return;
+  const el=document.getElementById('kullaniciListesi');
+  el.textContent='Yükleniyor…';
+  try{
+    const svcKey2 = sb.serviceKey || sb.key;
+    const r=await fetch(sb.url+'/auth/v1/admin/users?per_page=50',{
+      headers:{'apikey':svcKey2,'Authorization':'Bearer '+svcKey2}
+    });
+    const d=await r.json();
+    const users=d.users||d;
+    if(!Array.isArray(users)||users.length===0){
+      el.textContent='Henüz kullanıcı yok.'; return;
+    }
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.83rem;">
+      <thead><tr style="background:#f0f2f5;">
+        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">E-posta</th>
+        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Kayıt Tarihi</th>
+        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Son Giriş</th>
+        <th style="padding:8px 10px;"></th>
+      </tr></thead>
+      <tbody>${users.map(u=>`<tr style="border-bottom:1px solid #e2e6eb;">
+        <td style="padding:9px 10px;font-weight:600;color:#1a2535;">${u.email||'—'}</td>
+        <td style="padding:9px 10px;color:#8c97a8;">${u.created_at?new Date(u.created_at).toLocaleDateString('tr-TR'):'-'}</td>
+        <td style="padding:9px 10px;color:#8c97a8;">${u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleDateString('tr-TR'):'-'}</td>
+        <td style="padding:9px 10px;text-align:right;">
+          <button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:3px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">Sil</button>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }catch(e){
+    el.textContent='Hata: '+e.message;
+  }
+}
+
+async function kullanicisil(id, email){
+  if(!confirm(email+' kullanıcısını silmek istediğinizden emin misiniz?'))return;
+  const sb=sbCfg(); if(!sb)return;
+  try{
+    const svcKey3 = sb.serviceKey || sb.key;
+    const r=await fetch(sb.url+'/auth/v1/admin/users/'+id,{
+      method:'DELETE',
+      headers:{'apikey':svcKey3,'Authorization':'Bearer '+svcKey3}
+    });
+    if(r.ok||r.status===204){
+      toast('✅ Kullanıcı silindi: '+email);
+      kullanicilariYukle();
+    } else {
+      toast('⚠ Silinemedi. Status: '+r.status);
+    }
+  }catch(e){toast('✗ Hata: '+e.message);}
+}
+
+function kullaniciTabYukle(){
+  const sb=sbCfg();
+  if(sb&&sb.url&&sb.key){
+    document.getElementById('sb-url').value=sb.url;
+    document.getElementById('sb-key').value=sb.key;
+    if(sb.serviceKey) document.getElementById('sb-service-key').value=sb.serviceKey;
+    document.getElementById('sbDurum').textContent='Bağlı ✓';
+    document.getElementById('sbDurum').style.background='#e8f5ef';
+    document.getElementById('sbDurum').style.color='#1a7a4a';
+    document.getElementById('btnSbTest').style.display='inline-block';
+    document.getElementById('sbKullanici').style.display='block';
+    document.getElementById('sbListe').style.display='block';
+    kullanicilariYukle();
+  }
+}
+
+// ─── SABITLER ────────────────────────────────────────────────────────────────
+function sabitleriKaydet(){
+  const cfg = depoyuYukle() || {};
+  cfg.sabitler = {
+    tcmb:    parseFloat(document.getElementById('s-tcmb').value),
+    esik:    parseFloat(document.getElementById('s-esik').value),
+    gun:     parseInt(document.getElementById('s-gun').value),
+    ek3oran:   parseFloat(document.getElementById('s-ek3oran').value),
+    destek:    parseFloat(document.getElementById('s-destek').value),
+    destekSon: document.getElementById('s-destek-son').value.trim(),
+  };
+  // destek ayrı nesne olarak da kaydet (ibkb-sorgulama uyumluluğu)
+  cfg.destek = {oran: cfg.sabitler.destek, son: cfg.sabitler.destekSon};
+  depoyaKaydet(cfg);
+  toast('✅ Sayısal değerler kaydedildi');
+}
+
+function kurlariKaydet(){
+  const cfg = depoyuYukle() || {};
+  cfg.kurlar = {};
+  ['EUR','GBP','JPY','CHF','TRY','OTHER'].forEach(k=>{
+    cfg.kurlar[k] = parseFloat(document.getElementById('k-'+k).value);
+  });
+  depoyaKaydet(cfg);
+  toast('✅ Kurlar kaydedildi');
+}
+
+function metinleriKaydet(){
+  const cfg = depoyuYukle() || {};
+  cfg.metinler = {};
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel'].forEach(k=>{
+    const el = document.getElementById('m-'+k);
+    if(el) cfg.metinler[k] = el.value;
+  });
+  depoyaKaydet(cfg);
+  toast('✅ Metinler kaydedildi');
+}
+
+function degisimIsaretle(){
+  degisimVar = true;
+  document.getElementById('degisimBar').classList.add('goster');
+}
+
+function degisiklikleriKaydet(){
+  const cfg = depoyuYukle() || {};
+  cfg.ulkeler = ulkeler;
+  depoyaKaydet(cfg);
+  degisimVar = false;
+  document.getElementById('degisimBar').classList.remove('goster');
+  toast('✅ Tüm değişiklikler kaydedildi');
+}
+
+function degisiklikleriIptal(){
+  const cfg = depoyuYukle();
+  ulkeler = JSON.parse(JSON.stringify(cfg ? cfg.ulkeler : VARSAYILAN_ULKELER));
+  ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
+  ulkeTablosuGuncelle();
+  degisimVar = false;
+  document.getElementById('degisimBar').classList.remove('goster');
+  toast('↩ Değişiklikler geri alındı');
+}
+
+// ─── PAROLA ──────────────────────────────────────────────────────────────────
+function parolaGuncelle(){
+  const mevcut  = document.getElementById('mevcutParola').value;
+  const yeni    = document.getElementById('yeniParola').value;
+  const tekrar  = document.getElementById('yeniParolaTekrar').value;
+  const msg     = document.getElementById('parolaMesaj');
+
+  if(mevcut !== mevcutParolaAl()){ msg.style.color='var(--err)'; msg.textContent='⚠ Mevcut parola hatalı.'; return; }
+  if(yeni.length < 6){ msg.style.color='var(--err)'; msg.textContent='⚠ Parola en az 6 karakter olmalı.'; return; }
+  if(yeni !== tekrar){ msg.style.color='var(--err)'; msg.textContent='⚠ Parolalar eşleşmiyor.'; return; }
+
+  localStorage.setItem('ibkb_parola', yeni);
+  msg.style.color='var(--ok)'; msg.textContent='✅ Parola güncellendi.';
+  document.getElementById('mevcutParola').value='';
+  document.getElementById('yeniParola').value='';
+  document.getElementById('yeniParolaTekrar').value='';
+  toast('✅ Parola güncellendi');
+}
+
+function tumunuSifirla(){
+  if(!confirm('Tüm admin değişiklikleri silinecek ve fabrika ayarlarına dönülecek. Emin misiniz?')) return;
+  localStorage.removeItem('ibkb_config');
+  localStorage.removeItem('ibkb_parola');
+  toast('✅ Sıfırlandı — Yeniden giriş yapın');
+  setTimeout(cikisYap, 1500);
+}
+
+// ─── KONFIG KOPYALA ──────────────────────────────────────────────────────────
+function konfigKopyala(){
+  const cfg = depoyuYukle();
+  const json = JSON.stringify(cfg || {mesaj:'Henüz değişiklik kaydedilmedi'}, null, 2);
+  navigator.clipboard.writeText(json).then(()=>toast('📋 Yapılandırma kopyalandı'));
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.style.display='none', 2800);
+}
+
+// Modal dışına tıklayınca kapat
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target===this) modalKapat();
+});
+</script>
+</body>
+</html>

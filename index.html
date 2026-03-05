@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<style>body{visibility:hidden;}</style>
+<script>
+if(sessionStorage.getItem('govdag_token')){
+  document.addEventListener('DOMContentLoaded',function(){document.body.style.visibility='visible';});
+} else {
+  window.location.replace('./login.html');
+}
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GÖVDAĞ | İBKB Sorgulama — İhracat Bedeli Kabul Belgesi</title>
+
+<style>
+  :root{
+    --navy:#1a2540;--navy-mid:#243354;--blue:#2563eb;--blue-light:#3b82f6;
+    --gold:#d97706;--gold-light:#f59e0b;--cream:#f4f6f9;--white:#fff;
+    --g100:#f8fafc;--g200:#e8edf5;--g400:#4a5568;--g600:#374162;
+    --ok:#0a6640;--ok-bg:#f0fdf7;
+    --err:#b91c1c;--err-bg:#fff5f5;
+    --warn:#92400e;--warn-bg:#fffbeb;
+    --org:#9a3412;--org-bg:#fff7ed;
+    --pur:#5b21b6;--pur-bg:#f5f3ff;
+    --tel:#0e7490;--tel-bg:#f0f9ff;
+    --text:#1e293b;
+    --border:#dde3ef;
+    --shadow:0 1px 4px rgba(26,37,64,.07),0 4px 16px rgba(26,37,64,.06);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--text);}
+
+  /* HEADER */
+  header{background:var(--navy);border-bottom:2px solid var(--gold);padding:0;}
+  .hi{max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .li{width:38px;height:38px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .li svg{width:20px;height:20px;fill:var(--navy);}
+  .lt h1{font-size:1.05rem;color:#fff;font-weight:700;letter-spacing:.01em;line-height:1.2;}
+  .lt p{font-size:.65rem;color:rgba(255,255,255,.45);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:2px;}
+  .hbadge{font-size:.7rem;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;cursor:pointer;transition:border-color .2s;}
+  .hbadge:hover{border-color:rgba(255,255,255,.5);}
+
+  /* HERO */
+  .hero{background:linear-gradient(160deg,#1a2540 0%,#243354 60%,#2c4275 100%);padding:36px 0 32px;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 50%,rgba(37,99,235,.18) 0%,transparent 70%);pointer-events:none;}
+  .hero-ic{max-width:1100px;margin:0 auto;padding:0 2rem;text-align:center;}
+  .hero h2{font-size:1.75rem;color:#fff;font-weight:700;margin-bottom:8px;letter-spacing:-.01em;}
+  .hero p{color:rgba(255,255,255,.6);font-size:.93rem;font-weight:400;max-width:520px;margin:0 auto;line-height:1.65;}
+  .mtag{display:inline-flex;align-items:center;gap:6px;background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.35);color:rgba(255,255,255,.7);font-size:.72rem;padding:3px 10px;border-radius:20px;margin-bottom:14px;letter-spacing:.04em;}
+
+  main{max-width:1100px;margin:0 auto;padding:28px 2rem 60px;}
+  .card{background:#fff;border-radius:10px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:20px;}
+  .ch{background:var(--navy);padding:14px 24px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.06);}
+  .ch span{color:#fff;font-size:.95rem;font-weight:600;}
+  .ch svg{fill:var(--gold);width:16px;height:16px;flex-shrink:0;opacity:.9;}
+  .cb{padding:24px;}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .fg .full{grid-column:1/-1;}
+  .fgg{display:flex;flex-direction:column;gap:5px;}
+  label{font-size:.72rem;font-weight:600;color:var(--g600);letter-spacing:.05em;text-transform:uppercase;}
+  .rs{color:var(--gold);margin-left:2px;}
+  input,select{border:1.5px solid var(--border);border-radius:7px;padding:10px 13px;font-size:.92rem;font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s;outline:none;width:100%;}
+  input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+
+  /* ÜLKE SEÇİCİ */
+  .ulke-secici{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:#fff;}
+  .us-top{padding:10px 10px 0;}
+  .us-arama{width:100%;margin-bottom:8px;}
+  .sekme-bar{display:flex;gap:4px;padding:0 0 8px;flex-wrap:wrap;}
+  .sb-btn{padding:4px 10px;font-size:.7rem;font-weight:600;font-family:'Segoe UI',system-ui,sans-serif;border:1.5px solid var(--border);border-radius:20px;background:#fff;cursor:pointer;color:var(--g400);transition:all .15s;white-space:nowrap;}
+  .sb-btn:hover{border-color:var(--navy);color:var(--navy);}
+  .sb-btn.ak{color:#fff;border-color:transparent;}
+  .sb-btn.ak.s-tm{background:var(--navy);}
+  .sb-btn.ak.s-std{background:var(--ok);}
+  .sb-btn.ak.s-ek2{background:var(--err);}
+  .sb-btn.ak.s-ek3{background:var(--org);}
+  .sb-btn.ak.s-ozel{background:var(--tel);}
+  .ulke-liste-wrap{max-height:152px;overflow-y:auto;border-top:1px solid var(--g200);}
+  .ul-satir{padding:8px 13px;font-size:.88rem;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .ul-satir:last-child{border-bottom:none;}
+  .ul-satir:hover{background:var(--g100);}
+  .ul-satir.sec{background:#eff6ff;font-weight:600;color:var(--blue);}
+  .ul-satir .ul-kat{font-size:.65rem;padding:2px 6px;border-radius:8px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+  .ul-kat.std{background:rgba(10,102,64,.1);color:var(--ok);}
+  .ul-kat.ek2{background:rgba(185,28,28,.1);color:var(--err);}
+  .ul-kat.ek3{background:rgba(154,52,18,.1);color:var(--org);}
+  .ul-kat.ozel{background:rgba(14,116,144,.1);color:var(--tel);}
+  .ul-sayac{padding:6px 13px;font-size:.72rem;color:#4a5568;background:var(--g100);border-top:1px solid var(--border);}
+  .bos{padding:14px;font-size:.85rem;color:var(--g400);font-style:italic;text-align:center;}
+
+  /* SEÇİLİ KART */
+  .uk{display:none;margin-top:8px;background:var(--navy);border-radius:7px;padding:10px 14px;align-items:center;gap:10px;}
+  .uk.goster{display:flex;}
+  .uk .ua{font-weight:600;color:#fff;font-size:.92rem;flex:1;}
+  .uk-kat{font-size:.68rem;padding:2px 8px;border-radius:8px;font-weight:700;white-space:nowrap;}
+  .uk-kat.std{background:rgba(10,102,64,.35);color:#6ee7b7;}
+  .uk-kat.ek2{background:rgba(185,28,28,.35);color:#fca5a5;}
+  .uk-kat.ek3{background:rgba(154,52,18,.35);color:#fdba74;}
+  .uk-kat.ozel{background:rgba(14,116,144,.35);color:#67e8f9;}
+  .uk-kat.sb{background:rgba(91,33,182,.35);color:#d8b4fe;}
+  .udg{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);font-size:.7rem;padding:3px 9px;border-radius:6px;cursor:pointer;font-family:'Segoe UI',system-ui,sans-serif;transition:all .2s;width:auto;}
+  .udg:hover{border-color:rgba(255,255,255,.6);color:#fff;}
+
+  /* MUAFİYET */
+  .mb{display:none;margin-top:8px;padding:10px 14px;border-radius:7px;font-size:.82rem;line-height:1.6;gap:9px;align-items:flex-start;}
+  .mb svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;margin-top:2px;}
+  .mb.tam  {display:flex;background:var(--err-bg);color:var(--err);border-left:3px solid var(--err);}
+  .mb.yari {display:flex;background:var(--org-bg);color:var(--org);border-left:3px solid var(--org);}
+  .mb.sb   {display:flex;background:var(--pur-bg);color:var(--pur);border-left:3px solid var(--pur);}
+  .mb.norm {display:flex;background:var(--ok-bg);color:var(--ok);border-left:3px solid var(--ok);}
+  .mb.ozel {display:flex;background:var(--tel-bg);color:var(--tel);border-left:3px solid var(--tel);}
+
+  /* BUTONLAR */
+  .fnot{font-size:.72rem;color:#4a5568;line-height:1.5;margin-top:2px;}
+  .fnot a{color:var(--blue);text-decoration:none;font-weight:600;}
+  .fnot a:hover{text-decoration:underline;}
+  .fnot strong{color:var(--g600);}
+  .btn-calc{margin-top:12px;width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'Segoe UI',system-ui,sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,box-shadow .15s;}
+  .btn-calc:hover{background:var(--blue-light);box-shadow:0 4px 16px rgba(37,99,235,.3);}
+  .btn-rst{margin-top:8px;width:100%;padding:9px;background:transparent;color:var(--g400);border:1.5px solid var(--border);border-radius:8px;font-family:'Segoe UI',system-ui,sans-serif;font-size:.88rem;cursor:pointer;transition:all .15s;}
+  .btn-rst:hover{border-color:var(--g600);color:var(--g600);}
+
+  /* SONUÇ */
+  #result{display:none;animation:fi .3s ease;}
+  @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .rc{border-radius:10px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);}
+  .rh{padding:13px 20px;display:flex;align-items:center;gap:9px;font-weight:700;font-size:.92rem;flex-wrap:wrap;}
+  .rh svg{width:18px;height:18px;flex-shrink:0;}
+  .rc-z   .rh{background:#fff5f5;color:var(--err);border-left:4px solid var(--err);}
+  .rc-n   .rh{background:#f0fdf7;color:var(--ok);border-left:4px solid var(--ok);}
+  .rc-i   .rh{background:var(--warn-bg);color:var(--warn);border-left:4px solid var(--gold);}
+  .rc-y   .rh{background:var(--org-bg);color:var(--org);border-left:4px solid var(--org);}
+  .rc-o   .rh{background:var(--tel-bg);color:var(--tel);border-left:4px solid var(--tel);}
+  .rb{background:#fff;padding:20px;border-top:none;}
+
+  .sk{background:var(--navy);border-radius:9px;padding:18px 22px;margin-bottom:18px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;}
+  .sk .sq{font-size:.72rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-weight:600;}
+  .sk .sr{font-size:1.75rem;color:var(--blue-light);font-weight:700;line-height:1.1;}
+  .sk .sa{font-size:.72rem;color:rgba(255,255,255,.35);margin-top:4px;}
+  .ss{background:rgba(255,255,255,.06);border-radius:7px;padding:10px 14px;text-align:right;min-width:150px;}
+  .ss .sl{font-size:.68rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .ss .sv{font-size:1rem;font-weight:700;color:rgba(255,255,255,.8);}
+
+  .ha{background:var(--g100);border-radius:8px;padding:16px 18px;margin-bottom:16px;border:1px solid var(--border);}
+  .ha .hb{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);margin-bottom:10px;}
+  .adim-buyuk{padding:10px 0!important;border-top:1.5px solid rgba(255,255,255,.1)!important;margin-top:4px;}
+  .al-buyuk{font-size:.95rem!important;font-weight:700!important;color:rgba(255,255,255,.7)!important;}
+  .av-buyuk{font-size:1.05rem!important;font-weight:800!important;}
+  .adim-buyuk .av.gld{color:var(--blue-light)!important;font-size:1.08rem!important;}
+  .adim-buyuk .av.red{color:#fb923c!important;font-size:1.08rem!important;}
+  .adim{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--g200);font-size:.86rem;}
+  .adim:last-child{border-bottom:none;padding-top:9px;margin-top:3px;font-weight:700;font-size:.92rem;color:var(--navy);}
+  .al{color:var(--g600);}
+  .al.b{color:var(--navy);font-weight:600;}
+  .av{font-weight:600;color:var(--navy);}
+  .av.red{color:var(--err);}.av.grn{color:var(--ok);}.av.gld{color:var(--gold);}
+
+  .dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:16px;}
+  .di{background:var(--g100);border-radius:7px;padding:10px 13px;border-left:3px solid var(--blue);}
+  .di label{font-size:.65rem;color:#374162;letter-spacing:.06em;font-weight:600;text-transform:uppercase;display:block;margin-bottom:2px;}
+  .di .dv{font-size:.9rem;font-weight:700;color:var(--navy);}
+
+  .obk{background:var(--tel-bg);border:1px solid rgba(14,116,144,.2);border-radius:8px;padding:14px 18px;margin-bottom:16px;}
+  .obk .obb{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tel);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .obk .obb svg{width:13px;height:13px;fill:var(--tel);}
+  .obm{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(14,116,144,.12);font-size:.84rem;color:#0c4a6e;line-height:1.6;}
+  .obm:last-child{border-bottom:none;}
+  .obh{font-weight:700;color:var(--tel);flex-shrink:0;min-width:16px;}
+
+  .at{font-size:.84rem;color:var(--g600);line-height:1.75;border-top:1px solid var(--border);padding-top:13px;}
+  .pdf-btn-row{display:flex;justify-content:center;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:10px;}
+  .pdf-dl-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:var(--navy);color:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.1);border-radius:7px;font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:background .15s;}
+  .pdf-dl-btn:hover{background:#253054;color:#fff;}
+  .pdf-dl-btn svg{opacity:.65;}
+  .at strong{color:var(--navy);}
+  .mr{margin-top:10px;display:inline-flex;align-items:center;gap:5px;font-size:.71rem;color:var(--blue);background:rgba(37,99,235,.07);padding:3px 10px;border-radius:20px;font-weight:600;}
+
+  .uyari-kutu{display:none;margin-top:10px;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:11px 14px;font-size:.86rem;color:var(--err);line-height:1.7;}
+  .uyari-kutu.goster{display:block;}
+  .uyari-kutu ul{margin:6px 0 0 16px;}
+  .uyari-kutu li{margin-bottom:2px;}
+  .muk-kutu{display:none;margin-top:10px;background:var(--warn-bg);border:1px solid rgba(217,119,6,.3);border-radius:7px;padding:11px 14px;font-size:.86rem;color:var(--warn);align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .muk-kutu.goster{display:flex;}
+  .muk-kutu .muk-btn{display:flex;gap:8px;}
+  .muk-kutu button{padding:5px 12px;border:none;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;}
+  .muk-devam{background:var(--warn);color:#fff;}
+  .muk-iptal{background:rgba(180,83,9,.1);color:var(--warn);}
+  #tarih:focus + input + button,
+  div:has(#tarih):hover button[onclick="tarihPickerAc()"]{color:var(--blue);}
+  .disc{margin-top:16px;background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:12px 16px;font-size:.74rem;color:#78350f;line-height:1.65;display:flex;gap:9px;}
+  .disc svg{width:14px;height:14px;fill:var(--g400);flex-shrink:0;margin-top:2px;}
+
+  /* GEÇMİŞ PANELİ */
+  .gecmis-panel{background:#fff;border-radius:10px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:20px;}
+  .gecmis-header{background:var(--navy);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .gecmis-header span{color:#fff;font-size:.92rem;font-weight:600;}
+  .gecmis-header .gh-right{display:flex;gap:6px;align-items:center;}
+  .gecmis-sayac{font-size:.7rem;color:rgba(255,255,255,.6);background:rgba(255,255,255,.1);padding:2px 9px;border-radius:10px;}
+  .btn-pdf{padding:6px 13px;background:var(--gold);color:#fff;border:none;border-radius:6px;font-family:'Segoe UI',system-ui,sans-serif;font-size:.77rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;transition:opacity .15s;}
+  .btn-pdf:hover{opacity:.85;}
+  .btn-pdf:disabled{opacity:.35;cursor:default;}
+  .btn-gecmis-temizle{padding:6px 11px;background:transparent;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.15);border-radius:6px;font-family:'Segoe UI',system-ui,sans-serif;font-size:.77rem;cursor:pointer;transition:all .15s;}
+  .btn-gecmis-temizle:hover{color:#fff;border-color:rgba(255,255,255,.4);}
+  .gecmis-liste{padding:0;}
+  .gecmis-item{padding:12px 20px;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .1s;}
+  .gecmis-item:last-child{border-bottom:none;}
+  .gecmis-item:hover{background:var(--g100);}
+  .gi-no{font-size:.7rem;color:var(--g400);font-weight:700;min-width:22px;}
+  .gi-body{flex:1;}
+  .gi-baslik{font-size:.86rem;font-weight:700;color:var(--navy);}
+  .gi-detay{font-size:.75rem;color:var(--g400);margin-top:2px;}
+  .gi-sonuc{text-align:right;min-width:100px;}
+  .gi-ibkb{font-size:.8rem;font-weight:700;color:var(--gold);}
+  .gi-tcmb{font-size:.73rem;color:var(--err);margin-top:1px;}
+  .gi-muaf{font-size:.8rem;font-weight:700;color:var(--ok);}
+  .gi-saat{font-size:.68rem;color:var(--g400);margin-top:3px;}
+  /* TABLO */
+  .gt{width:100%;border-collapse:collapse;font-size:.8rem;overflow-x:auto;display:block;}
+  .gt thead tr{background:var(--navy);position:sticky;top:0;z-index:1;}
+  .gt thead th{padding:9px 12px;text-align:left;color:rgba(255,255,255,.6);font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.06);}
+  .gt thead th:last-child{border-right:none;}
+  .gt thead th.th-gold{color:var(--gold-light);}
+  .gt thead th.th-org{color:#fb923c;}
+  .gt tbody tr{border-bottom:1px solid var(--g100);cursor:pointer;transition:background .1s;}
+  .gt tbody tr:nth-child(even){background:#fafbfd;}
+  .gt tbody tr:last-child{border-bottom:none;}
+  .gt tbody tr:hover{background:#eff6ff;}
+  .gt tbody tr.muaf-satir{background:rgba(10,102,64,.03);}
+  .gt td{padding:8px 12px;color:var(--text);white-space:nowrap;border-right:1px solid var(--g100);vertical-align:middle;}
+  .gt td:last-child{border-right:none;}
+  .gt .td-no{color:var(--g400);font-size:.72rem;font-weight:700;text-align:center;}
+  .gt .td-saat{color:var(--g400);font-size:.72rem;}
+  .gt .td-ulke{font-weight:700;color:var(--navy);}
+  .gt .td-gold{font-weight:700;color:var(--gold);}
+  .gt .td-org{font-weight:700;color:var(--org);}
+  .gt .td-ok{color:var(--ok);font-weight:600;}
+  .gt .td-muaf{color:var(--ok);font-weight:600;font-style:italic;}
+  .gt .td-yok{color:var(--g400);font-style:italic;}
+  .gecmis-tablo-wrap{overflow-x:auto;max-height:460px;overflow-y:auto;}
+  .gecmis-bos{padding:24px;text-align:center;font-size:.86rem;color:#4a5568;}
+
+  .print-rapor { display: none; }
+  .pdf-sayfa-baslik { display: none; }
+  @media print {
+    @page { size: A4 portrait; margin: 10mm; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body.pdf-gecmis-mod header,
+    body.pdf-gecmis-mod .hero,
+    body.pdf-gecmis-mod main,
+    body.pdf-gecmis-mod .pdf-sayfa-baslik { display: none !important; }
+    body.pdf-gecmis-mod .print-rapor { display: block !important; }
+  }
+  @media(max-width:640px){
+    .fg{grid-template-columns:1fr;}.fg .full{grid-column:1;}
+    .hero h2{font-size:1.45rem;}.cb{padding:18px 14px;}.hbadge{display:none;}
+    .sk{grid-template-columns:1fr;}.ss{text-align:left;}
+    .sekme-bar{flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hi">
+    <div class="logo">
+      <div class="li" id="logoWrap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div>
+      <div class="lt">
+        <h1>GÖVDAĞ</h1>
+        <p>İBKB ZORUNLULUĞU SORGULAMA YAZILIMI</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="oturumBilgi" style="display:none;align-items:center;gap:8px;">
+        <span id="kullanicEmail" style="font-size:.72rem;color:rgba(255,255,255,.85);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
+        <button onclick="cikisYap()" style="font-size:.72rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 14px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;">Çıkış</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+<div class="hero-ic">
+<h2>İBKB Zorunluluğu Sorgulama Yazılımı</h2>
+  <p>Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak ihracat bedelinizin asgari ne kadarını TCMB'ye satmak zorunda olduğunuzu hesaplayın.</p>
+</div>
+
+<div class="print-rapor" id="printRapor"></div>
+<div class="pdf-sayfa-baslik">
+  <div>
+    <div class="psb-logo">İHRACAT BEDELİ KABUL BELGESİ DÜZENLEME ZORUNLULUĞU HESAPLAMASI</div>
+    <div class="psb-alt">Türkiye Cumhuriyet Merkez Bankası — İhracat Genelgesi</div>
+  </div>
+  <div class="psb-tarih" id="pdfTarihBant"></div>
+</div>
+<main>
+  <div class="card">
+    <div class="ch">
+      <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      <span>İhracat Bilgilerini Girin</span>
+    </div>
+    <div class="cb">
+      <form id="frm">
+        <div class="fg">
+
+          <div class="fgg">
+            <label>Beyanname Numarası</label>
+            <input type="text" id="beyanname" placeholder="Örn: 24010100EX123456" oninput="beyannameLinkGuncelle()">
+            <span class="fnot" id="beyannameLinkWrap" style="display:none;">
+              🔍 <a id="beyannameLinkEl" href="#" target="_blank" rel="noopener">GTB Beyanname Sorgulama</a> sayfasında kapanma tarihini sorgulayabilirsiniz.
+            </span>
+            <span class="fnot" id="beyannameLinkYok">
+              Beyanname numarası girerek <a href="https://uygulama.gtb.gov.tr/beyannamesorgulama/" target="_blank" rel="noopener">GTB Beyanname Sorgulama</a> sayfasında kapanma tarihini sorgulayabilirsiniz.
+            </span>
+          </div>
+
+          <div class="fgg">
+            <label>İhracat Tarihi<span class="rs">*</span></label>
+            <div style="position:relative;display:flex;">
+              <input type="text" id="tarih" required placeholder="GG.AA.YYYY" maxlength="10" autocomplete="off" style="width:100%;letter-spacing:.05em;padding-right:38px;" oninput="tarihFormatla(this)">
+              <input type="date" id="tarihPicker" tabindex="-1" style="position:absolute;opacity:0;width:1px;height:1px;top:0;right:0;pointer-events:none;" onchange="tarihPickerSecildi(this.value)">
+              <button type="button" onclick="tarihPickerAc()" tabindex="-1" title="Takvimden seç" style="position:absolute;right:0;top:0;bottom:0;width:36px;background:var(--g100);border:none;border-left:1.5px solid var(--border);border-radius:0 7px 7px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--g400);transition:color .15s,background .15s;" onmouseenter="this.style.background='#eff6ff';this.style.color='var(--blue)'" onmouseleave="this.style.background='var(--g100)';this.style.color='var(--g400)'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              </button>
+            </div>
+            <span class="fnot">⚠ Beyannamenin <strong>kapanma tarihi</strong>ni giriniz (fiili ihraç tarihi)</span>
+          </div>
+
+          <div class="fgg">
+            <label>İhracat Bedeli<span class="rs">*</span></label>
+            <input type="text" id="bedel" placeholder="0,00" inputmode="decimal" autocomplete="off" required oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
+            <span class="fnot">📋 Beyannamenin <strong>46. hanesi</strong>nden alınız</span>
+          </div>
+
+          <div class="fgg">
+            <label>Para Birimi</label>
+            <input type="hidden" id="para" value="USD">
+            <div style="border:1.5px solid var(--g200);border-radius:7px;padding:11px 14px;font-size:.95rem;background:var(--g100);color:var(--g400);">USD — Amerikan Doları</div>
+          </div>
+
+          <div class="fgg full">
+            <label>Daha Önce Düzenlenen İBKB Tutarı</label>
+            <input type="text" id="oncekiIbkb" placeholder="0,00 — Yoksa boş bırakın" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
+            <span class="fnot">💡 Bu ihracata ait daha önce kısmi İBKB düzenlendiyse tutarı giriniz. Matrahtan düşülerek kalan yükümlülük hesaplanır.</span>
+          </div>
+
+          <div class="fgg full">
+            <label>Hedef Ülke<span class="rs">*</span></label>
+
+            <!-- Seçici paneli -->
+            <div id="ulkePaneli" class="ulke-secici">
+              <div class="us-top">
+                <input type="text" class="us-arama" id="aramaInput" placeholder="🔍  Ülke adı yazın…" oninput="listele()" autocomplete="off">
+                <div class="sekme-bar">
+                  <button type="button" class="sb-btn s-tm ak" onclick="sekme('',this)">Tümü</button>
+                  <button type="button" class="sb-btn s-std"   onclick="sekme('std',this)">✅ Standart</button>
+                  <button type="button" class="sb-btn s-ek2"   onclick="sekme('ek2',this)">⛔ EK-2 Muaf</button>
+                  <button type="button" class="sb-btn s-ek3"   onclick="sekme('ek3',this)">⚠ EK-3</button>
+                  <button type="button" class="sb-btn s-ozel"  onclick="sekme('ozel',this)">🔵 Özel</button>
+                </div>
+              </div>
+              <div class="ulke-liste-wrap" id="ulkeListe"></div>
+              <div class="ul-sayac" id="ulkeSayac"></div>
+            </div>
+            <span class="fnot" style="margin-top:6px;display:block;">📋 Beyannamenin <strong>17. hanesi</strong>nden alınız</span>
+
+            <!-- Seçilen ülke kartı -->
+            <div class="uk" id="ulkeKart">
+              <span class="ua" id="ulkeAd"></span>
+              <span class="uk-kat" id="ulkeKat"></span>
+              <button type="button" class="udg" onclick="ulkeDegistir()">Değiştir</button>
+            </div>
+
+            <div class="mb" id="muafBadge"></div>
+          </div>
+
+        </div>
+
+        <div class="uyari-kutu" id="uyariKutu"></div>
+        <div class="muk-kutu" id="mukKutu">
+          <span id="mukMesaj">⚠ Bu sorgu daha önce yapıldı. Tekrar hesaplamak istiyor musunuz?</span>
+          <div class="muk-btn">
+            <button class="muk-devam" onclick="hesaplaDevam()">Evet, devam et</button>
+            <button class="muk-iptal" onclick="mukKapat()">İptal</button>
+          </div>
+        </div>
+        <button type="button" class="btn-calc" onclick="hesapla()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          Hesapla
+        </button>
+        <button type="button" class="btn-rst" onclick="sifirla()">Formu Temizle</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="result"></div>
+
+
+  <!-- GEÇMİŞ PANELİ -->
+  <div class="gecmis-panel" id="gecmisPanel" style="display:none;">
+    <div class="gecmis-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--gold)"><path d="M13 3a9 9 0 1 0 0 18A9 9 0 0 0 13 3zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm.5-11H12v6l4.25 2.55.75-1.23-3.5-2.08V8z"/></svg>
+        <span>Oturum Sorgu Geçmişi</span>
+        <span class="gecmis-sayac" id="gecmisSayac">0 sorgu</span>
+      </div>
+      <div class="gh-right">
+        <button class="btn-pdf" id="btnPdf" onclick="pdfIndir()" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 17h8v1.5H8V17zm0-3h8v1.5H8V14zm0-3h3v1.5H8V11z"/></svg>
+          PDF
+        </button>
+        <button class="btn-pdf" id="btnXlsx" onclick="xlsxIndir()" disabled style="background:#1a7a4a;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
+          Excel
+        </button>
+        <button class="btn-gecmis-temizle" onclick="gecmisTemizle()">Temizle</button>
+      </div>
+    </div>
+    <div class="gecmis-liste" id="gecmisListe">
+      <div class="gecmis-bos">Henüz sorgu yapılmadı.</div>
+    </div>
+  </div>
+
+  <div class="disc">
+    <svg viewBox="0 0 24 24" style="fill:#d97706;flex-shrink:0;width:15px;height:15px;margin-top:1px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <div>
+      <span>Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.</span>
+      <div style="margin-top:8px;">
+<a href="https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:.75rem;color:#92400e;font-weight:600;text-decoration:none;">📄 İhracat Genelgesi ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:16px 20px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <span style="font-size:.75rem;font-weight:600;color:#374162;text-transform:uppercase;letter-spacing:.05em;">İletişim</span>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <a href="/cdn-cgi/l/email-protection#bad5c8d2dbd4d1dfd6dbd2d7dfcefaddd7dbd3d694d9d5d7" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;"><span class="__cf_email__" data-cfemail="fc938e949d929799909d94919988bc9b919d9590d29f9391">[email&#160;protected]</span></a>
+      <a href="tel:+905331987033" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        +90 533 198 70 33
+      </a>
+    </div>
+  </div>
+  <div style="text-align:center;padding:18px 0 28px;border-top:1px solid var(--border);margin-top:8px;">
+    <span style="font-size:.75rem;color:rgba(255,255,255,.7);letter-spacing:.04em;">© 2025 <strong style="color:#fff;">GÖVDAĞ</strong> — Tüm hakları saklıdır.</span>
+  </div>
+</main>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// OTURUM KONTROLU
+var SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+
+(function(){
+  var token = sessionStorage.getItem('govdag_token');
+  if(!token){
+    window.location.replace('./login.html');
+    return;
+  }
+})();
+
+function oturumGoster(){
+  var email = sessionStorage.getItem('govdag_email') || '';
+  var el = document.getElementById('oturumBilgi');
+  var em = document.getElementById('kullanicEmail');
+  if(el){ el.style.display = 'flex'; }
+  if(em && email){ em.textContent = email; }
+}
+
+document.addEventListener('DOMContentLoaded', oturumGoster);
+window.addEventListener('load', oturumGoster);
+
+function cikisYap(){
+  if(!confirm('Çıkış yapmak istediğinizden emin misiniz?')) return;
+  sessionStorage.removeItem('govdag_token');
+  sessionStorage.removeItem('govdag_email');
+  sessionStorage.removeItem('govdag_refresh');
+  window.location.replace('./login.html');
+}
+
+// Config localStorage'dan yükle (admin paneli yönetir)
+function cfgYukle(){
+  try{
+    const raw=localStorage.getItem('ibkb_config');
+    return raw?JSON.parse(raw):null;
+  }catch(e){return null;}
+}
+const _cfg   = cfgYukle();
+const _sab   = (_cfg && _cfg.sabitler) || {};
+const _dest  = (_cfg && _cfg.destek)   || {};
+const TCMB   = (_sab.tcmb   || 35) / 100;
+const ESIK   = _sab.esik   || 15000;
+const GUN    = _sab.gun    || 180;
+// Döviz dönüşüm desteği
+const DESTEK     = (_dest.oran  !== undefined ? _dest.oran  : 3) / 100;
+const DESTEK_SON = _dest.son || '30 Nisan 2026';
+const KUR={USD:1,EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
+const KATLBL={std:'Standart',ek2:'EK-2 Muaf',ek3:'EK-3 %50',sb:'Serbest Bölge',ozel:'Özel Md.4/4'};
+
+// ─── ÜLKE VERİTABANI — tüm BM üyesi ülkeler Türkçe ─────────────────────────
+const U=[
+  // EK-2 (33)
+  {a:"Afganistan",k:"ek2"},{a:"Angola",k:"ek2"},{a:"Belarus",k:"ek2"},
+  {a:"Benin",k:"ek2"},{a:"Cibuti",k:"ek2"},{a:"Demokratik Kongo Cumhuriyeti",k:"ek2"},
+  {a:"Etiyopya",k:"ek2"},{a:"Fildişi Sahili",k:"ek2"},{a:"Filistin",k:"ek2"},
+  {a:"Gabon",k:"ek2"},{a:"Gana",k:"ek2"},{a:"Gine",k:"ek2"},
+  {a:"Güney Sudan",k:"ek2"},{a:"İran",k:"ek2"},{a:"Kamerun",k:"ek2"},
+  {a:"Kenya",k:"ek2"},{a:"Kırgızistan",k:"ek2"},{a:"Kongo Cumhuriyeti",k:"ek2"},
+  {a:"Kuzey Kore",k:"ek2"},{a:"Küba",k:"ek2"},{a:"Liberya",k:"ek2"},
+  {a:"Lübnan",k:"ek2"},{a:"Mali",k:"ek2"},{a:"Moldova",k:"ek2"},
+  {a:"Nijerya",k:"ek2"},{a:"Senegal",k:"ek2"},{a:"Somali",k:"ek2"},
+  {a:"Sudan",k:"ek2"},{a:"Suriye",k:"ek2"},{a:"Tacikistan",k:"ek2"},
+  {a:"Tanzanya",k:"ek2"},{a:"Venezuela",k:"ek2"},{a:"Zimbabwe",k:"ek2"},
+  // EK-3 (8 — Libya Özel sekmesinde)
+  {a:"Azerbaycan",k:"ek3"},{a:"Cezayir",k:"ek3"},{a:"Fas",k:"ek3"},
+  {a:"Kazakistan",k:"ek3"},{a:"Özbekistan",k:"ek3"},
+  {a:"Tunus",k:"ek3"},{a:"Türkmenistan",k:"ek3"},{a:"Ukrayna",k:"ek3"},
+  // Özel Md.4/4
+  {a:"Irak",k:"ozel"},{a:"Libya",k:"ozel"},{a:"Moritanya",k:"ozel"},
+  // Serbest Bölge
+  {a:"Yurt İçi Serbest Bölge",k:"sb"},
+  // Standart — tüm BM üyeleri + diğer tanınmış bölgeler
+  {a:"Almanya",k:"std"},{a:"Amerika Birleşik Devletleri",k:"std"},
+  {a:"Andorra",k:"std"},{a:"Angola (std)",k:"std"},
+  {a:"Antigua ve Barbuda",k:"std"},{a:"Arjantin",k:"std"},
+  {a:"Arnavutluk",k:"std"},{a:"Avustralya",k:"std"},
+  {a:"Avusturya",k:"std"},{a:"Bahamalar",k:"std"},
+  {a:"Bahreyn",k:"std"},{a:"Bangladeş",k:"std"},
+  {a:"Barbados",k:"std"},{a:"Belçika",k:"std"},
+  {a:"Belize",k:"std"},{a:"Bhutan",k:"std"},
+  {a:"Birleşik Arap Emirlikleri",k:"std"},{a:"Bolivya",k:"std"},
+  {a:"Bosna Hersek",k:"std"},{a:"Botsvana",k:"std"},
+  {a:"Brezilya",k:"std"},{a:"Brunei",k:"std"},
+  {a:"Bulgaristan",k:"std"},{a:"Burkina Faso",k:"std"},
+  {a:"Burundi",k:"std"},{a:"Cabo Verde",k:"std"},
+  {a:"Çad",k:"std"},{a:"Çek Cumhuriyeti",k:"std"},
+  {a:"Çin",k:"std"},{a:"Danimarka",k:"std"},
+  {a:"Doğu Timor",k:"std"},{a:"Dominik Cumhuriyeti",k:"std"},
+  {a:"Dominika",k:"std"},{a:"Ekvador",k:"std"},
+  {a:"Ekvator Ginesi",k:"std"},{a:"El Salvador",k:"std"},
+  {a:"Endonezya",k:"std"},{a:"Eritre",k:"std"},
+  {a:"Ermenistan",k:"std"},{a:"Estonya",k:"std"},
+  {a:"Esvatini",k:"std"},{a:"Filipinler",k:"std"},
+  {a:"Fiji",k:"std"},{a:"Finlandiya",k:"std"},
+  {a:"Fransa",k:"std"},{a:"Gambiya",k:"std"},
+  {a:"Gine Bissau",k:"std"},{a:"Grenada",k:"std"},
+  {a:"Guatemala",k:"std"},{a:"Guyana",k:"std"},
+  {a:"Güney Afrika",k:"std"},{a:"Gürcistan",k:"std"},
+  {a:"Haiti",k:"std"},{a:"Hırvatistan",k:"std"},
+  {a:"Hindistan",k:"std"},{a:"Hollanda",k:"std"},
+  {a:"Honduras",k:"std"},{a:"Hong Kong",k:"std"},
+  {a:"İngiltere",k:"std"},{a:"İrlanda",k:"std"},
+  {a:"İspanya",k:"std"},{a:"İsrail",k:"std"},
+  {a:"İsveç",k:"std"},{a:"İsviçre",k:"std"},
+  {a:"İtalya",k:"std"},{a:"İzlanda",k:"std"},
+  {a:"Jamaika",k:"std"},{a:"Japonya",k:"std"},
+  {a:"Kamboçya",k:"std"},{a:"Kanada",k:"std"},
+  {a:"Katar",k:"std"},{a:"Karadağ",k:"std"},
+  {a:"Kiribati",k:"std"},{a:"KKTC",k:"std"},
+  {a:"Kolombiya",k:"std"},{a:"Komorlar",k:"std"},
+  {a:"Kosova",k:"std"},{a:"Kosta Rika",k:"std"},
+  {a:"Kuveyt",k:"std"},{a:"Kıbrıs",k:"std"},
+  {a:"Laos",k:"std"},{a:"Lesoto",k:"std"},
+  {a:"Letonya",k:"std"},{a:"Liechtenstein",k:"std"},
+  {a:"Litvanya",k:"std"},{a:"Lüksemburg",k:"std"},
+  {a:"Macaristan",k:"std"},{a:"Madagaskar",k:"std"},
+  {a:"Malavi",k:"std"},{a:"Maldivler",k:"std"},
+  {a:"Malezya",k:"std"},{a:"Malta",k:"std"},
+  {a:"Marshall Adaları",k:"std"},{a:"Meksika",k:"std"},
+  {a:"Mikronezya",k:"std"},{a:"Mısır",k:"std"},
+  {a:"Moğolistan",k:"std"},{a:"Mozambik",k:"std"},
+  {a:"Myanmar",k:"std"},{a:"Kuzey Makedonya",k:"std"},
+  {a:"Namibya",k:"std"},{a:"Nauru",k:"std"},
+  {a:"Nepal",k:"std"},{a:"Nijer",k:"std"},
+  {a:"Nikaragua",k:"std"},{a:"Norveç",k:"std"},
+  {a:"Orta Afrika Cumhuriyeti",k:"std"},{a:"Pakistan",k:"std"},
+  {a:"Palau",k:"std"},{a:"Panama",k:"std"},
+  {a:"Papua Yeni Gine",k:"std"},{a:"Paraguay",k:"std"},
+  {a:"Peru",k:"std"},{a:"Polonya",k:"std"},
+  {a:"Portekiz",k:"std"},{a:"Romanya",k:"std"},
+  {a:"Ruanda",k:"std"},{a:"Rusya",k:"std"},
+  {a:"Saint Kitts ve Nevis",k:"std"},{a:"Saint Lucia",k:"std"},
+  {a:"Saint Vincent ve Grenadinler",k:"std"},{a:"Samoa",k:"std"},
+  {a:"San Marino",k:"std"},{a:"Sao Tome ve Principe",k:"std"},
+  {a:"Sırbistan",k:"std"},{a:"Sierra Leone",k:"std"},
+  {a:"Singapur",k:"std"},{a:"Slovakya",k:"std"},
+  {a:"Slovenya",k:"std"},{a:"Solomon Adaları",k:"std"},
+  {a:"Sri Lanka",k:"std"},{a:"Suudi Arabistan",k:"std"},
+  {a:"Surinam",k:"std"},{a:"Tayland",k:"std"},
+  {a:"Tayvan",k:"std"},{a:"Togo",k:"std"},
+  {a:"Tonga",k:"std"},{a:"Trinidad ve Tobago",k:"std"},
+  {a:"Türkiye",k:"std"},{a:"Tuvalu",k:"std"},
+  {a:"Uganda",k:"std"},{a:"Umman",k:"std"},
+  {a:"Uruguay",k:"std"},{a:"Ürdün",k:"std"},
+  {a:"Vanuatu",k:"std"},{a:"Vatican",k:"std"},
+  {a:"Vietnam",k:"std"},{a:"Yemen",k:"std"},
+  {a:"Yeni Zelanda",k:"std"},{a:"Yunanistan",k:"std"},
+  {a:"Zambiya",k:"std"},{a:"Diğer Ülke",k:"std"},
+];
+
+// Alfabetik sırala (kategori içinde)
+U.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
+
+// ─── DURUM ────────────────────────────────────────────────────────────────────
+let secili=null;   // {a, k}
+let aktifKat='';   // '' = tümü
+
+// ─── YARDIMCI ─────────────────────────────────────────────────────────────────
+function beyannameLinkGuncelle(){
+  const val = document.getElementById('beyanname').value.trim();
+  const wrap = document.getElementById('beyannameLinkWrap');
+  const yok  = document.getElementById('beyannameLinkYok');
+  if(val){
+    const url = 'https://uygulama.gtb.gov.tr/beyannamesorgulama/?beyanname=' + encodeURIComponent(val);
+    document.getElementById('beyannameLinkEl').href = url;
+    wrap.style.display = 'inline';
+    yok.style.display  = 'none';
+  } else {
+    wrap.style.display = 'none';
+    yok.style.display  = 'inline';
+  }
+}
+
+const N=s=>(s||'').replace(/İ/g,'i').replace(/I/g,'ı').replace(/Ş/g,'ş').replace(/Ğ/g,'ğ').replace(/Ö/g,'ö').replace(/Ü/g,'ü').replace(/Ç/g,'ç').replace(/[A-Z]/g,x=>x.toLowerCase());
+const F=(n,p)=>Number(n).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+(p?' '+p:'');
+const FU=n=>Number(n).toLocaleString('tr-TR',{maximumFractionDigits:0})+' USD';
+function sonT(t,g){const d=new Date(t);d.setDate(d.getDate()+g);return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'});}
+
+function md29Kutu(st){
+  return '<div style="margin-top:16px;background:#fef2f2;border:1.5px solid #fca5a5;border-left:4px solid #991b1b;border-radius:8px;padding:14px 16px;">'
+    + '<div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991b1b;margin-bottom:8px;display:flex;align-items:center;gap:6px;">'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="#991b1b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>'
+    + 'Süre Aşımı — Madde 29 Bildirimi Gerekli</div>'
+    + '<div style="font-size:.84rem;color:#7f1d1d;line-height:1.75;">'
+    + '180 günlük yasal süre <strong>' + st + '</strong> tarihinde dolmuştur. '
+    + 'İhracat Genelgesi <strong>Madde 29/1</strong> uyarınca aracı bankanın, açık ihracat hesabını '
+    + '<strong>5 iş günü içinde</strong> Vergi Dairesi Başkanlığı veya Vergi Dairesi Müdürlüğüne ihbar etmesi gerekmektedir. '
+    + 'Vergi Dairesi, ihbardan itibaren <strong>10 iş günü içinde 90 günlük ihtarname</strong> gönderir. '
+    + 'İhtarname süresi sonunda hesap kapatılmazsa <strong>Cumhuriyet Savcılığına</strong> bildirim yapılır (1567 sayılı Kanun).'
+    + '</div>'
+    + '<div style="margin-top:10px;font-size:.75rem;">'
+    + '<a href="https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR" '
+    + 'target="_blank" rel="noopener" style="color:#991b1b;font-weight:700;text-decoration:underline;">→ İhracat Genelgesi Madde 29’u görüntüle</a>'
+    + '</div>'
+    + '</div>';
+}
+
+// ─── SEKME ────────────────────────────────────────────────────────────────────
+function sekme(kat, btn){
+  aktifKat=kat;
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('ak'));
+  btn.classList.add('ak');
+  listele();
+}
+
+// ─── LİSTE ────────────────────────────────────────────────────────────────────
+function listele(){
+  const fl=N(document.getElementById('aramaInput').value);
+  const liste=U.filter(u=>{
+    const katOk = !aktifKat || u.k===aktifKat;
+    const araOk = !fl || N(u.a).includes(fl);
+    return katOk && araOk;
+  });
+
+  const el=document.getElementById('ulkeListe');
+  const sayac=document.getElementById('ulkeSayac');
+
+  if(!liste.length){
+    el.innerHTML='<div class="bos">Sonuç bulunamadı</div>';
+    sayac.textContent='';
+    return;
+  }
+
+  el.innerHTML=liste.map(u=>
+    `<div class="ul-satir${secili&&secili.a===u.a?' sec':''}" onclick='ulkeSec(${JSON.stringify(u.a)},${JSON.stringify(u.k)})'>
+      <span>${u.a}</span>
+      <span class="ul-kat ${u.k}">${KATLBL[u.k]||u.k}</span>
+    </div>`
+  ).join('');
+  sayac.textContent=`${liste.length} ülke gösteriliyor`;
+}
+
+// ─── SEÇİM ────────────────────────────────────────────────────────────────────
+function ulkeSec(a,k){
+  secili={a,k};
+  document.getElementById('ulkePaneli').style.display='none';
+  const kart=document.getElementById('ulkeKart');
+  kart.classList.add('goster');
+  document.getElementById('ulkeAd').textContent=a;
+  const ke=document.getElementById('ulkeKat');
+  ke.textContent=KATLBL[k]||k;
+  ke.className='uk-kat '+k;
+  muafiyetGoster(k);
+  listele(); // seçili satırı vurgula
+}
+
+function ulkeDegistir(){
+  secili=null;
+  document.getElementById('ulkePaneli').style.display='block';
+  document.getElementById('ulkeKart').classList.remove('goster');
+  document.getElementById('muafBadge').className='mb';
+  listele();
+}
+
+// ─── MUAFİYET BADGE ───────────────────────────────────────────────────────────
+function muafiyetGoster(k){
+  const b=document.getElementById('muafBadge');
+  const ico=`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
+  const m={
+    ek2:[`tam`,`<strong>EK-2 Tam Muafiyet:</strong> Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.`],
+    ek3:[`yari`,`<strong>EK-3 — %50 Yurda Getirme:</strong> Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.`],
+    sb:[`sb`,`<strong>Yurt İçi Serbest Bölge:</strong> İBKB ve TCMB satış yükümlülüğü dışındadır (3218 sy. Kanun).`],
+    ozel:[`ozel`,`<strong>Özel Transfer Ülkesi (Md. 4/4):</strong> Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir. Standart hesaplama uygulanır.`],
+    std:[`norm`,`<strong>Standart Yükümlülük:</strong> 15.000 USD muaf dilim düşüldükten sonra kalan tutar üzerinden %35 TCMB satışı yapılır.`],
+  };
+  if(!m[k]){b.className='mb';return;}
+  b.className=`mb ${m[k][0]}`;
+  b.innerHTML=`${ico}<span>${m[k][1]}</span>`;
+}
+
+// ─── TARİH FORMAT ────────────────────────────────────────────────────────────
+// ─── SAYI FORMAT (Türkçe: 1.234.567,89) ─────────────────────────────────────
+function sayiFormatla(el){
+  // Ham değeri al: sadece rakam ve virgül kalsın
+  let v = el.value.replace(/[^0-9,]/g, '');
+  // Birden fazla virgülü engelle
+  const parts = v.split(',');
+  if(parts.length > 2) v = parts[0] + ',' + parts.slice(1).join('');
+  // Tam kısma nokta ekle
+  const tam = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  el.value = parts.length === 2 ? tam + ',' + parts[1].slice(0,2) : tam;
+}
+function sayiFormatlaBlur(el){
+  // Boşsa bırak
+  if(!el.value) return;
+  let v = el.value.replace(/\./g,'').replace(',','.');
+  const n = parseFloat(v);
+  if(isNaN(n)) return;
+  // İki ondalık basamakla yeniden formatla
+  el.value = n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function sayiDegerAl(id){
+  // "1.234,56" → 1234.56
+  const v = document.getElementById(id).value.replace(/\./g,'').replace(',','.');
+  return parseFloat(v) || 0;
+}
+
+function tarihPickerAc(){
+  const picker = document.getElementById('tarihPicker');
+  // Mevcut değeri picker'a set et
+  const v = document.getElementById('tarih').value;
+  if(/^\d{2}\.\d{2}\.\d{4}$/.test(v)){
+    const [g,a,y] = v.split('.');
+    picker.value = y+'-'+a+'-'+g;
+  }
+  try { picker.showPicker(); } catch(e) { picker.click(); }
+}
+function tarihPickerSecildi(val){
+  // YYYY-MM-DD → GG.AA.YYYY
+  if(!val) return;
+  const [y,a,g] = val.split('-');
+  document.getElementById('tarih').value = g+'.'+a+'.'+y;
+}
+function tarihFormatla(el){
+  let v = el.value.replace(/[^0-9]/g,'');
+  if(v.length>2) v = v.slice(0,2)+'.'+v.slice(2);
+  if(v.length>5) v = v.slice(0,5)+'.'+v.slice(5);
+  el.value = v;
+}
+
+// ─── HESAP ADIMLAR ────────────────────────────────────────────────────────────
+function adimKutu(adimlar){
+  if(!adimlar||!adimlar.length) return '';
+  // Son 2 adım büyük: gld (İBKB) ve red (TCMB)
+  const renkMap = {gld:'#1e40af', red:'#fb923c', grn:'#3b82f6'};
+  const buyukSet = new Set();
+  for(let i=adimlar.length-1;i>=0;i--){
+    if(adimlar[i].c==='red'||adimlar[i].c==='gld'){
+      buyukSet.add(i);
+      if(buyukSet.size>=2) break;
+    }
+  }
+  return '<div class="ha"><div class="hb">Hesaplama Adımları</div>'
+    + adimlar.map((a,i)=>{
+        const buyuk = buyukSet.has(i);
+        const renk = a.c ? (renkMap[a.c]||'') : '';
+        const valStyle = buyuk
+          ? 'font-size:1.15rem!important;font-weight:800!important;color:' + renk + '!important;'
+          : (renk ? 'color:' + renk + ';' : '');
+        const lblRenk = buyuk ? (a.c==='gld' ? '#1e40af' : a.c==='red' ? '#fb923c' : 'rgba(255,255,255,.9)') : '';
+        const lblStyle = buyuk
+          ? 'font-size:.98rem;font-weight:700;color:' + lblRenk + ';'
+          : '';
+        const divStyle = buyuk
+          ? 'padding:12px 0;border-top:1.5px solid rgba(255,255,255,.15);margin-top:6px;'
+          : '';
+        return '<div class="adim" style="' + divStyle + '">'
+          + '<span class="al' + (i===adimlar.length-1?' b':'') + '" style="' + lblStyle + '">' + a.l + '</span>'
+          + '<span class="av" style="' + valStyle + '">' + a.v + '</span>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+}
+
+function filistinKutu(){
+  var p9 = "GB&#x27;nin &quot;Gidece&#287;i Ülke&quot; başlıklı 17&#x27;nci hanesinde belirtilen ülkeye bakılmaksızın fiili ihracatın Filistin&#x27;e yapıldığı, dolayısıyla GB&#x27;nin 8&#x27;inci hanesinde alıcı adresinin &quot;Filistin&quot; olarak belirtildiği ihracat işlemlerinde, bu hususun satış sözleşmesi, kesin veya proforma fatura, GB örneği/GB bilgileri ve banka hesap özeti gibi belgelerle tevsik edilmesi şartıyla, bahse konu ihracat Filistin&#x27;e yapılmış sayılır.";
+  var p3 = "İhracata aracılık eden bankalar, bilgisi dâhilinde olan beyannamelerin &quot;Gideceği Ülke&quot; başlıklı 17&#x27;nci hanesinde belirtilen ülkeye bakılmaksızın GB&#x27;nin 8&#x27;inci hanesinde yer alan alıcı adresini kontrol etmek suretiyle ihracatın fiili olarak Filistin&#x27;e gerçekleştirilip gerçekleştirilmediğini ihracatçılardan teyit ederek buna göre işlem tesis etmekle yükümlümdürler.";
+  return '<div class="obk" style="margin-bottom:18px;background:var(--warn-bg);border-color:rgba(180,83,9,.25);">'
+    + '<div class="obb" style="color:var(--warn);">'
+    + '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>'
+    + 'Özel Hükümler — Filistin / İsrail İhracatı</div>'
+    + '<div class="obm"><span class="obh" style="color:var(--warn);">(9)</span><span>' + p9 + '</span></div>'
+    + '<div class="obm"><span class="obh" style="color:var(--warn);">(3)</span><span>' + p3 + '</span></div>'
+    + '</div>';
+}
+
+function ozelKutu(){
+  return `<div class="obk">
+    <div class="obb"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Genelge Md. 4/4 — Alternatif Bedel Kabul Yolları</div>
+    <div class="obm"><span class="obh">a)</span><span>İthalatçının Türkiye'deki bankalarda bulunan hesaplarından transferi yoluyla</span></div>
+    <div class="obm"><span class="obh">b)</span><span>İhracat bedelinin ihracat işlemiyle ilişkisi kurulmak şartıyla üçüncü bir ülkeden bankalar aracılığıyla transferi yoluyla</span></div>
+    <div class="obm"><span class="obh">c)</span><span>İhracatçının yazılı beyanı ile satış sözleşmesi ya da kesin satış faturası (veya proforma fatura) ve GB örneği/bilgileri ibraz edilmek kaydıyla NBF aranmaksızın efektif olarak</span></div>
+    <div class="obm"><span class="obh">d)</span><span>Peşin döviz olarak getirilen bedellerde, ihracatçının yazılı beyanı ile satış sözleşmesi ya da kesin satış faturası (veya proforma fatura) ibraz edilmek kaydıyla NBF aranmaksızın efektif olarak</span></div>
+  </div>`;
+}
+
+// ─── HESAPLA ──────────────────────────────────────────────────────────────────
+function hesapla(){
+  const byn=document.getElementById('beyanname').value.trim();
+  const bedel=sayiDegerAl('bedel');
+  const para=document.getElementById('para').value;
+  const tarihRaw=document.getElementById('tarih').value;
+  let tarih=tarihRaw;
+  if(/^\d{2}\.\d{2}\.\d{4}$/.test(tarihRaw)){const [g,a,y]=tarihRaw.split('.');tarih=y+'-'+a+'-'+g;}
+  // Eksik alan kontrolü
+  const uyariEl = document.getElementById('uyariKutu');
+  const eksikler = [];
+  if(!bedel||bedel<=0) eksikler.push('İhracat Bedeli girilmemiş veya geçersiz');
+  if(!tarih)           eksikler.push('İhracat Tarihi (kapanma tarihi) girilmemiş');
+  if(!secili)          eksikler.push('Hedef Ülke seçilmemiş');
+  if(eksikler.length){
+    uyariEl.innerHTML = '<strong>⚠ Lütfen yukarıdaki alanları doldurunuz:</strong><ul>' + eksikler.map(e=>'<li>'+e+'</li>').join('') + '</ul>';
+    uyariEl.classList.add('goster');
+    uyariEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+  uyariEl.classList.remove('goster');
+
+  // Mükerrer sorgu kontrolü
+  if(sorguGecmisi.length > 0){
+    const son = sorguGecmisi[0];
+    if(son && byn && son.beyanname && son.beyanname === byn){
+      document.getElementById('mukKutu').classList.add('goster');
+      document.getElementById('mukKutu').scrollIntoView({behavior:'smooth',block:'nearest'});
+      return;
+    }
+  }
+  mukKapat();
+
+  hesaplaCore();
+}
+
+function hesaplaCore(){
+  const byn=document.getElementById('beyanname').value.trim();
+  const bedel=sayiDegerAl('bedel');
+  const para=document.getElementById('para').value;
+  const tarihRaw=document.getElementById('tarih').value;
+  let tarih=tarihRaw;
+  if(/^\d{2}\.\d{2}\.\d{4}$/.test(tarihRaw)){const [g,a,y]=tarihRaw.split('.');tarih=y+'-'+a+'-'+g;}
+  const {a:ulke,k}=secili;
+  const oncekiIbkb = Math.max(0, sayiDegerAl('oncekiIbkb'));
+  const bUSD=bedel*(KUR[para]||1);
+  const st=sonT(tarih,GUN);
+  // 180 gün doldu mu kontrolü
+  const bugun = new Date(); bugun.setHours(0,0,0,0);
+  const sonTarihObj = new Date(tarih); sonTarihObj.setDate(sonTarihObj.getDate()+GUN);
+  const sureDoldu = sonTarihObj < bugun;
+  const esik=ESIK/(KUR[para]||1);
+
+  const IO=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"/></svg>`;
+  const IW=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"/></svg>`;
+  const IA=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
+  const II=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`;
+
+
+  let cls,bsl,ico,adimlar=[],sat=0,ser=bedel,acik,ref,ek='',ibkbMatrah=0;
+
+  if(k==='ek2'){
+    cls='rc-i';ico=IW;bsl='Döviz Bozturma Yükümlülüğü Yok — EK-2 Tam Muafiyet';
+    adimlar=[{l:'EK-2 Tam Muafiyet — Kambiyo takibi uygulanmaz',v:'✓',c:'grn'}];
+    acik=`<em>${ulke}</em>, EK-2 listesindedir. <strong>İBKB düzenlenmesi zorunlu değildir.</strong>`;
+    ref='TCMB Genelgesi Md. 4/6 — EK-2';
+    if(ulke==='Filistin') ek=filistinKutu();
+
+  } else if(k==='sb'){
+    cls='rc-n';ico=IO;bsl='Döviz Bozturma Yükümlülüğü Yok — Serbest Bölge';
+    adimlar=[{l:'Yurt içi serbest bölge — Yükümlülük dışı',v:'✓',c:'grn'}];
+    acik=`3218 sayılı Kanun kapsamında <strong>İBKB ve TCMB satış yükümlülüğü dışındadır.</strong>`;
+    ref='3218 Sayılı Serbest Bölgeler Kanunu';
+
+  } else if(k==='ek3'){
+    const yg=bedel*.5, ygU=bUSD*.5;
+    const kalanYg = Math.max(0, yg - oncekiIbkb);
+    sat=kalanYg*TCMB; ser=bedel-sat; ibkbMatrah=kalanYg;
+    cls='rc-y';ico=IW;bsl='EK-3 — Zorunlu TCMB Satışı Hesabı';
+    adimlar=[
+      {l:'Toplam ihracat bedeli',v:F(bedel,para)},
+      {l:'Yurda getirilmesi gereken (asgari %50)',v:F(yg,para),c:'gld'},
+      ...(oncekiIbkb>0?[{l:'Daha önce düzenlenen İBKB',v:'− '+F(oncekiIbkb,para),c:'grn'},{l:'Kalan tutar',v:F(kalanYg,para),c:'gld'}]:[]),
+      {l:'TCMB Zorunlu Satış (%35 × kalan)',v:F(sat,para),c:'red'},
+    ];
+    acik=`EK-3: <em>${ulke}</em>. Bedelin asgari %50'si (${F(yg,para)}) yurda getirilmeli.${oncekiIbkb>0?' Daha önce düzenlenen <strong>'+F(oncekiIbkb,para)+'</strong> düşüldükten sonra kalan':''} <strong>${F(kalanYg,para)}</strong> üzerinden hesaplanan <strong>${F(sat,para)}</strong> TCMB'ye satılmalıdır. En geç <strong>${st}</strong>.`;
+    ref='Genelge Md. 22/1 — EK-3';
+
+  } else if(k==='ozel'){
+    const mat=Math.max(0,bedel-esik), matU=Math.max(0,bUSD-ESIK);
+    sat=mat*TCMB; ser=bedel-sat; ek=ozelKutu(); ibkbMatrah=mat;
+    if(matU<=0){
+      cls='rc-o';ico=II;bsl='Özel Transfer Ülkesi — TCMB Satışı Gerekmez (Eşik Altı)';
+      adimlar=[
+        {l:'Toplam ihracat bedeli',v:F(bedel,para)},
+        {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,para),c:'grn'},
+        {l:'Matrah',v:F(0,para)},
+        {l:'TCMB Zorunlu Satış (%35 × 0)',v:F(0,para)+' ✓',c:'grn'},
+      ];
+      acik=`<strong>${ulke}</strong>, Genelge Md. 4/4 kapsamında özel transfer ülkesidir. Bedel eşik altında kaldığından TCMB satışı gerekmez. Bedel kabulü için aşağıdaki alternatif yollar uygulanabilir.`;
+      ref='TCMB Genelgesi Md. 4/4';
+    } else {
+      const kalanMatO = Math.max(0, mat - oncekiIbkb);
+      sat = kalanMatO * TCMB; ibkbMatrah = kalanMatO;
+      cls='rc-o';ico=II;bsl='Özel Transfer Ülkesi — Alternatif Kabul + TCMB Satışı';
+      adimlar=[
+        {l:'Toplam ihracat bedeli',v:F(bedel,para)},
+        {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,para),c:'grn'},
+        {l:'Brüt matrah',v:F(mat,para),c:'gld'},
+        ...(oncekiIbkb>0?[{l:'Daha önce düzenlenen İBKB',v:'− '+F(oncekiIbkb,para),c:'grn'},{l:'Kalan matrah',v:F(kalanMatO,para),c:'gld'}]:[]),
+        {l:'TCMB Zorunlu Satış (%35 × kalan matrah)',v:F(sat,para),c:'red'},
+      ];
+      acik=`<strong>${ulke}</strong>, Md. 4/4 kapsamında özel ülkedir. Bedel kabulü aşağıdaki alternatif yollardan biriyle yapılmalı; <strong>${F(sat,para)}</strong> TCMB'ye satılmalıdır. En geç <strong>${st}</strong>.`;
+      ref='TCMB Genelgesi Md. 4/4';
+    }
+
+  } else { // std
+    const mat=Math.max(0,bedel-esik), matU=Math.max(0,bUSD-ESIK);
+    sat=mat*TCMB; ser=bedel-sat; ibkbMatrah=mat;
+    if(matU<=0){
+      cls='rc-n';ico=IO;bsl='Döviz Bozturma Yükümlülüğü Yok — Eşik Altı';
+      adimlar=[
+        {l:'Toplam ihracat bedeli',v:F(bedel,para)},
+        {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,para),c:'grn'},
+        {l:'Matrah',v:F(0,para)},
+        {l:'TCMB Zorunlu Satış (%35 × 0)',v:F(0,para)+' ✓',c:'grn'},
+      ];
+      acik=`Bedelin USD karşılığı (~${FU(bUSD)}) 15.000 USD eşiğinin altında kaldığından <strong>TCMB'ye döviz satışı gerekmemektedir.</strong>`;
+      ref='Tebliğ 2018-32/48 Md. 23';
+    } else {
+      const kalanMat = Math.max(0, mat - oncekiIbkb);
+      sat = kalanMat * TCMB;
+      ibkbMatrah = kalanMat;
+      if(kalanMat <= 0){
+        cls='rc-n';ico=IO;bsl='Kalan İBKB Yükümlülüğü Yok — Önceki Belgeler Yeterli';
+        adimlar=[
+          {l:'Toplam ihracat bedeli',v:F(bedel,para)},
+          {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,para),c:'grn'},
+          {l:'Düzenlenmesi Gereken İBKB',v:F(mat,para),c:'gld'},
+          {l:'Daha önce düzenlenen İBKB',v:'− '+F(oncekiIbkb,para),c:'grn'},
+          {l:'Kalan matrah',v:F(0,para)+' ✓',c:'grn'},
+        ];
+        acik=`Daha önce düzenlenen <strong>${F(oncekiIbkb,para)}</strong> tutarındaki İBKB, matrahın tamamını karşıladığından <strong>ek İBKB düzenlenmesi gerekmemektedir.</strong>`;
+        ref='Tebliğ 2018-32/48 Md. 23';
+      } else {
+        cls='rc-z';ico=IA;bsl='İBKB Zorunlu — TCMB Satışı Hesabı';
+        adimlar=[
+          {l:'Toplam ihracat bedeli',v:F(bedel,para)},
+          {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,para),c:'grn'},
+          {l:'Brüt matrah',v:F(mat,para),c:'gld'},
+          ...(oncekiIbkb>0?[{l:'Daha önce düzenlenen İBKB',v:'− '+F(oncekiIbkb,para),c:'grn'},{l:'Düzenlenmesi Gereken İBKB',v:F(kalanMat,para),c:'gld'}]:[{l:'Düzenlenmesi Gereken İBKB',v:F(mat,para),c:'gld'}]),
+          {l:'TCMB Zorunlu Satış (%35 × kalan matrah)',v:F(sat,para),c:'red'},
+        ];
+        acik=`Bedel 15.000 USD eşiğini aştığından <strong>İBKB düzenlenmesi ve TCMB'ye %35 döviz satışı zorunludur.</strong>${oncekiIbkb>0?' Daha önce düzenlenen <strong>'+F(oncekiIbkb,para)+'</strong> düşüldükten sonra kalan':' Muaf dilim düşüldükten sonra'} <strong>${F(kalanMat,para)}</strong> üzerinden hesaplanan <strong>${F(sat,para)}</strong> TCMB'ye satılmalıdır. En geç <strong>${st}</strong>.`;
+        ref='Tebliğ 2018-32/48 Md. 23';
+        if(ulke==='İsrail') ek=filistinKutu();
+      }
+    }
+  }
+
+
+
+  const md29Html = (sureDoldu && ibkbMatrah > 0) ? md29Kutu(st) : '';
+
+  // Döviz dönüşüm desteği hesabı
+  const destekTutar = sat > 0 ? sat * DESTEK : 0;
+  const destekHtml  = sat > 0 ? `
+    <div style="background:#f0fdf7;border:1px solid #6ee7b7;border-radius:8px;padding:13px 16px;margin-top:12px;display:flex;align-items:flex-start;gap:10px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#047857" style="flex-shrink:0;margin-top:1px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17l6.59-6.59L18 8l-8 8z"/></svg>
+      <div>
+        <div style="font-size:.78rem;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Döviz Dönüşüm Desteği (2023/5 sayılı Tebliğ)</div>
+        <div style="font-size:.86rem;color:#064e3b;line-height:1.7;">
+          TCMB'ye satacağınız <strong>${F(sat,para)}</strong> üzerinden
+          <strong>%${(DESTEK*100).toFixed(0)} döviz dönüşüm desteği</strong> talep edebilirsiniz.<br>
+          Tahmini destek tutarı: <strong style="font-size:1rem;">${F(destekTutar,para)}</strong><br>
+          <span style="font-size:.78rem;color:#047857;">Geçici Md. 3 — ${DESTEK_SON} tarihine kadar geçerlidir. 1 ay döviz almama taahhüdü şartıyla aracı banka üzerinden başvurulur.</span>
+        </div>
+        <a href="https://www.tcmb.gov.tr/wps/wcm/connect/42b92a18-2418-46e3-911c-1cf16f12e8db/Yurtd%C4%B1%C5%9F%C4%B1_Kaynakl%C4%B1_D%C3%B6viz_Destek_UT_5.5.2025.pdf?MOD=AJPERES&CACHEID=ROOTWORKSPACE-42b92a18-2418-46e3-911c-1cf16f12e8db-pqvhCXi" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:.75rem;color:#047857;font-weight:600;text-decoration:none;margin-top:7px;background:rgba(4,120,87,.08);padding:3px 10px;border-radius:20px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+          Uygulama Talimatı (TCMB)
+        </a>
+      </div>
+    </div>` : '';
+  // Süre durum badge'i
+  const sureBadge = ibkbMatrah > 0 ? (sureDoldu
+    ? '<span style="display:inline-flex;align-items:center;gap:5px;background:#fef2f2;color:#991b1b;border:1px solid #fca5a5;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:700;margin-left:10px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Süre Aşıldı</span>'
+    : '<span style="display:inline-flex;align-items:center;gap:5px;background:#ecfdf5;color:#047857;border:1px solid #6ee7b7;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:700;margin-left:10px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"/></svg>Süre Dolmadı — Son: ' + st + '</span>'
+  ) : '';
+  document.getElementById('result').innerHTML=`
+    <div class="rc ${cls}">
+      <div class="rh">${ico} ${bsl}${sureBadge}</div>
+      <div class="rb">
+        ${adimKutu(adimlar)}
+        ${ek}
+        ${md29Html}
+        ${destekHtml}
+        <div class="at">${acik}<br><br>
+          <span class="mr"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>${ref}</span>
+        </div>
+        <div class="pdf-btn-row">
+          <button class="pdf-dl-btn" onclick="sayfaPdfIndir()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 17h8v1.5H8V17zm0-3h8v1.5H8V14zm0-3h3v1.5H8V11z"/></svg>Hesaplamayı PDF Olarak Kaydet</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  // Geçmişe kaydet
+  try {
+    const htmlDetay = document.getElementById('result').innerHTML;
+    gecmiseKaydet({
+      ulke:      String(ulke || ''),
+      ulkeHam:   String(ulke || ''),
+      bedelHam:  bedel,
+      tarihHam:  tarih,
+      bedel:     F(bedel, para),
+      para:      para,
+      tarih:     new Date(tarih).toLocaleDateString('tr-TR', {day:'2-digit', month:'long', year:'numeric'}),
+      beyanname: String(byn || ''),
+      oncekiIbkb: oncekiIbkb > 0 ? F(oncekiIbkb, para) : '',
+      ibkb:      ibkbMatrah > 0 ? F(ibkbMatrah, para) : 'Yok',
+      tcmb:      sat > 0 ? F(sat, para) : 'Yok',
+      sonTarih:  ibkbMatrah > 0 ? st : '—',
+      muaf:      ibkbMatrah === 0,
+      adimlar:   adimlar.map(a=>({l:a.l, v:a.v})),
+      muafDilim: (adimlar.find(a=>a.l&&a.l.includes('15.000'))||{}).v || '—',
+      brutMatrah:(adimlar.find(a=>a.l&&(a.l.includes('Brüt matrah')||a.l.includes('Matrah'))&&!a.l.includes('Düzenlenmesi'))||{}).v || '—',
+      saat:      new Date().toLocaleString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+      htmlDetay: htmlDetay,
+    });
+  } catch(e) { console.error('Geçmiş kaydedilemedi:', e); }
+}
+
+function mukKapat(){
+  document.getElementById('mukKutu').classList.remove('goster');
+}
+
+function hesaplaDevam(){
+  mukKapat();
+  hesaplaCore();
+}
+
+function sifirla(){
+  document.getElementById('frm').reset();
+  document.getElementById('tarih').value='';
+  document.getElementById('oncekiIbkb').value = '';
+  secili=null; aktifKat='';
+  document.getElementById('ulkePaneli').style.display='block';
+  document.getElementById('ulkeKart').classList.remove('goster');
+  document.getElementById('muafBadge').className='mb';
+  document.getElementById('aramaInput').value='';
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('ak'));
+  document.querySelector('.sb-btn.s-tm').classList.add('ak');
+  listele();
+  const r=document.getElementById('result');
+  r.style.display='none';r.innerHTML='';
+}
+
+// ─── GEÇMİŞ ──────────────────────────────────────────────────────────────────
+let sorguGecmisi = [];
+
+// tarih alanı boş başlıyor
+listele();
+
+function gecmiseKaydet(kayit){
+  sorguGecmisi.unshift(kayit); // en yenisi başa
+  gecmisPanelGuncelle();
+}
+
+function gecmisPanelGuncelle(){
+  const panel = document.getElementById('gecmisPanel');
+  const liste = document.getElementById('gecmisListe');
+  const sayac = document.getElementById('gecmisSayac');
+  const btnPdf = document.getElementById('btnPdf');
+
+  if(sorguGecmisi.length === 0){
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'block';
+  sayac.textContent = sorguGecmisi.length + ' sorgu';
+  btnPdf.disabled = false;
+  // Xlsx butonu da etkinleştir
+  const btnXlsxEl = document.getElementById('btnXlsx');
+  if(btnXlsxEl) btnXlsxEl.disabled = false;
+  document.getElementById('btnXlsx').disabled = false;
+
+  const satirlar = sorguGecmisi.filter(q => q && q.ulke);
+
+  // Adımlardan değer çek
+  const adimDeger = (q, anahtar) => {
+    if(!q.adimlar) return '—';
+    const a = q.adimlar.find(x => x.l && x.l.includes(anahtar));
+    return a ? a.v : '—';
+  };
+
+  liste.innerHTML = '<div class="gecmis-tablo-wrap"><table class="gt">'
+    + '<thead><tr>'
+    + '<th>#</th>'
+    + '<th>Sorgulama Tarihi</th>'
+    + '<th>Beyanname No</th>'
+    + '<th>İhracat Tarihi</th>'
+    + '<th>İhracat Bedeli</th>'
+    + '<th>Para Birimi</th>'
+    + '<th>Hedef Ülke</th>'
+    + '<th>Son Tarih (180. Gün)</th>'
+    + '<th>Süre Durumu</th>'
+    + '<th>15.000 USD Muaf Dilim</th>'
+    + '<th>Brüt Matrah</th>'
+    + '<th>Önceki İBKB</th>'
+    + '<th class="th-gold">Düzenlenmesi Gereken İBKB</th>'
+    + '<th class="th-org">TCMB Zorunlu Satış (%35)</th>'
+    + '<th></th>'
+    + '</tr></thead>'
+    + '<tbody>'
+    + satirlar.map((q, i) => {
+        const muaf = q.muaf;
+        const muafDilim = adimDeger(q, '15.000');
+        const brutMatrah = adimDeger(q, 'Brüt matrah');
+        const onceki = q.oncekiIbkb || (adimDeger(q, 'önce düzenlenen') !== '—' ? adimDeger(q, 'önce düzenlenen') : '');
+        return '<tr class="' + (muaf?'muaf-satir':'') + '" onclick="gecmisGoster(' + i + ')" title="Sonucu görmek için tıklayın">'
+          + '<td class="td-no">' + (sorguGecmisi.length - i) + '</td>'
+          + '<td class="td-saat">' + (q.saat||'') + '</td>'
+          + '<td>' + (q.beyanname||'<span class="td-yok">—</span>') + '</td>'
+          + '<td>' + q.tarih + '</td>'
+          + '<td><strong>' + q.bedel + '</strong></td>'
+          + '<td>' + (q.para||'USD') + '</td>'
+          + '<td class="td-ulke">' + q.ulke + '</td>'
+          + '<td>' + (q.sonTarih && q.sonTarih!=='—' ? q.sonTarih : '<span class="td-yok">—</span>') + '</td>'
+          + (function(){
+              if(muaf) return '<td><span class="td-yok">—</span></td>';
+              if(!q.sonTarih || q.sonTarih==='—') return '<td><span class="td-yok">—</span></td>';
+              const bugunT = new Date(); bugunT.setHours(0,0,0,0);
+              const aylarT={Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
+              const pT = q.sonTarih.replace(/\u00a0/g,' ').split(' ');
+              if(pT.length!==3||aylarT[pT[1]]===undefined) return '<td><span class="td-yok">—</span></td>';
+              const stT = new Date(parseInt(pT[2]),aylarT[pT[1]],parseInt(pT[0]));
+              return stT < bugunT
+                ? '<td style="font-weight:700;color:#991b1b;white-space:nowrap;">⚠ Süre Aşıldı</td>'
+                : '<td style="font-weight:700;color:#047857;white-space:nowrap;">✓ Devam Ediyor</td>';
+            })()
+          + '<td>' + (muaf ? '<span class="td-muaf">Muaf</span>' : muafDilim) + '</td>'
+          + '<td>' + (muaf ? '<span class="td-muaf">Muaf</span>' : (brutMatrah!=='—'?brutMatrah:(adimDeger(q,'Matrah')!=='—'?adimDeger(q,'Matrah'):'<span class="td-yok">—</span>'))) + '</td>'
+          + '<td>' + (onceki ? '<span style="color:var(--ok);font-weight:600;">− ' + onceki + '</span>' : '<span class="td-yok">—</span>') + '</td>'
+          + '<td class="td-gold">' + (muaf ? '<span class="td-muaf">Yok</span>' : (q.ibkb||'—')) + '</td>'
+          + '<td class="td-org">' + (muaf ? '<span class="td-muaf">Yok</span>' : (q.tcmb||'—')) + '</td>'
+          + '<td><button style="padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:inherit;" onclick="event.stopPropagation();gecmisGoster(' + i + ')">Göster</button></td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>';
+}
+
+function gecmisToggle(idx){
+  const detay = document.getElementById('detay-' + idx);
+  const toggle = document.getElementById('toggle-' + idx);
+  if(detay.classList.contains('acik')){
+    detay.classList.remove('acik');
+    toggle.classList.remove('acik');
+  } else {
+    detay.classList.add('acik');
+    toggle.classList.add('acik');
+  }
+}
+
+function gecmisGoster(idx){
+  const q = sorguGecmisi[idx];
+  if(!q || !q.htmlDetay) return;
+  document.getElementById('result').innerHTML = q.htmlDetay;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function gecmisTemizle(){
+  if(sorguGecmisi.length === 0) return;
+  if(!confirm('Tüm sorgu geçmişi silinecek. Emin misiniz?')) return;
+  sorguGecmisi = [];
+  gecmisPanelGuncelle();
+  const r = document.getElementById('result');
+  r.style.display = 'none'; r.innerHTML = '';
+}
+
+// ─── PDF ──────────────────────────────────────────────────────────────────────
+function sayfaPdfIndir(){
+  const simdi = new Date().toLocaleString('tr-TR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // Form bilgilerini topla
+  const beyanname = document.getElementById('beyanname').value || '—';
+  const tarihVal  = document.getElementById('tarih').value || '—';
+  const bedelVal  = document.getElementById('bedel').value || '—';
+  const ulkeKart  = document.getElementById('ulkeAd') ? document.getElementById('ulkeAd').textContent : '—';
+
+  // Sonuç kartının HTML'ini al
+  const resultEl = document.getElementById('result');
+  if(!resultEl || resultEl.style.display === 'none' || !resultEl.innerHTML.trim()){
+    alert('Önce hesaplama yapınız.'); return;
+  }
+  const resultHtml = resultEl.innerHTML;
+
+  // Sayfanın tüm CSS'ini al
+  const styles = Array.from(document.styleSheets).map(ss => {
+    try {
+      return Array.from(ss.cssRules).map(r => r.cssText).join('\n');
+    } catch(e) { return ''; }
+  }).join('\n');
+
+  const html = `<!DOCTYPE html>
+<html lang="tr"><head>
+<meta charset="UTF-8">
+<title>İBKB Hesaplama — ${simdi}</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; color: #1e293b; font-size: 9pt; margin: 0; padding: 0; }
+@page { size: A4 portrait; margin: 10mm; }
+* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* Header bandı */
+.pdf-header { background: #1a2540; color: #fff; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-radius: 6px; }
+.pdf-header h1 { font-size: 10pt; font-weight: 700; }
+.pdf-header span { font-size: 7pt; color: rgba(255,255,255,.6); }
+
+/* Bilgi kutusu */
+.pdf-bilgi { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.pdf-bi { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 7px 10px; }
+.pdf-bi-lbl { font-size: 6.5pt; color: #6b7a99; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; font-weight: 600; }
+.pdf-bi-val { font-size: 9pt; font-weight: 700; color: #1a2540; }
+
+/* Sonuç kartı değişkenleri */
+:root {
+  --navy:#1a2540; --blue:#2563eb; --blue-light:#3b82f6;
+  --gold:#d97706; --gold-light:#f59e0b;
+  --g100:#f8fafc; --g200:#e8edf5; --g400:#6b7a99; --g600:#374162;
+  --ok:#0a6640; --ok-bg:#f0fdf7;
+  --err:#b91c1c; --err-bg:#fff5f5;
+  --warn:#92400e; --warn-bg:#fffbeb;
+  --org:#9a3412; --org-bg:#fff7ed;
+  --tel:#0e7490; --tel-bg:#f0f9ff;
+  --pur:#5b21b6; --pur-bg:#f5f3ff;
+  --text:#1e293b; --border:#dde3ef;
+}
+.rc { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.rh { padding: 11px 18px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 9pt; flex-wrap: wrap; }
+.rh svg { width: 16px; height: 16px; flex-shrink: 0; }
+.rc-z .rh { background: #fff5f5; color: var(--err); border-left: 4px solid var(--err); }
+.rc-n .rh { background: #f0fdf7; color: var(--ok); border-left: 4px solid var(--ok); }
+.rc-i .rh { background: var(--warn-bg); color: var(--warn); border-left: 4px solid var(--gold); }
+.rc-y .rh { background: var(--org-bg); color: var(--org); border-left: 4px solid var(--org); }
+.rc-o .rh { background: var(--tel-bg); color: var(--tel); border-left: 4px solid var(--tel); }
+.rb { background: #fff; padding: 16px; }
+.sk { background: #1a2540; border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+.sk .sq { font-size: 7pt; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; font-weight: 600; }
+.sk .sr { font-size: 18pt; color: #3b82f6; font-weight: 700; line-height: 1.1; }
+.sk .sa { font-size: 7pt; color: rgba(255,255,255,.35); margin-top: 3px; }
+.ss { background: rgba(255,255,255,.07); border-radius: 6px; padding: 8px 12px; text-align: right; min-width: 130px; }
+.ss .sl { font-size: 6.5pt; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.ss .sv { font-size: 9.5pt; font-weight: 700; color: rgba(255,255,255,.8); }
+.ha { background: #f8fafc; border-radius: 7px; padding: 12px 14px; margin-bottom: 12px; border: 1px solid #e8edf5; }
+.ha .hb { font-size: 6.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #6b7a99; margin-bottom: 8px; }
+.adim { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #e8edf5; font-size: 8pt; }
+.adim:last-child { border-bottom: none; padding-top: 7px; margin-top: 2px; font-weight: 700; font-size: 8.5pt; color: #1a2540; }
+.adim-buyuk { padding: 8px 0 !important; border-top: 1.5px solid rgba(255,255,255,.1) !important; margin-top: 3px; }
+.al { color: #374162; } .al.b { color: #1a2540; font-weight: 600; }
+.al-buyuk { font-size: 8.5pt !important; font-weight: 700 !important; color: rgba(255,255,255,.7) !important; }
+.av { font-weight: 600; color: #1a2540; }
+.av.red { color: #b91c1c; } .av.grn { color: #0a6640; } .av.gld { color: #d97706; }
+.av-buyuk { font-size: 9.5pt !important; font-weight: 800 !important; }
+.adim-buyuk .av.gld { color: #3b82f6 !important; font-size: 10pt !important; }
+.adim-buyuk .av.red { color: #fb923c !important; font-size: 10pt !important; }
+.dg { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 7px; margin-bottom: 12px; }
+.di { background: #f8fafc; border-radius: 6px; padding: 8px 10px; border-left: 3px solid #2563eb; }
+.di label { font-size: 6pt; color: #6b7a99; letter-spacing: .06em; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 2px; }
+.di .dv { font-size: 8.5pt; font-weight: 700; color: #1a2540; }
+.at { font-size: 7.5pt; color: #374162; line-height: 1.65; border-top: 1px solid #e8edf5; padding-top: 10px; }
+.at strong { color: #1a2540; }
+.mr { margin-top: 7px; display: inline-flex; align-items: center; gap: 4px; font-size: 6.5pt; color: #2563eb; background: rgba(37,99,235,.07); padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.obk { background: #f0f9ff; border: 1px solid rgba(14,116,144,.2); border-radius: 7px; padding: 10px 14px; margin-bottom: 12px; }
+.obk .obb { font-size: 6.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #0e7490; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.obm { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(14,116,144,.1); font-size: 7.5pt; color: #0c4a6e; line-height: 1.5; }
+.obm:last-child { border-bottom: none; }
+.obh { font-weight: 700; color: #0e7490; flex-shrink: 0; min-width: 14px; }
+.uyari-kutu { display: none !important; }
+.btn-calc, .btn-rst, #btnSayfaPdf, #btnSayfaPdfWrap, .disc, .fnot, .mr a, .pdf-btn-row, .pdf-dl-btn { display: none !important; }
+td.sureasim { font-weight: 700; color: #991b1b; background: #fef2f2; }
+td.sureok { font-weight: 700; color: #047857; background: #ecfdf5; }
+</style>
+</head><body>
+<div class="pdf-header">
+  <h1><span style="opacity:.6;font-weight:500;margin-right:6px;">GÖVDAĞ</span>İBKB — İhracat Bedeli Kabul Belgesi Hesaplamasi</h1>
+  <span>${simdi}</span>
+</div>
+<div class="pdf-bilgi">
+  <div class="pdf-bi"><div class="pdf-bi-lbl">Beyanname No</div><div class="pdf-bi-val">${beyanname}</div></div>
+  <div class="pdf-bi"><div class="pdf-bi-lbl">İhracat Tarihi</div><div class="pdf-bi-val">${tarihVal}</div></div>
+  <div class="pdf-bi"><div class="pdf-bi-lbl">Hedef Ülke</div><div class="pdf-bi-val">${ulkeKart}</div></div>
+</div>
+${resultHtml}
+</body></html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if(!win){ alert('Lütfen popup engelleyiciyi bu site için kapatın.'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  // Sadece tek print — onload yeterli
+  win.addEventListener('load', function(){
+    setTimeout(function(){ win.print(); }, 250);
+  });
+}
+
+function pdfIndir(){
+  if(sorguGecmisi.length === 0) return;
+  const simdi = new Date().toLocaleString('tr-TR');
+  const sorgular = sorguGecmisi.filter(q=>q&&q.ulke).slice().reverse();
+
+  const adimDeger = (q, anahtar) => {
+    if(!q.adimlar) return '\u2014';
+    const a = q.adimlar.find(x => x.l && x.l.includes(anahtar));
+    return a ? a.v : '\u2014';
+  };
+
+  const satirlar = sorgular.map((q,i) => {
+    const muafDilim  = adimDeger(q,'15.000');
+    const brutMatrah = (q.brutMatrah && q.brutMatrah!=='\u2014') ? q.brutMatrah : adimDeger(q,'Br\u00fct matrah');
+    const onceki     = q.oncekiIbkb || '';
+    return '<tr>'
+      + '<td>'+(i+1)+'</td>'
+      + '<td>'+(q.saat||'')+'</td>'
+      + '<td>'+(q.beyanname||'\u2014')+'</td>'
+      + '<td>'+q.tarih+'</td>'
+      + '<td><strong>'+q.bedel+'</strong></td>'
+      + '<td>'+(q.para||'USD')+'</td>'
+      + '<td><strong>'+q.ulke+'</strong></td>'
+      + '<td>'+(q.sonTarih&&q.sonTarih!=='\u2014'?q.sonTarih:'\u2014')+'</td>'
+      + (function(){
+          if(q.muaf) return '<td>\u2014</td>';
+          if(!q.sonTarih||q.sonTarih==='\u2014') return '<td>\u2014</td>';
+          // sonTarih string -> Date karşılaştırması
+          const bugunPdf = new Date(); bugunPdf.setHours(0,0,0,0);
+          const [gun,ay,yil] = q.sonTarih.replace(/\xa0/g,' ').split(' ');
+          const aylar={Ocak:0,\u015eubat:1,Mart:2,Nisan:3,May\u0131s:4,Haziran:5,Temmuz:6,A\u011fustos:7,Eyl\u00fcl:8,Ekim:9,Kas\u0131m:10,Aral\u0131k:11};
+          const stDate = ay&&aylar[ay]!==undefined ? new Date(parseInt(yil),aylar[ay],parseInt(gun)) : null;
+          if(!stDate) return '<td>\u2014</td>';
+          return stDate < bugunPdf
+            ? '<td class="sureasim">\u26a0 S\u00fcre A\u015f\u0131ld\u0131</td>'
+            : '<td class="sureok">\u2713 Devam Ediyor</td>';
+        })()
+      + '<td>'+(q.muaf?'Muaf':muafDilim)+'</td>'
+      + '<td>'+(q.muaf?'Muaf':brutMatrah)+'</td>'
+      + '<td>'+(onceki?'\u2212 '+onceki:'\u2014')+'</td>'
+      + '<td class="gold">'+(q.muaf?'Yok':q.ibkb||'\u2014')+'</td>'
+      + '<td class="org">'+(q.muaf?'Yok':q.tcmb||'\u2014')+'</td>'
+      + '</tr>';
+  }).join('');
+
+  const css = [
+    '@page{size:A4 landscape;margin:10mm;}',
+    '*{box-sizing:border-box;margin:0;padding:0;}',
+    'body{font-family:"Segoe UI",Arial,sans-serif;color:#1a2535;font-size:8pt;}',
+    '.rpt-header{background:#0d1f3c;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;border-radius:6px;}',
+    '.rpt-header h1{font-size:12pt;font-weight:700;}',
+    '.rpt-header span{font-size:7.5pt;color:#e8b84b;}',
+    '.altin{height:2px;background:#c8952a;margin-bottom:10px;}',
+    'table{width:100%;border-collapse:collapse;font-size:7.5pt;}',
+    'thead tr{background:#0d1f3c;}',
+    'thead th{padding:7px 6px;text-align:left;color:rgba(255,255,255,.75);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:6.5pt;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);}',
+    'thead th.gold{color:#f59e0b;}',
+    'thead th.org{color:#fb923c;}',
+    'tbody tr:nth-child(even){background:#f7f8fa;}',
+    'tbody tr{border-bottom:1px solid #e2e6eb;}',
+    'td{padding:6px;vertical-align:middle;border-right:1px solid #e2e6eb;white-space:nowrap;}',
+    'td.gold{font-weight:700;color:#b45309;}',
+    'td.org{font-weight:700;color:#c2410c;}',
+    '.footer{margin-top:10px;font-size:6.5pt;color:#8c97a8;text-align:center;border-top:1px solid #e2e6eb;padding-top:6px;}',
+    'td.sureasim{font-weight:700;color:#991b1b;background:#fef2f2;}',
+    'td.sureok{font-weight:700;color:#047857;background:#ecfdf5;}',
+    '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
+  ].join('\n');
+
+  const baslik = '<div class="rpt-header"><h1><span style="opacity:.5;font-weight:400;font-size:9pt;margin-right:8px;">GÖVDAĞ</span>İBKB SORGULAMA RAPORU</h1>'
+    + '<span>Olu\u015fturulma: ' + simdi + ' &nbsp;|&nbsp; Toplam: ' + sorgular.length + ' sorgu</span></div>';
+
+  const thead = '<thead><tr>'
+    + '<th>#</th>'
+    + '<th>Sorgulama Tarihi</th>'
+    + '<th>Beyanname No</th>'
+    + '<th>\u0130hracat Tarihi</th>'
+    + '<th>\u0130hracat Bedeli</th>'
+    + '<th>Para Birimi</th>'
+    + '<th>Hedef \u00dclke</th>'
+    + '<th>Son Tarih (180. G\u00fcn)</th>'
+    + '<th>S\u00fcre Durumu</th>'
+    + '<th>15.000 USD Muaf Dilim</th>'
+    + '<th>Br\u00fct Matrah</th>'
+    + '<th>\u00d6nceki \u0130BKB</th>'
+    + '<th class="gold">D\u00fczenlenmesi Gereken \u0130BKB</th>'
+    + '<th class="org">TCMB Zorunlu Sat\u0131\u015f (%35)</th>'
+    + '</tr></thead>';
+
+  // print-rapor div'ine sadece içeriği yaz (tam HTML dökümanı değil)
+  const icerik = baslik
+    + '<div class="altin"></div>'
+    + '<table>' + thead + '<tbody>' + satirlar + '</tbody></table>'
+    + '<div class="footer">© 2025 GÖVDAĞ — Tüm hakları saklıdır. | Bilgilendirme amaçlıdır, hukuki bağlayıcılığı yoktur. | TCMB Genelgesi Şubat 2025</div>';
+
+  const gecmisHtml = '<!DOCTYPE html><html lang="tr"><head>'
+    + '<meta charset="UTF-8">'
+    + '<title>İBKB Raporu — ' + simdi + '</title>'
+    + '<style>' + css + '</style>'
+    + '</head><body>'
+    + icerik
+    + '</body></html>';
+
+  const gWin = window.open('', '_blank', 'width=1200,height=700');
+  if(!gWin){ alert('Lütfen popup engelleyiciyi bu site için kapatın.'); return; }
+  gWin.document.open();
+  gWin.document.write(gecmisHtml);
+  gWin.document.close();
+  gWin.addEventListener('load', function(){
+    setTimeout(function(){ gWin.print(); }, 250);
+  });
+}
+function gecmisGoster(idx){
+  const q = sorguGecmisi[idx];
+  if(!q || !q.htmlDetay) return;
+  document.getElementById('result').innerHTML = q.htmlDetay;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function gecmisTemizle(){
+  if(sorguGecmisi.length === 0) return;
+  if(!confirm('Tüm sorgu geçmişi silinecek. Emin misiniz?')) return;
+  sorguGecmisi = [];
+  gecmisPanelGuncelle();
+  const r = document.getElementById('result');
+  r.style.display = 'none'; r.innerHTML = '';
+}
+
+// ─── PDF ──────────────────────────────────────────────────────────────────────
+
+// ─── EXCEL ────────────────────────────────────────────────────────────────────
+function xlsxIndir(){
+  if(sorguGecmisi.length === 0) return;
+  const sorgular = sorguGecmisi.filter(q=>q&&q.ulke).slice().reverse();
+
+  const adimDeger = (q, anahtar) => {
+    if(!q.adimlar) return '';
+    const a = q.adimlar.find(x => x.l && x.l.includes(anahtar));
+    return a ? a.v : '';
+  };
+
+  const esc = v => String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  const basliklar = [
+    '#','Sorgulama Tarihi','Beyanname No','İhracat Tarihi',
+    'İhracat Bedeli','Para Birimi','Hedef Ülke',
+    'Son Tarih (180. Gün)','Süre Durumu',
+    '15.000 USD Muaf Dilim','Brüt Matrah',
+    'Önceki İBKB','Düzenlenmesi Gereken İBKB','TCMB Zorunlu Satış (%35)'
+  ];
+
+  const aylarX = {Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
+
+  const getSureDurumu = (q) => {
+    if(q.muaf || !q.sonTarih || q.sonTarih==='—') return '';
+    const bugunX = new Date(); bugunX.setHours(0,0,0,0);
+    const p = q.sonTarih.replace(/\u00a0/g,' ').split(' ');
+    if(p.length!==3 || aylarX[p[1]]===undefined) return '';
+    const stX = new Date(parseInt(p[2]),aylarX[p[1]],parseInt(p[0]));
+    return stX < bugunX ? 'Süre Aşıldı' : 'Devam Ediyor';
+  };
+
+  // XML Spreadsheet (SpreadsheetML) — Excel'de doğrudan açılır, gerçek tablo
+  const thRow = '<Row>'
+    + basliklar.map(h => '<Cell ss:StyleID="th"><Data ss:Type="String">'+esc(h)+'</Data></Cell>').join('')
+    + '</Row>';
+
+  const dataRows = sorgular.map((q,i) => {
+    const muafDilim  = adimDeger(q,'15.000');
+    const brutMatrah = (q.brutMatrah && q.brutMatrah!=='—') ? q.brutMatrah : adimDeger(q,'Brüt matrah');
+    const onceki     = q.oncekiIbkb || '';
+    const sureDurumu = getSureDurumu(q);
+    const vals = [
+      i+1,
+      q.saat||'',
+      q.beyanname||'',
+      q.tarih||'',
+      q.bedel||'',
+      q.para||'USD',
+      q.ulke||'',
+      q.sonTarih&&q.sonTarih!=='—'?q.sonTarih:'',
+      sureDurumu,
+      q.muaf?'Muaf':(muafDilim||''),
+      q.muaf?'Muaf':(brutMatrah||''),
+      onceki?('- '+onceki):'',
+      q.muaf?'Yok':(q.ibkb||''),
+      q.muaf?'Yok':(q.tcmb||''),
+    ];
+    // Son 3 sütun (ibkb, tcmb) gold/org stili, süre durumu renkli
+    const styles = ['','','','','','','','',
+      sureDurumu==='Süre Aşıldı'?'asim':sureDurumu==='Devam Ediyor'?'ok':'',
+      '','','','gold','org'];
+    return '<Row>'
+      + vals.map((v,j) => {
+          const sid = styles[j] ? ' ss:StyleID="'+styles[j]+'"' : (j===0?' ss:StyleID="no"':'');
+          return '<Cell'+sid+'><Data ss:Type="String">'+esc(v)+'</Data></Cell>';
+        }).join('')
+      + '</Row>';
+  }).join('');
+
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>'
+    + '<?mso-application progid="Excel.Sheet"?>'
+    + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"'
+    + ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+    + '<Styles>'
+    + '<Style ss:ID="th"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0F1F3D" ss:Pattern="Solid"/><Alignment ss:WrapText="0"/></Style>'
+    + '<Style ss:ID="gold"><Font ss:Bold="1" ss:Color="#92400E"/><Interior ss:Color="#FFFBEB" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="org"><Font ss:Bold="1" ss:Color="#9A3412"/><Interior ss:Color="#FFF7ED" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="asim"><Font ss:Bold="1" ss:Color="#991B1B"/><Interior ss:Color="#FEF2F2" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="ok"><Font ss:Bold="1" ss:Color="#047857"/><Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="no"><Font ss:Bold="1"/></Style>'
+    + '</Styles>'
+    + '<Worksheet ss:Name="İBKB Raporu">'
+    + '<Table>'
+    + 

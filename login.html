@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GÖVDAĞ — Giriş</title>
+<style>
+  :root{
+    --navy:#1a2540; --navy-mid:#243354; --gold:#d97706;
+    --blue:#2563eb; --text:#1e293b; --border:#dde3ef;
+    --g100:#f8fafc; --g400:#6b7a99; --err:#b91c1c; --err-bg:#fff5f5;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(140deg,#0f172a 0%,#1a2540 50%,#243354 100%);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse 70% 60% at 70% 40%,rgba(37,99,235,.12) 0%,transparent 70%);
+    pointer-events:none;
+  }
+
+  .kart{
+    background:#fff;border-radius:16px;padding:48px 44px;width:100%;max-width:420px;
+    box-shadow:0 24px 64px rgba(0,0,0,.35),0 4px 16px rgba(0,0,0,.2);
+    position:relative;overflow:hidden;
+  }
+  .kart::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,var(--navy),var(--gold));
+  }
+
+  /* Logo / marka */
+  .marka{text-align:center;margin-bottom:32px;}
+  .marka-ikon{
+    width:56px;height:56px;background:var(--navy);border-radius:12px;
+    display:inline-flex;align-items:center;justify-content:center;
+    margin-bottom:14px;box-shadow:0 4px 16px rgba(26,37,64,.25);
+  }
+  .marka-ikon svg{width:28px;height:28px;fill:var(--gold);}
+  .marka h1{font-size:1.5rem;font-weight:700;color:var(--navy);letter-spacing:-.01em;}
+  .marka p{font-size:.72rem;color:#475569;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;font-weight:500;}
+
+  /* Form */
+  .fg{display:flex;flex-direction:column;gap:16px;}
+  .fgg{display:flex;flex-direction:column;gap:5px;}
+  label{font-size:.72rem;font-weight:600;color:#1e293b;letter-spacing:.05em;text-transform:uppercase;}
+  input{
+    border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;
+    font-size:.95rem;font-family:inherit;color:var(--text);background:#fff;
+    transition:border-color .15s,box-shadow .15s;outline:none;width:100%;
+  }
+  input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+  input.hata{border-color:var(--err);box-shadow:0 0 0 3px rgba(185,28,28,.08);}
+
+  .btn-giris{
+    width:100%;padding:13px;background:var(--navy);color:#fff;border:none;
+    border-radius:8px;font-family:inherit;font-size:.95rem;font-weight:700;
+    cursor:pointer;transition:background .15s;margin-top:4px;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn-giris:hover{background:#253054;}
+  .btn-giris:disabled{opacity:.55;cursor:not-allowed;}
+  .btn-giris svg{width:16px;height:16px;flex-shrink:0;}
+
+  /* Hata kutusu */
+  .hata-kutu{
+    display:none;background:var(--err-bg);border:1px solid rgba(185,28,28,.2);
+    border-radius:8px;padding:10px 14px;color:var(--err);font-size:.82rem;
+    line-height:1.5;align-items:center;gap:8px;
+  }
+  .hata-kutu.goster{display:flex;}
+  .hata-kutu svg{width:15px;height:15px;flex-shrink:0;}
+
+  /* Yükleniyor spinner */
+  .spin{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+    border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* Footer */
+  .foot{text-align:center;margin-top:20px;font-size:.72rem;color:#64748b;}
+
+  /* İletişim */
+  .iletisim{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
+  .iletisim-baslik{font-size:.67rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+  .iletisim-satir{display:flex;align-items:center;gap:7px;font-size:.8rem;color:#475569;margin-bottom:6px;}
+  .iletisim-satir:last-child{margin-bottom:0;}
+  .iletisim-satir svg{width:13px;height:13px;fill:#64748b;flex-shrink:0;}
+  .iletisim-satir a{color:#2563eb;text-decoration:none;font-weight:500;}
+  .iletisim-satir a:hover{text-decoration:underline;}
+
+  /* Supabase yapılandırma uyarısı */
+  .cfg-uyari{
+    background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;
+    padding:10px 14px;font-size:.78rem;color:#78350f;margin-bottom:20px;
+    display:none;align-items:flex-start;gap:7px;line-height:1.5;
+  }
+  .cfg-uyari.goster{display:flex;}
+  .cfg-uyari a{color:#92400e;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="kart">
+  <div class="marka">
+    <div class="marka-ikon">
+      <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+    </div>
+    <h1>GÖVDAĞ</h1>
+    <p>İBKB Zorunluluğu Sorgulama Yazılımı</p>
+  </div>
+
+  <div class="cfg-uyari" id="cfgUyari">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <span>Supabase henüz yapılandırılmamış. <a href="admin.html">Admin panelinden</a> URL ve API anahtarını girin.</span>
+  </div>
+
+  <div class="hata-kutu" id="hataKutu">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <span id="hataMesaj"></span>
+  </div>
+
+  <div class="fg">
+    <div class="fgg">
+      <label>E-posta Adresi</label>
+      <input type="email" id="eposta" placeholder="ornek@sirket.com" autocomplete="email">
+    </div>
+    <div class="fgg">
+      <label>Parola</label>
+      <input type="password" id="parola" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-giris" id="btnGiris" onclick="girisYap()">
+      <span id="btnText">Giriş Yap</span>
+      <div class="spin" id="spinner"></div>
+      <svg id="btnIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+    </button>
+  </div>
+  <div class="iletisim">
+    <div class="iletisim-baslik">İletişim</div>
+    <div class="iletisim-satir">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      <a href="mailto:orhankelahmet@gmail.com">orhankelahmet@gmail.com</a>
+    </div>
+    <div class="iletisim-satir">
+      <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+      <a href="tel:+905331987033">+90 533 198 70 33</a>
+    </div>
+  </div>
+  <div class="foot">© 2025 <strong>GÖVDAĞ</strong> — Tüm hakları saklıdır.</div>
+</div>
+
+<script>
+// ─── SUPABASE YAPILANDIRMASI ─────────────────────────────────────────────────
+const SUPABASE_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+
+let sbUrl = SUPABASE_URL;
+let sbKey  = SUPABASE_KEY;
+
+window.onload = function(){
+  // Enter tuşu
+  document.getElementById('parola').addEventListener('keydown', e => {
+    if(e.key === 'Enter') girisYap();
+  });
+  document.getElementById('eposta').addEventListener('keydown', e => {
+    if(e.key === 'Enter') girisYap();
+  });
+  // Zaten giriş yapılmışsa yönlendir
+  const token = sessionStorage.getItem('govdag_token');
+  if(token) window.location.replace('./index.html');
+};
+
+function hataGoster(msg){
+  document.getElementById('hataMesaj').textContent = msg;
+  document.getElementById('hataKutu').classList.add('goster');
+}
+function hataGizle(){
+  document.getElementById('hataKutu').classList.remove('goster');
+  document.getElementById('eposta').classList.remove('hata');
+  document.getElementById('parola').classList.remove('hata');
+}
+
+async function girisYap(){
+  hataGizle();
+  const eposta = document.getElementById('eposta').value.trim();
+  const parola = document.getElementById('parola').value;
+
+  if(!eposta){ hataGoster('Lütfen e-posta adresinizi girin.'); document.getElementById('eposta').classList.add('hata'); return; }
+  if(!parola){ hataGoster('Lütfen parolanızı girin.'); document.getElementById('parola').classList.add('hata'); return; }
+
+  if(!sbUrl || !sbKey){
+    hataGoster('Supabase yapılandırılmamış. Lütfen admin panelini kontrol edin.');
+    return;
+  }
+
+  // Yükleniyor durumu
+  const btn = document.getElementById('btnGiris');
+  btn.disabled = true;
+  document.getElementById('btnText').textContent = 'Giriş yapılıyor…';
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('btnIcon').style.display = 'none';
+
+  try{
+    const res = await fetch(`${sbUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': sbKey,
+        'Authorization': `Bearer ${sbKey}`
+      },
+      body: JSON.stringify({ email: eposta, password: parola })
+    });
+    const data = await res.json();
+
+    if(!res.ok || !data.access_token){
+      const mesaj = data.error_description || data.msg || 'E-posta veya parola hatalı.';
+      hataGoster(mesaj === 'Invalid login credentials' ? 'E-posta veya parola hatalı.' : mesaj);
+      document.getElementById('eposta').classList.add('hata');
+      document.getElementById('parola').classList.add('hata');
+      return;
+    }
+
+    // Başarılı giriş — token'ı sakla
+    sessionStorage.setItem('govdag_token', data.access_token);
+    sessionStorage.setItem('govdag_email', eposta);
+    sessionStorage.setItem('govdag_refresh', data.refresh_token || '');
+
+    // Yönlendir
+    window.location.replace('./index.html');
+
+  }catch(err){
+    hataGoster('Bağlantı hatası. İnternet bağlantınızı kontrol edin.');
+  }finally{
+    btn.disabled = false;
+    document.getElementById('btnText').textContent = 'Giriş Yap';
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('btnIcon').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
