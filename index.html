@@ -2,13 +2,24 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<style>body{opacity:0;transition:opacity .15s;}body.hazir{opacity:1;}</style>
+<style>body{opacity:0;}</style>
 <script>
 if(!sessionStorage.getItem('govdag_token')){
   document.location.replace('./login.html');
 } else {
   document.addEventListener('DOMContentLoaded',function(){
-    document.body.classList.add('hazir');
+    document.body.style.opacity='1';
+    // Email göster
+    var email = sessionStorage.getItem('govdag_email') || '';
+    var em = document.getElementById('kullanicEmail');
+    if(em) em.textContent = email;
+    // İletişim
+    var links = document.getElementById('iletisimLinks');
+    if(links){
+      var ep = 'orhankelahmet' + '@' + 'gmail.com';
+      links.innerHTML = '<a href="mailto:'+ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+ep+'</a>'
+        + '<a href="tel:+905331987033" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">+90 533 198 70 33</a>';
+    }
   });
 }
 </script>
@@ -19,7 +30,7 @@ if(!sessionStorage.getItem('govdag_token')){
   :root{
     --navy:#1a2540;--navy-mid:#243354;--blue:#2563eb;--blue-light:#3b82f6;
     --gold:#d97706;--gold-light:#f59e0b;--cream:#f4f6f9;--white:#fff;
-    --g100:#f8fafc;--g200:#e8edf5;--g400:#4a5568;--g600:#374162;
+    --g100:#f8fafc;--g200:#e8edf5;--g400:#6b7a99;--g600:#374162;
     --ok:#0a6640;--ok-bg:#f0fdf7;
     --err:#b91c1c;--err-bg:#fff5f5;
     --warn:#92400e;--warn-bg:#fffbeb;
@@ -89,7 +100,7 @@ if(!sessionStorage.getItem('govdag_token')){
   .ul-kat.ek2{background:rgba(185,28,28,.1);color:var(--err);}
   .ul-kat.ek3{background:rgba(154,52,18,.1);color:var(--org);}
   .ul-kat.ozel{background:rgba(14,116,144,.1);color:var(--tel);}
-  .ul-sayac{padding:6px 13px;font-size:.72rem;color:#4a5568;background:var(--g100);border-top:1px solid var(--border);}
+  .ul-sayac{padding:6px 13px;font-size:.72rem;color:var(--g400);background:var(--g100);border-top:1px solid var(--border);}
   .bos{padding:14px;font-size:.85rem;color:var(--g400);font-style:italic;text-align:center;}
 
   /* SEÇİLİ KART */
@@ -115,7 +126,7 @@ if(!sessionStorage.getItem('govdag_token')){
   .mb.ozel {display:flex;background:var(--tel-bg);color:var(--tel);border-left:3px solid var(--tel);}
 
   /* BUTONLAR */
-  .fnot{font-size:.72rem;color:#4a5568;line-height:1.5;margin-top:2px;}
+  .fnot{font-size:.72rem;color:var(--g400);line-height:1.5;margin-top:2px;}
   .fnot a{color:var(--blue);text-decoration:none;font-weight:600;}
   .fnot a:hover{text-decoration:underline;}
   .fnot strong{color:var(--g600);}
@@ -161,7 +172,7 @@ if(!sessionStorage.getItem('govdag_token')){
 
   .dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:16px;}
   .di{background:var(--g100);border-radius:7px;padding:10px 13px;border-left:3px solid var(--blue);}
-  .di label{font-size:.65rem;color:#374162;letter-spacing:.06em;font-weight:600;text-transform:uppercase;display:block;margin-bottom:2px;}
+  .di label{font-size:.65rem;color:var(--g400);letter-spacing:.06em;font-weight:600;text-transform:uppercase;display:block;margin-bottom:2px;}
   .di .dv{font-size:.9rem;font-weight:700;color:var(--navy);}
 
   .obk{background:var(--tel-bg);border:1px solid rgba(14,116,144,.2);border-radius:8px;padding:14px 18px;margin-bottom:16px;}
@@ -191,7 +202,7 @@ if(!sessionStorage.getItem('govdag_token')){
   .muk-iptal{background:rgba(180,83,9,.1);color:var(--warn);}
   #tarih:focus + input + button,
   div:has(#tarih):hover button[onclick="tarihPickerAc()"]{color:var(--blue);}
-  .disc{margin-top:16px;background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:12px 16px;font-size:.74rem;color:#78350f;line-height:1.65;display:flex;gap:9px;}
+  .disc{margin-top:16px;background:rgba(26,37,64,.03);border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:.74rem;color:var(--g400);line-height:1.65;display:flex;gap:9px;}
   .disc svg{width:14px;height:14px;fill:var(--g400);flex-shrink:0;margin-top:2px;}
 
   /* GEÇMİŞ PANELİ */
@@ -241,7 +252,7 @@ if(!sessionStorage.getItem('govdag_token')){
   .gt .td-muaf{color:var(--ok);font-weight:600;font-style:italic;}
   .gt .td-yok{color:var(--g400);font-style:italic;}
   .gecmis-tablo-wrap{overflow-x:auto;max-height:460px;overflow-y:auto;}
-  .gecmis-bos{padding:24px;text-align:center;font-size:.86rem;color:#4a5568;}
+  .gecmis-bos{padding:24px;text-align:center;font-size:.86rem;color:var(--g400);}
 
   .print-rapor { display: none; }
   .pdf-sayfa-baslik { display: none; }
@@ -269,13 +280,13 @@ if(!sessionStorage.getItem('govdag_token')){
     <div class="logo">
       <div class="li" id="logoWrap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div>
       <div class="lt">
-        <h1>GÖVDAĞ</h1>
+        <h1>GÖVDAĞ <span style="font-weight:400;color:rgba(255,255,255,.45);font-size:.85rem;">| İBKB Sorgulama</span></h1>
         <p>İBKB ZORUNLULUĞU SORGULAMA YAZILIMI</p>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span id="kullanicEmail" style="font-size:.75rem;color:rgba(255,255,255,.9);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
-      <button onclick="cikisYap()" style="font-size:.75rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap;">Çıkış Yap</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="kullanicEmail" style="font-size:.75rem;color:rgba(255,255,255,.85);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
+      <button onclick="cikisYap()" style="font-size:.75rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;">Çıkış Yap</button>
     </div>
   </div>
 </header>
@@ -422,35 +433,24 @@ if(!sessionStorage.getItem('govdag_token')){
     </div>
   </div>
 
-  <div class="disc">
+  <div class="disc" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:12px 16px;font-size:.74rem;color:#78350f;line-height:1.65;display:flex;gap:9px;">
     <svg viewBox="0 0 24 24" style="fill:#d97706;flex-shrink:0;width:15px;height:15px;margin-top:1px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
     <div>
       <span>Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.</span>
-      <div style="margin-top:8px;">
-<a href="https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:.75rem;color:#92400e;font-weight:600;text-decoration:none;">📄 İhracat Genelgesi ↗</a>
-      </div>
+      <div style="margin-top:8px;"><a href="https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR" target="_blank" rel="noopener" style="font-size:.75rem;color:#92400e;font-weight:600;text-decoration:none;">📄 İhracat Genelgesi ↗</a></div>
     </div>
   </div>
 
-  <div id="iletisimBlok" style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:16px 20px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+  <div style="background:#fff;border-radius:10px;border:1px solid #dde3ef;padding:16px 20px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
     <span style="font-size:.75rem;font-weight:600;color:#374162;text-transform:uppercase;letter-spacing:.05em;">İletişim</span>
     <div id="iletisimLinks" style="display:flex;gap:20px;flex-wrap:wrap;"></div>
   </div>
   <div style="text-align:center;padding:18px 0 28px;border-top:1px solid var(--border);margin-top:8px;">
-    <span style="font-size:.75rem;color:rgba(255,255,255,.7);letter-spacing:.04em;">© 2025 <strong style="color:#fff;">GÖVDAĞ</strong> — Tüm hakları saklıdır.</span>
+    <span style="font-size:.72rem;color:var(--g400);letter-spacing:.04em;">© 2025 <strong style="color:var(--g600);">GÖVDAĞ</strong> — Tüm hakları saklıdır.</span>
   </div>
 </main>
 
 <script>
-// OTURUM KONTROLU
-var SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
-var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
-
-(function(){
-  var token = sessionStorage.getItem('govdag_token');
-  if(!token){ window.location.replace('./login.html'); }
-})();
-
 function cikisYap(){
   if(!confirm('Çıkış yapmak istediğinizden emin misiniz?')) return;
   sessionStorage.removeItem('govdag_token');
@@ -458,6 +458,9 @@ function cikisYap(){
   sessionStorage.removeItem('govdag_refresh');
   window.location.replace('./login.html');
 }
+
+const SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
 
 // Config localStorage'dan yükle (admin paneli yönetir)
 function cfgYukle(){
@@ -1300,26 +1303,251 @@ td.sureok { font-weight: 700; color: #047857; background: #ecfdf5; }
   <div class="pdf-bi"><div class="pdf-bi-lbl">Hedef Ülke</div><div class="pdf-bi-val">${ulkeKart}</div></div>
 </div>
 ${resultHtml}
-<script>
-(function(){
-  // Oturum bilgisi - email ve çıkış butonu
-  var email = sessionStorage.getItem('govdag_email') || '';
-  var em = document.getElementById('kullanicEmail');
-  if(em) em.textContent = email;
+</body></html>`;
 
-  // İletişim - JS ile yaz (Cloudflare bypass)
-  var links = document.getElementById('iletisimLinks');
-  if(links){
-    var ep = ['orhankel','ahmet','@','gmail','.com'].join('');
-    links.innerHTML =
-      '<a href="mailto:'+ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'
-      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'
-      + ep + '</a>'
-      + '<a href="tel:+905331987033" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'
-      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>'
-      + '+90 533 198 70 33</a>';
-  }
-})();
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if(!win){ alert('Lütfen popup engelleyiciyi bu site için kapatın.'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  // Sadece tek print — onload yeterli
+  win.addEventListener('load', function(){
+    setTimeout(function(){ win.print(); }, 250);
+  });
+}
+
+function pdfIndir(){
+  if(sorguGecmisi.length === 0) return;
+  const simdi = new Date().toLocaleString('tr-TR');
+  const sorgular = sorguGecmisi.filter(q=>q&&q.ulke).slice().reverse();
+
+  const adimDeger = (q, anahtar) => {
+    if(!q.adimlar) return '\u2014';
+    const a = q.adimlar.find(x => x.l && x.l.includes(anahtar));
+    return a ? a.v : '\u2014';
+  };
+
+  const satirlar = sorgular.map((q,i) => {
+    const muafDilim  = adimDeger(q,'15.000');
+    const brutMatrah = (q.brutMatrah && q.brutMatrah!=='\u2014') ? q.brutMatrah : adimDeger(q,'Br\u00fct matrah');
+    const onceki     = q.oncekiIbkb || '';
+    return '<tr>'
+      + '<td>'+(i+1)+'</td>'
+      + '<td>'+(q.saat||'')+'</td>'
+      + '<td>'+(q.beyanname||'\u2014')+'</td>'
+      + '<td>'+q.tarih+'</td>'
+      + '<td><strong>'+q.bedel+'</strong></td>'
+      + '<td>'+(q.para||'USD')+'</td>'
+      + '<td><strong>'+q.ulke+'</strong></td>'
+      + '<td>'+(q.sonTarih&&q.sonTarih!=='\u2014'?q.sonTarih:'\u2014')+'</td>'
+      + (function(){
+          if(q.muaf) return '<td>\u2014</td>';
+          if(!q.sonTarih||q.sonTarih==='\u2014') return '<td>\u2014</td>';
+          // sonTarih string -> Date karşılaştırması
+          const bugunPdf = new Date(); bugunPdf.setHours(0,0,0,0);
+          const [gun,ay,yil] = q.sonTarih.replace(/\xa0/g,' ').split(' ');
+          const aylar={Ocak:0,\u015eubat:1,Mart:2,Nisan:3,May\u0131s:4,Haziran:5,Temmuz:6,A\u011fustos:7,Eyl\u00fcl:8,Ekim:9,Kas\u0131m:10,Aral\u0131k:11};
+          const stDate = ay&&aylar[ay]!==undefined ? new Date(parseInt(yil),aylar[ay],parseInt(gun)) : null;
+          if(!stDate) return '<td>\u2014</td>';
+          return stDate < bugunPdf
+            ? '<td class="sureasim">\u26a0 S\u00fcre A\u015f\u0131ld\u0131</td>'
+            : '<td class="sureok">\u2713 Devam Ediyor</td>';
+        })()
+      + '<td>'+(q.muaf?'Muaf':muafDilim)+'</td>'
+      + '<td>'+(q.muaf?'Muaf':brutMatrah)+'</td>'
+      + '<td>'+(onceki?'\u2212 '+onceki:'\u2014')+'</td>'
+      + '<td class="gold">'+(q.muaf?'Yok':q.ibkb||'\u2014')+'</td>'
+      + '<td class="org">'+(q.muaf?'Yok':q.tcmb||'\u2014')+'</td>'
+      + '</tr>';
+  }).join('');
+
+  const css = [
+    '@page{size:A4 landscape;margin:10mm;}',
+    '*{box-sizing:border-box;margin:0;padding:0;}',
+    'body{font-family:"Segoe UI",Arial,sans-serif;color:#1a2535;font-size:8pt;}',
+    '.rpt-header{background:#0d1f3c;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;border-radius:6px;}',
+    '.rpt-header h1{font-size:12pt;font-weight:700;}',
+    '.rpt-header span{font-size:7.5pt;color:#e8b84b;}',
+    '.altin{height:2px;background:#c8952a;margin-bottom:10px;}',
+    'table{width:100%;border-collapse:collapse;font-size:7.5pt;}',
+    'thead tr{background:#0d1f3c;}',
+    'thead th{padding:7px 6px;text-align:left;color:rgba(255,255,255,.75);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:6.5pt;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);}',
+    'thead th.gold{color:#f59e0b;}',
+    'thead th.org{color:#fb923c;}',
+    'tbody tr:nth-child(even){background:#f7f8fa;}',
+    'tbody tr{border-bottom:1px solid #e2e6eb;}',
+    'td{padding:6px;vertical-align:middle;border-right:1px solid #e2e6eb;white-space:nowrap;}',
+    'td.gold{font-weight:700;color:#b45309;}',
+    'td.org{font-weight:700;color:#c2410c;}',
+    '.footer{margin-top:10px;font-size:6.5pt;color:#8c97a8;text-align:center;border-top:1px solid #e2e6eb;padding-top:6px;}',
+    'td.sureasim{font-weight:700;color:#991b1b;background:#fef2f2;}',
+    'td.sureok{font-weight:700;color:#047857;background:#ecfdf5;}',
+    '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
+  ].join('\n');
+
+  const baslik = '<div class="rpt-header"><h1><span style="opacity:.5;font-weight:400;font-size:9pt;margin-right:8px;">GÖVDAĞ</span>İBKB SORGULAMA RAPORU</h1>'
+    + '<span>Olu\u015fturulma: ' + simdi + ' &nbsp;|&nbsp; Toplam: ' + sorgular.length + ' sorgu</span></div>';
+
+  const thead = '<thead><tr>'
+    + '<th>#</th>'
+    + '<th>Sorgulama Tarihi</th>'
+    + '<th>Beyanname No</th>'
+    + '<th>\u0130hracat Tarihi</th>'
+    + '<th>\u0130hracat Bedeli</th>'
+    + '<th>Para Birimi</th>'
+    + '<th>Hedef \u00dclke</th>'
+    + '<th>Son Tarih (180. G\u00fcn)</th>'
+    + '<th>S\u00fcre Durumu</th>'
+    + '<th>15.000 USD Muaf Dilim</th>'
+    + '<th>Br\u00fct Matrah</th>'
+    + '<th>\u00d6nceki \u0130BKB</th>'
+    + '<th class="gold">D\u00fczenlenmesi Gereken \u0130BKB</th>'
+    + '<th class="org">TCMB Zorunlu Sat\u0131\u015f (%35)</th>'
+    + '</tr></thead>';
+
+  // print-rapor div'ine sadece içeriği yaz (tam HTML dökümanı değil)
+  const icerik = baslik
+    + '<div class="altin"></div>'
+    + '<table>' + thead + '<tbody>' + satirlar + '</tbody></table>'
+    + '<div class="footer">© 2025 GÖVDAĞ — Tüm hakları saklıdır. | Bilgilendirme amaçlıdır, hukuki bağlayıcılığı yoktur. | TCMB Genelgesi Şubat 2025</div>';
+
+  const gecmisHtml = '<!DOCTYPE html><html lang="tr"><head>'
+    + '<meta charset="UTF-8">'
+    + '<title>İBKB Raporu — ' + simdi + '</title>'
+    + '<style>' + css + '</style>'
+    + '</head><body>'
+    + icerik
+    + '</body></html>';
+
+  const gWin = window.open('', '_blank', 'width=1200,height=700');
+  if(!gWin){ alert('Lütfen popup engelleyiciyi bu site için kapatın.'); return; }
+  gWin.document.open();
+  gWin.document.write(gecmisHtml);
+  gWin.document.close();
+  gWin.addEventListener('load', function(){
+    setTimeout(function(){ gWin.print(); }, 250);
+  });
+}
+function gecmisGoster(idx){
+  const q = sorguGecmisi[idx];
+  if(!q || !q.htmlDetay) return;
+  document.getElementById('result').innerHTML = q.htmlDetay;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function gecmisTemizle(){
+  if(sorguGecmisi.length === 0) return;
+  if(!confirm('Tüm sorgu geçmişi silinecek. Emin misiniz?')) return;
+  sorguGecmisi = [];
+  gecmisPanelGuncelle();
+  const r = document.getElementById('result');
+  r.style.display = 'none'; r.innerHTML = '';
+}
+
+// ─── PDF ──────────────────────────────────────────────────────────────────────
+
+// ─── EXCEL ────────────────────────────────────────────────────────────────────
+function xlsxIndir(){
+  if(sorguGecmisi.length === 0) return;
+  const sorgular = sorguGecmisi.filter(q=>q&&q.ulke).slice().reverse();
+
+  const adimDeger = (q, anahtar) => {
+    if(!q.adimlar) return '';
+    const a = q.adimlar.find(x => x.l && x.l.includes(anahtar));
+    return a ? a.v : '';
+  };
+
+  const esc = v => String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  const basliklar = [
+    '#','Sorgulama Tarihi','Beyanname No','İhracat Tarihi',
+    'İhracat Bedeli','Para Birimi','Hedef Ülke',
+    'Son Tarih (180. Gün)','Süre Durumu',
+    '15.000 USD Muaf Dilim','Brüt Matrah',
+    'Önceki İBKB','Düzenlenmesi Gereken İBKB','TCMB Zorunlu Satış (%35)'
+  ];
+
+  const aylarX = {Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
+
+  const getSureDurumu = (q) => {
+    if(q.muaf || !q.sonTarih || q.sonTarih==='—') return '';
+    const bugunX = new Date(); bugunX.setHours(0,0,0,0);
+    const p = q.sonTarih.replace(/\u00a0/g,' ').split(' ');
+    if(p.length!==3 || aylarX[p[1]]===undefined) return '';
+    const stX = new Date(parseInt(p[2]),aylarX[p[1]],parseInt(p[0]));
+    return stX < bugunX ? 'Süre Aşıldı' : 'Devam Ediyor';
+  };
+
+  // XML Spreadsheet (SpreadsheetML) — Excel'de doğrudan açılır, gerçek tablo
+  const thRow = '<Row>'
+    + basliklar.map(h => '<Cell ss:StyleID="th"><Data ss:Type="String">'+esc(h)+'</Data></Cell>').join('')
+    + '</Row>';
+
+  const dataRows = sorgular.map((q,i) => {
+    const muafDilim  = adimDeger(q,'15.000');
+    const brutMatrah = (q.brutMatrah && q.brutMatrah!=='—') ? q.brutMatrah : adimDeger(q,'Brüt matrah');
+    const onceki     = q.oncekiIbkb || '';
+    const sureDurumu = getSureDurumu(q);
+    const vals = [
+      i+1,
+      q.saat||'',
+      q.beyanname||'',
+      q.tarih||'',
+      q.bedel||'',
+      q.para||'USD',
+      q.ulke||'',
+      q.sonTarih&&q.sonTarih!=='—'?q.sonTarih:'',
+      sureDurumu,
+      q.muaf?'Muaf':(muafDilim||''),
+      q.muaf?'Muaf':(brutMatrah||''),
+      onceki?('- '+onceki):'',
+      q.muaf?'Yok':(q.ibkb||''),
+      q.muaf?'Yok':(q.tcmb||''),
+    ];
+    // Son 3 sütun (ibkb, tcmb) gold/org stili, süre durumu renkli
+    const styles = ['','','','','','','','',
+      sureDurumu==='Süre Aşıldı'?'asim':sureDurumu==='Devam Ediyor'?'ok':'',
+      '','','','gold','org'];
+    return '<Row>'
+      + vals.map((v,j) => {
+          const sid = styles[j] ? ' ss:StyleID="'+styles[j]+'"' : (j===0?' ss:StyleID="no"':'');
+          return '<Cell'+sid+'><Data ss:Type="String">'+esc(v)+'</Data></Cell>';
+        }).join('')
+      + '</Row>';
+  }).join('');
+
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>'
+    + '<?mso-application progid="Excel.Sheet"?>'
+    + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"'
+    + ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+    + '<Styles>'
+    + '<Style ss:ID="th"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0F1F3D" ss:Pattern="Solid"/><Alignment ss:WrapText="0"/></Style>'
+    + '<Style ss:ID="gold"><Font ss:Bold="1" ss:Color="#92400E"/><Interior ss:Color="#FFFBEB" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="org"><Font ss:Bold="1" ss:Color="#9A3412"/><Interior ss:Color="#FFF7ED" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="asim"><Font ss:Bold="1" ss:Color="#991B1B"/><Interior ss:Color="#FEF2F2" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="ok"><Font ss:Bold="1" ss:Color="#047857"/><Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/></Style>'
+    + '<Style ss:ID="no"><Font ss:Bold="1"/></Style>'
+    + '</Styles>'
+    + '<Worksheet ss:Name="İBKB Raporu">'
+    + '<Table>'
+    + thRow
+    + dataRows
+    + '</Table>'
+    + '</Worksheet>'
+    + '</Workbook>';
+
+  const blob = new Blob([xml], {type:'application/vnd.ms-excel;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'IBKB_Rapor_' + new Date().toISOString().slice(0,10) + '.xls';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
 </script>
 </body>
 </html>
