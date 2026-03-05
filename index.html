@@ -2,12 +2,14 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<style>body{visibility:hidden;}</style>
+<style>body{opacity:0;transition:opacity .15s;}body.hazir{opacity:1;}</style>
 <script>
-if(sessionStorage.getItem('govdag_token')){
-  document.addEventListener('DOMContentLoaded',function(){document.body.style.visibility='visible';});
+if(!sessionStorage.getItem('govdag_token')){
+  document.location.replace('./login.html');
 } else {
-  window.location.replace('./login.html');
+  document.addEventListener('DOMContentLoaded',function(){
+    document.body.classList.add('hazir');
+  });
 }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -272,10 +274,8 @@ if(sessionStorage.getItem('govdag_token')){
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
-      <div id="oturumBilgi" style="display:none;align-items:center;gap:8px;">
-        <span id="kullanicEmail" style="font-size:.72rem;color:rgba(255,255,255,.85);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
-        <button onclick="cikisYap()" style="font-size:.72rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 14px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;">Çıkış</button>
-      </div>
+      <span id="kullanicEmail" style="font-size:.75rem;color:rgba(255,255,255,.9);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
+      <button onclick="cikisYap()" style="font-size:.75rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap;">Çıkış Yap</button>
     </div>
   </div>
 </header>
@@ -432,44 +432,24 @@ if(sessionStorage.getItem('govdag_token')){
     </div>
   </div>
 
-  <div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:16px 20px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+  <div id="iletisimBlok" style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:16px 20px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
     <span style="font-size:.75rem;font-weight:600;color:#374162;text-transform:uppercase;letter-spacing:.05em;">İletişim</span>
-    <div style="display:flex;gap:20px;flex-wrap:wrap;">
-      <a href="/cdn-cgi/l/email-protection#bad5c8d2dbd4d1dfd6dbd2d7dfcefaddd7dbd3d694d9d5d7" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;"><span class="__cf_email__" data-cfemail="fc938e949d929799909d94919988bc9b919d9590d29f9391">[email&#160;protected]</span></a>
-      <a href="tel:+905331987033" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        +90 533 198 70 33
-      </a>
-    </div>
+    <div id="iletisimLinks" style="display:flex;gap:20px;flex-wrap:wrap;"></div>
   </div>
   <div style="text-align:center;padding:18px 0 28px;border-top:1px solid var(--border);margin-top:8px;">
     <span style="font-size:.75rem;color:rgba(255,255,255,.7);letter-spacing:.04em;">© 2025 <strong style="color:#fff;">GÖVDAĞ</strong> — Tüm hakları saklıdır.</span>
   </div>
 </main>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // OTURUM KONTROLU
 var SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
 
 (function(){
   var token = sessionStorage.getItem('govdag_token');
-  if(!token){
-    window.location.replace('./login.html');
-    return;
-  }
+  if(!token){ window.location.replace('./login.html'); }
 })();
-
-function oturumGoster(){
-  var email = sessionStorage.getItem('govdag_email') || '';
-  var el = document.getElementById('oturumBilgi');
-  var em = document.getElementById('kullanicEmail');
-  if(el){ el.style.display = 'flex'; }
-  if(em && email){ em.textContent = email; }
-}
-
-document.addEventListener('DOMContentLoaded', oturumGoster);
-window.addEventListener('load', oturumGoster);
 
 function cikisYap(){
   if(!confirm('Çıkış yapmak istediğinizden emin misiniz?')) return;
@@ -1320,6 +1300,27 @@ td.sureok { font-weight: 700; color: #047857; background: #ecfdf5; }
   <div class="pdf-bi"><div class="pdf-bi-lbl">Hedef Ülke</div><div class="pdf-bi-val">${ulkeKart}</div></div>
 </div>
 ${resultHtml}
+<script>
+(function(){
+  // Oturum bilgisi - email ve çıkış butonu
+  var email = sessionStorage.getItem('govdag_email') || '';
+  var em = document.getElementById('kullanicEmail');
+  if(em) em.textContent = email;
+
+  // İletişim - JS ile yaz (Cloudflare bypass)
+  var links = document.getElementById('iletisimLinks');
+  if(links){
+    var ep = ['orhankel','ahmet','@','gmail','.com'].join('');
+    links.innerHTML =
+      '<a href="mailto:'+ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'
+      + ep + '</a>'
+      + '<a href="tel:+905331987033" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>'
+      + '+90 533 198 70 33</a>';
+  }
+})();
+</script>
 </body></html>`;
 
   const win = window.open('', '_blank', 'width=900,height=700');
