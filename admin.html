@@ -193,6 +193,7 @@
       <button class="tab-btn"    onclick="tab('metinler',this)">📝 Metinler & Notlar</button>
       <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
       <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
+      <button class="tab-btn"    onclick="tab('girislog',this)" id="tabGirisLog">📋 Giriş Geçmişi</button>
     </div>
 
     <!-- ÜLKELER -->
@@ -470,7 +471,18 @@
       </div>
     </div>
 
-  </main>
+    <!-- GİRİŞ GEÇMİŞİ TAB -->
+  <div id="tab-girislog" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div><h3>📋 Giriş Geçmişi</h3><p>Sisteme giriş yapan kullanıcılar ve zamanları</p></div>
+        <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
+      </div>
+      <div id="girisLogListesi">Yükleniyor...</div>
+    </div>
+  </div>
+
+</main>
 </div>
 
 <div id="toast"></div>
@@ -681,11 +693,46 @@ function baslat(){
   ulkeTablosuGuncelle();
 }
 
+// ─── GİRİŞ GEÇMİŞİ ─────────────────────────────────────────────────────────
+async function girisLogYukle(){
+  const sb = sbCfg(); if(!sb){ toast('⚠ Supabase yapılandırılmamış'); return; }
+  const el = document.getElementById('girisLogListesi');
+  if(!el) return;
+  el.innerHTML = '<p style="padding:20px;color:#6b7a99;">Yükleniyor...</p>';
+  try{
+    const svcKey = sb.serviceKey || sb.key;
+    const r = await fetch(sb.url + '/rest/v1/giris_log?order=giris_tarihi.desc&limit=100', {
+      headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey }
+    });
+    const d = await r.json();
+    if(!Array.isArray(d) || d.length === 0){
+      el.innerHTML = '<p style="text-align:center;color:#6b7a99;padding:20px;">Henüz giriş kaydı yok.</p>';
+      return;
+    }
+    el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">' 
+      + '<thead><tr style="background:#f0f4f8;">' 
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;">E-posta</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;">Giriş Tarihi & Saati</th>'
+      + '</tr></thead><tbody>'
+      + d.map((row,i) => {
+          const tarih = new Date(row.giris_tarihi).toLocaleString("tr-TR",{timeZone:"Europe/Istanbul"});
+          return "<tr style='border-bottom:1px solid #edf2f7;background:"+(i%2===0?"#fff":"#f8fafc")+"'>"
+            + "<td style='padding:10px 14px;color:#1e293b;font-weight:500;'>"+row.email+"</td>"
+            + "<td style='padding:10px 14px;color:#4a5568;'>"+tarih+"</td>"
+            + "</tr>";
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){
+    el.innerHTML = '<p style="color:#b91c1c;padding:20px;">Hata: ' + e.message + '</p>';
+  }
+}
+
 // ─── SEKMELER ────────────────────────────────────────────────────────────────
 function tab(id, btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('ak'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ak'));
   if(id==='kullanicilar') kullaniciTabYukle();
+  if(id==='girislog') girisLogYukle();
   document.getElementById('tab-'+id).classList.add('ak');
   btn.classList.add('ak');
 }

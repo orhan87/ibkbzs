@@ -227,6 +227,19 @@ async function girisYap(){
     sessionStorage.setItem('govdag_email', eposta);
     sessionStorage.setItem('govdag_refresh', data.refresh_token || '');
 
+    // Giriş logu kaydet (hata olsa da devam et)
+    try{
+      await fetch(sbUrl + '/rest/v1/giris_log', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': sbKey,
+          'Authorization': 'Bearer ' + data.access_token
+        },
+        body: JSON.stringify({ email: eposta })
+      });
+    } catch(e){ /* log hatası girişi engellemez */ }
+
     // Yönlendir
     window.location.replace('./index.html');
 
