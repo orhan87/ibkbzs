@@ -705,8 +705,12 @@ async function girisLogYukle(){
       headers: { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey }
     });
     const d = await r.json();
+    if(!r.ok){
+      el.innerHTML = '<p style="color:#b91c1c;padding:20px;">API Hatası: ' + JSON.stringify(d) + '</p>';
+      return;
+    }
     if(!Array.isArray(d) || d.length === 0){
-      el.innerHTML = '<p style="text-align:center;color:#6b7a99;padding:20px;">Henüz giriş kaydı yok.</p>';
+      el.innerHTML = '<p style="text-align:center;color:#6b7a99;padding:20px;">Henüz giriş kaydı yok. Lütfen siteden çıkış yapıp tekrar giriş yapın.</p>';
       return;
     }
     el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">' 
