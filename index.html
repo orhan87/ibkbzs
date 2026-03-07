@@ -14,6 +14,9 @@ if(!sessionStorage.getItem('govdag_token')){
     var em = document.getElementById('kullanicEmail');
     if(em) em.textContent = email;
 
+    // Supabase'den geçmiş sorgular yükle
+    supabaseSorguYukle();
+
     // Admin'den gelen metinleri uygula
     try{
       var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
@@ -1131,6 +1134,76 @@ listele();
 function gecmiseKaydet(kayit){
   sorguGecmisi.unshift(kayit); // en yenisi başa
   gecmisPanelGuncelle();
+  // Supabase'e kaydet
+  supabaseSorguKaydet(kayit);
+}
+
+async function supabaseSorguKaydet(kayit){
+  try{
+    const token = sessionStorage.getItem('govdag_token');
+    const email = sessionStorage.getItem('govdag_email');
+    if(!token) return;
+    const sbUrl = SB_URL;
+    const sbKey = SB_KEY;
+    // htmlDetay hariç kaydet (çok büyük)
+    const veri = Object.assign({}, kayit);
+    delete veri.htmlDetay;
+    await fetch(sbUrl + '/rest/v1/sorgular', {
+      method:'POST',
+      headers:{
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ email: email, veri: veri })
+    });
+  }catch(e){ console.warn('Supabase sorgu kaydedilemedi:', e); }
+}
+
+async function supabaseSorguYukle(){
+  try{
+    const token = sessionStorage.getItem('govdag_token');
+    if(!token) return;
+    const sbUrl = SB_URL;
+    const sbKey = SB_KEY;
+    const res = await fetch(sbUrl + '/rest/v1/sorgular?order=tarih.desc&limit=200', {
+      headers:{
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + token,
+      }
+    });
+    if(!res.ok) return;
+    const rows = await res.json();
+    if(!Array.isArray(rows) || rows.length === 0) return;
+    // Mevcut oturum sorguları + sunucudaki sorgular birleştir (duplicate önle)
+    const mevcutSaatler = new Set(sorguGecmisi.map(q=>q.saat));
+    rows.forEach(row=>{
+      if(row.veri && !mevcutSaatler.has(row.veri.saat)){
+        sorguGecmisi.push(row.veri);
+        mevcutSaatler.add(row.veri.saat);
+      }
+    });
+    // Tarihe göre sırala (yeniden eskiye)
+    sorguGecmisi.sort((a,b)=> new Date(b.saat||0) - new Date(a.saat||0));
+    if(sorguGecmisi.length > 0) gecmisPanelGuncelle();
+  }catch(e){ console.warn('Supabase sorgu yüklenemedi:', e); }
+}
+
+async function supabaseSorguTemizle(){
+  try{
+    const token = sessionStorage.getItem('govdag_token');
+    if(!token) return;
+    const sbUrl = SB_URL;
+    const sbKey = SB_KEY;
+    await fetch(sbUrl + '/rest/v1/sorgular?id=neq.00000000-0000-0000-0000-000000000000', {
+      method:'DELETE',
+      headers:{
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + token,
+      }
+    });
+  }catch(e){ console.warn('Supabase temizleme hatası:', e); }
 }
 
 function gecmisPanelGuncelle(){
@@ -1210,7 +1283,10 @@ function gecmisPanelGuncelle(){
           + '<td>' + (onceki ? '<span style="color:var(--ok);font-weight:600;">− ' + onceki + '</span>' : '<span class="td-yok">—</span>') + '</td>'
           + '<td class="td-gold">' + (muaf ? '<span class="td-muaf">Yok</span>' : (q.ibkb||'—')) + '</td>'
           + '<td class="td-org">' + (muaf ? '<span class="td-muaf">Yok</span>' : (q.tcmb||'—')) + '</td>'
-          + '<td><button style="padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:inherit;" onclick="event.stopPropagation();gecmisGoster(' + i + ')">Göster</button></td>'
+          + '<td style="white-space:nowrap;">'
+          + '<button style="padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:inherit;margin-right:4px;" onclick="event.stopPropagation();gecmisGoster(' + i + ')">Göster</button>'
+          + '<button style="padding:4px 8px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:inherit;" onclick="event.stopPropagation();gecmisSatirSil(' + i + ')">✕</button>'
+          + '</td>'
           + '</tr>';
       }).join('')
     + '</tbody></table></div>';
@@ -1236,9 +1312,33 @@ function gecmisGoster(idx){
   document.getElementById('result').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
+async function gecmisSatirSil(idx){
+  if(!confirm('Bu sorgu silinecek. Emin misiniz?')) return;
+  const kayit = sorguGecmisi[idx];
+  // Supabase'den sil
+  try{
+    const token = sessionStorage.getItem('govdag_token');
+    if(token && kayit && kayit.saat){
+      // saat eşleşen kaydı sil
+      const saatEncoded = encodeURIComponent(kayit.saat);
+      await fetch(SB_URL + '/rest/v1/sorgular?veri->>saat=eq.' + saatEncoded, {
+        method: 'DELETE',
+        headers:{
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + token,
+        }
+      });
+    }
+  }catch(e){ console.warn('Supabase satır silme hatası:', e); }
+  // Listeden kaldır
+  sorguGecmisi.splice(idx, 1);
+  gecmisPanelGuncelle();
+}
+
 function gecmisTemizle(){
   if(sorguGecmisi.length === 0) return;
   if(!confirm('Tüm sorgu geçmişi silinecek. Emin misiniz?')) return;
+  supabaseSorguTemizle();
   sorguGecmisi = [];
   gecmisPanelGuncelle();
   const r = document.getElementById('result');
