@@ -100,6 +100,25 @@
   }
   .cfg-uyari.goster{display:flex;}
   .cfg-uyari a{color:#92400e;font-weight:700;}
+
+  /* Fiyat kartı */
+  .fiyat-kart{
+    margin-top:20px;padding:18px 20px;
+    background:linear-gradient(135deg,#1a2540 0%,#2563eb 100%);
+    border-radius:14px;position:relative;overflow:hidden;
+  }
+  .fiyat-kart::before{
+    content:'';position:absolute;top:-30px;right:-30px;
+    width:100px;height:100px;border-radius:50%;
+    background:rgba(255,255,255,.06);
+  }
+  .fiyat-kart-ust{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+  .fiyat-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);}
+  .fiyat-badge{font-size:.65rem;font-weight:700;background:rgba(255,255,255,.18);color:#fff;padding:3px 10px;border-radius:20px;letter-spacing:.04em;}
+  .fiyat-tutar{font-size:1.85rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.02em;margin:4px 0;}
+  .fiyat-alt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .fiyat-sure{font-size:.73rem;color:rgba(255,255,255,.7);font-weight:500;}
+  .fiyat-kdv{font-size:.65rem;background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);padding:2px 8px;border-radius:10px;font-weight:600;}
 </style>
 </head>
 <body>
@@ -135,6 +154,7 @@
       <svg id="btnIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
     </button>
   </div>
+  <div id="fiyatKartWrap"></div>
   <div class="iletisim"><div class="iletisim-baslik">İletişim</div><div id="loginIletisim"></div></div>
   <div class="foot">© 2026 <strong>GÖVDAĞ</strong> — Tüm hakları saklıdır.</div>
 </div>
@@ -149,12 +169,44 @@ let sbKey  = SUPABASE_KEY;
 
 window.onload = function(){
   // Admin ayarlarını uygula
+  // Varsayılan fiyat kartını hemen göster (config yüklenmeden önce)
+  (function(){
+    var defWrap = document.getElementById('fiyatKartWrap');
+    if(defWrap && !defWrap.innerHTML){
+      defWrap.innerHTML = '<div class="fiyat-kart"><div class="fiyat-kart-ust"><span class="fiyat-label">Lisans Bedeli</span></div><div class="fiyat-tutar">1.000 TL</div><div class="fiyat-alt"><span class="fiyat-sure">1 Yıllık Lisans</span><span class="fiyat-kdv">KDV Dahil</span></div></div>';
+    }
+  })();
+
   try{
     var cfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
     var met = cfg.metinler || {};
 
     // Sekme başlığı
     if(met.loginBaslik) document.title = met.loginBaslik;
+
+    // Fiyat kartı
+    var fiyatWrap = document.getElementById('fiyatKartWrap');
+    if(fiyatWrap){
+      var fGoster = met.fiyatGoster !== 'hayir';
+      if(fGoster){
+        var tutar   = met.fiyatTutar  || '1.000 TL';
+        var sure    = met.fiyatSure   || '1 Yıllık Lisans';
+        var kdvDahil = met.fiyatKdvDahil !== 'hayir';
+        var badge   = met.fiyatBadge  || '';
+        fiyatWrap.innerHTML =
+          '<div class="fiyat-kart">'
+          + '<div class="fiyat-kart-ust">'
+          + '<span class="fiyat-label">Lisans Bedeli</span>'
+          + (badge ? '<span class="fiyat-badge">'+badge+'</span>' : '')
+          + '</div>'
+          + '<div class="fiyat-tutar">'+tutar+'</div>'
+          + '<div class="fiyat-alt">'
+          + '<span class="fiyat-sure">'+sure+'</span>'
+          + (kdvDahil ? '<span class="fiyat-kdv">KDV Dahil</span>' : '')
+          + '</div>'
+          + '</div>';
+      }
+    }
 
     // Logo
     var logoImg = document.querySelector('.marka img');

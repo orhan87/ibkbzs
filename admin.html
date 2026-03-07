@@ -493,6 +493,44 @@
         </div>
       </div>
 
+      <!-- FİYAT KARTI -->
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>💰 Fiyat Bilgisi</h3><p>Login sayfasında görünen fiyat kartı</p></div></div>
+        <div class="pc-body">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
+            <div style="flex:1;min-width:220px;">
+              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Fiyat Kartını Göster</label>
+              <select id="m-fiyatGoster" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
+                <option value="evet">✅ Göster</option>
+                <option value="hayir">❌ Gizle</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:220px;">
+              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">KDV Dahil Rozeti</label>
+              <select id="m-fiyatKdvDahil" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
+                <option value="evet">Göster — "KDV Dahil"</option>
+                <option value="hayir">Gizle</option>
+              </select>
+            </div>
+          </div>
+          <div class="metin-item">
+            <label>Fiyat (örn: 1.000 TL veya 1.000 TL / Yıl)</label>
+            <input type="text" id="m-fiyatTutar" placeholder="1.000 TL">
+          </div>
+          <div class="metin-item">
+            <label>Süre / Açıklama (örn: 1 Yıllık Lisans)</label>
+            <input type="text" id="m-fiyatSure" placeholder="1 Yıllık Lisans">
+          </div>
+          <div class="metin-item">
+            <label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label>
+            <input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir">
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- PAROLA -->
@@ -790,6 +828,11 @@ const VARSAYILAN_METINLER = {
   loginEmail:'orhankelahmet@gmail.com',
   loginTel:'+90 533 198 70 33',
   loginFooter:'© 2026 GÖVDAĞ — Tüm hakları saklıdır.',
+  fiyatGoster:'evet',
+  fiyatTutar:'1.000 TL',
+  fiyatKdvDahil:'evet',
+  fiyatSure:'1 Yıllık Lisans',
+  fiyatBadge:'',
 };
 
 // ─── GİRİŞ ───────────────────────────────────────────────────────────────────
@@ -862,6 +905,26 @@ function logoTabYukle(){
     const el = document.getElementById('m-'+k);
     if(el) el.value = met[k] || '';
   });
+  // Fiyat alanları
+  const fiyatGosterEl = document.getElementById('m-fiyatGoster');
+  if(fiyatGosterEl) fiyatGosterEl.value = met.fiyatGoster || 'evet';
+  const fiyatKdvEl = document.getElementById('m-fiyatKdvDahil');
+  if(fiyatKdvEl) fiyatKdvEl.value = met.fiyatKdvDahil || 'evet';
+  ['fiyatTutar','fiyatSure','fiyatBadge'].forEach(k=>{
+    const el = document.getElementById('m-'+k);
+    if(el) el.value = met[k] || '';
+  });
+}
+
+function fiyatKaydet(){
+  const cfg = depoyuYukle() || {};
+  if(!cfg.metinler) cfg.metinler = {};
+  ['fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
+    const el = document.getElementById('m-'+k);
+    if(el) cfg.metinler[k] = el.value;
+  });
+  depoyaKaydet(cfg);
+  toast('\u2705 Fiyat bilgisi kaydedildi');
 }
 
 function logoKaydet(){
@@ -1129,42 +1192,87 @@ async function kullaniciEkle(){
 async function kullanicilariYukle(){
   const sb=sbCfg(); if(!sb) return;
   const el=document.getElementById('kullaniciListesi');
-  el.innerHTML='<span style="color:#8c97a8;font-size:.83rem;">Yükleniyor…</span>';
+  el.innerHTML='<div style="color:#8c97a8;font-size:.83rem;padding:12px 0;">Kullanıcılar yükleniyor…</div>';
   try{
-    // giris_log'dan unique kullanıcıları çek (anon key ile erişilebilir)
-    const r=await fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=500',{
+    // giris_log'dan giriş istatistiklerini çek
+    const rLog=await fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000',{
       headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
     });
-    const d=await r.json();
-    if(!Array.isArray(d)||d.length===0){
-      el.innerHTML='<span style="color:#8c97a8;font-size:.83rem;">Henüz giriş yapan kullanıcı yok.</span>'; return;
-    }
-    // Her kullanıcının son giriş tarihini ve toplam giriş sayısını hesapla
-    const kullaniciMap={};
-    d.forEach(row=>{
-      if(!row.email) return;
-      if(!kullaniciMap[row.email]){
-        kullaniciMap[row.email]={email:row.email, sonGiris:row.giris_tarihi, girisAdedi:0};
-      }
-      kullaniciMap[row.email].girisAdedi++;
-      if(row.giris_tarihi > kullaniciMap[row.email].sonGiris)
-        kullaniciMap[row.email].sonGiris = row.giris_tarihi;
+    const logData = rLog.ok ? await rLog.json() : [];
+
+    // Supabase admin/users ile kayıt tarihi almaya çalış
+    const svcKey = sb.serviceKey || sb.key;
+    const rAuth=await fetch(sb.url+'/auth/v1/admin/users?per_page=200',{
+      headers:{'apikey':svcKey,'Authorization':'Bearer '+svcKey}
     });
-    const users=Object.values(kullaniciMap).sort((a,b)=>b.sonGiris.localeCompare(a.sonGiris));
-    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.83rem;">
-      <thead><tr style="background:#f0f2f5;">
-        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">E-posta</th>
-        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Toplam Giriş</th>
-        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Son Giriş</th>
+    const authData = rAuth.ok ? await rAuth.json() : {};
+    const authUsers = authData.users || [];
+
+    // giris_log'dan istatistik map'i oluştur
+    const logMap={};
+    if(Array.isArray(logData)){
+      logData.forEach(row=>{
+        if(!row.email) return;
+        if(!logMap[row.email]) logMap[row.email]={girisAdedi:0,sonGiris:null};
+        logMap[row.email].girisAdedi++;
+        if(!logMap[row.email].sonGiris || row.giris_tarihi > logMap[row.email].sonGiris)
+          logMap[row.email].sonGiris = row.giris_tarihi;
+      });
+    }
+
+    // authUsers varsa onları kullan, yoksa logMap'ten oluştur
+    let users = [];
+    if(authUsers.length > 0){
+      users = authUsers.map(u=>({
+        id: u.id,
+        email: u.email||'-',
+        kayitTarihi: u.created_at,
+        sonGiris: (logMap[u.email]&&logMap[u.email].sonGiris) || u.last_sign_in_at,
+        girisAdedi: (logMap[u.email]&&logMap[u.email].girisAdedi) || 0,
+        silinebilir: true
+      }));
+    } else {
+      // Sadece log varsa
+      users = Object.entries(logMap).map(([email,v])=>({
+        id:null, email, kayitTarihi:null, sonGiris:v.sonGiris, girisAdedi:v.girisAdedi, silinebilir:false
+      }));
+    }
+
+    users.sort((a,b)=>(b.sonGiris||'').localeCompare(a.sonGiris||''));
+
+    if(users.length===0){
+      el.innerHTML='<div style="color:#8c97a8;font-size:.83rem;padding:12px;">Henüz kullanıcı yok.</div>';
+      return;
+    }
+
+    const fmtTar = (iso)=> iso ? new Date(iso).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+    const fmtSon = (iso)=> iso ? new Date(iso).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+      <thead><tr style="background:#f0f4f8;border-bottom:2px solid #e2e8f0;">
+        <th style="padding:10px 12px;text-align:left;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">E-posta</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Kayıt Tarihi</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Son Giriş</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Giriş Sayısı</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">İşlem</th>
       </tr></thead>
-      <tbody>${users.map(u=>`<tr style="border-bottom:1px solid #e2e6eb;">
-        <td style="padding:9px 10px;font-weight:600;color:#1a2535;">${u.email}</td>
-        <td style="padding:9px 10px;color:#2563eb;font-weight:600;text-align:center;">${u.girisAdedi}</td>
-        <td style="padding:9px 10px;color:#8c97a8;">${u.sonGiris?new Date(u.sonGiris).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'-'}</td>
+      <tbody>${users.map((u,i)=>`<tr style="border-bottom:1px solid #edf2f7;background:${i%2===0?'#fff':'#f8fafc'};">
+        <td style="padding:10px 12px;font-weight:600;color:#1a2535;">${u.email}</td>
+        <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtTar(u.kayitTarihi)}</td>
+        <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtSon(u.sonGiris)}</td>
+        <td style="padding:10px 12px;text-align:center;">
+          <span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.78rem;padding:2px 10px;border-radius:12px;">${u.girisAdedi}</span>
+        </td>
+        <td style="padding:10px 12px;text-align:center;">
+          ${u.silinebilir
+            ? `<button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>`
+            : `<span style="font-size:.7rem;color:#94a3b8;">—</span>`}
+        </td>
       </tr>`).join('')}</tbody>
-    </table>`;
+    </table>
+    ${authUsers.length===0?'<p style="font-size:.72rem;color:#94a3b8;margin-top:8px;padding:0 4px;">ℹ Silme işlemi için Supabase Service Role Key gereklidir.</p>':''}`;
   }catch(e){
-    el.innerHTML='<span style="color:#b91c1c;font-size:.83rem;">Hata: '+e.message+'</span>';
+    el.innerHTML='<div style="color:#b91c1c;font-size:.83rem;padding:12px;">Hata: '+e.message+'</div>';
   }
 }
 
@@ -1230,7 +1338,7 @@ function kurlariKaydet(){
 function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','heroAlt','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','heroAlt','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
