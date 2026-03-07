@@ -191,6 +191,7 @@
       <button class="tab-btn ak" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
       <button class="tab-btn"    onclick="tab('sabitler',this)">⚙ Sayısal Değerler</button>
       <button class="tab-btn"    onclick="tab('metinler',this)">📝 Metinler & Notlar</button>
+      <button class="tab-btn"    onclick="tab('logologin',this)">🖼 Logo & Login Sayfası</button>
       <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
       <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
       <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
@@ -410,6 +411,85 @@
             <p class="acik">Disclaimer kutusundaki "İhracat Genelgesi ↗" bağlantısı</p>
           </div>
           <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LOGO & LOGIN -->
+    <div id="tab-logologin" class="tab-content">
+
+      <!-- LOGO YÖNETİMİ -->
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>🖼 Logo Yönetimi</h3><p>Sitede görünen logoyu değiştirin</p></div></div>
+        <div class="pc-body">
+          <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:18px;">
+            <div style="flex:1;min-width:200px;">
+              <p style="font-size:.78rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Mevcut Logo</p>
+              <div style="background:#0f172a;border-radius:10px;padding:16px;display:inline-flex;align-items:center;justify-content:center;min-width:120px;">
+                <img id="logoOnizleme" src="" alt="Logo" style="height:40px;width:auto;max-width:200px;" onerror="this.style.display='none'">
+                <span id="logoYok" style="color:#64748b;font-size:.78rem;">Logo yüklü değil</span>
+              </div>
+            </div>
+          </div>
+          <div class="metin-item">
+            <label>Logo Dosyası Yükle (PNG, SVG — max 200KB)</label>
+            <input type="file" id="logoInput" accept="image/png,image/svg+xml,image/jpeg,image/webp" style="padding:8px;border:1px dashed var(--border);border-radius:7px;width:100%;cursor:pointer;">
+            <p class="acik">Logo koyu arka planda görünür. Şeffaf arka planlı PNG önerilir.</p>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="logoKaydet()">💾 Logoyu Kaydet</button>
+            <button class="btn" onclick="logoSifirla()" style="color:#991b1b;">🗑 Logoyu Kaldır</button>
+          </div>
+          <div id="logoMsg" style="margin-top:8px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
+        </div>
+      </div>
+
+      <!-- LOGIN SAYFA METİNLERİ -->
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>🔐 Giriş Sayfası Metinleri</h3><p>Login ekranında görünen yazılar</p></div></div>
+        <div class="pc-body">
+          <div class="metin-item">
+            <label>Tarayıcı Sekme Başlığı (Login)</label>
+            <input type="text" id="m-loginBaslik" placeholder="GÖVDAĞ — Giriş">
+          </div>
+          <div class="metin-item">
+            <label>Kart Üst Yazısı (Marka Alt Metni)</label>
+            <input type="text" id="m-loginAlt" placeholder="İBKB Zorunluluğu Sorgulama Yazılımı">
+          </div>
+          <div class="metin-item">
+            <label>E-posta Alan Etiketi</label>
+            <input type="text" id="m-loginEpostaLabel" placeholder="E-posta Adresi">
+          </div>
+          <div class="metin-item">
+            <label>E-posta Placeholder</label>
+            <input type="text" id="m-loginEpostaPlaceholder" placeholder="ornek@sirket.com">
+          </div>
+          <div class="metin-item">
+            <label>Parola Alan Etiketi</label>
+            <input type="text" id="m-loginParolaLabel" placeholder="Parola">
+          </div>
+          <div class="metin-item">
+            <label>Giriş Butonu Yazısı</label>
+            <input type="text" id="m-loginBtnYazi" placeholder="Giriş Yap">
+          </div>
+          <div class="fg" style="margin-top:14px;">
+            <div class="fgg">
+              <label>İletişim E-posta (Login)</label>
+              <input type="email" id="m-loginEmail" placeholder="ornek@sirket.com">
+            </div>
+            <div class="fgg">
+              <label>İletişim Telefon (Login)</label>
+              <input type="text" id="m-loginTel" placeholder="+90 5xx xxx xx xx">
+            </div>
+          </div>
+          <div class="metin-item">
+            <label>Footer Yazısı (Login)</label>
+            <input type="text" id="m-loginFooter" placeholder="© 2026 GÖVDAĞ — Tüm hakları saklıdır.">
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-primary" onclick="loginMetinleriKaydet()">💾 Kaydet</button>
+          </div>
         </div>
       </div>
 
@@ -701,6 +781,15 @@ const VARSAYILAN_METINLER = {
   iletisimTel:'+90 533 198 70 33',
   destekUygulamaTalimat:'https://www.tcmb.gov.tr/wps/wcm/connect/a474085d-0c69-42be-bb62-81afbb30ba15/2023-5.pdf?MOD=AJPERES&CACHEID=ROOTWORKSPACE-a474085d-0c69-42be-bb62-81afbb30ba15-oNrRH3t',
   genelgePdf:'https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR',
+  loginBaslik:'GÖVDAĞ — Giriş',
+  loginAlt:'İBKB Zorunluluğu Sorgulama Yazılımı',
+  loginEpostaLabel:'E-posta Adresi',
+  loginEpostaPlaceholder:'ornek@sirket.com',
+  loginParolaLabel:'Parola',
+  loginBtnYazi:'Giriş Yap',
+  loginEmail:'orhankelahmet@gmail.com',
+  loginTel:'+90 533 198 70 33',
+  loginFooter:'© 2026 GÖVDAĞ — Tüm hakları saklıdır.',
 };
 
 // ─── GİRİŞ ───────────────────────────────────────────────────────────────────
@@ -749,6 +838,84 @@ function baslat(){
   });
 
   ulkeTablosuGuncelle();
+  logoTabYukle();
+}
+
+// ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
+function logoTabYukle(){
+  const cfg = depoyuYukle() || {};
+  // Logo önizleme
+  const logoData = cfg.logo || null;
+  const onizleme = document.getElementById('logoOnizleme');
+  const logoYok = document.getElementById('logoYok');
+  if(logoData && onizleme){
+    onizleme.src = logoData;
+    onizleme.style.display = 'block';
+    if(logoYok) logoYok.style.display = 'none';
+  } else if(onizleme){
+    onizleme.style.display = 'none';
+    if(logoYok) logoYok.style.display = 'block';
+  }
+  // Login metinleri
+  const met = Object.assign({}, VARSAYILAN_METINLER, cfg.metinler || {});
+  ['loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
+    const el = document.getElementById('m-'+k);
+    if(el) el.value = met[k] || '';
+  });
+}
+
+function logoKaydet(){
+  const input = document.getElementById('logoInput');
+  const msgEl = document.getElementById('logoMsg');
+  if(!input.files || !input.files[0]){
+    msgEl.style.display='block'; msgEl.style.background='#fef2f2'; msgEl.style.color='#991b1b';
+    msgEl.textContent='Lütfen bir dosya seçin.'; return;
+  }
+  const file = input.files[0];
+  if(file.size > 200*1024){
+    msgEl.style.display='block'; msgEl.style.background='#fef2f2'; msgEl.style.color='#991b1b';
+    msgEl.textContent='Dosya 200KB sınırını aşıyor. Daha küçük bir logo seçin.'; return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const base64 = e.target.result;
+    const cfg = depoyuYukle() || {};
+    cfg.logo = base64;
+    depoyaKaydet(cfg);
+    // Önizlemeyi güncelle
+    const onizleme = document.getElementById('logoOnizleme');
+    const logoYok = document.getElementById('logoYok');
+    if(onizleme){ onizleme.src = base64; onizleme.style.display='block'; }
+    if(logoYok) logoYok.style.display='none';
+    msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
+    msgEl.textContent='✅ Logo kaydedildi. Sayfayı yenileyin.';
+  };
+  reader.readAsDataURL(file);
+}
+
+function logoSifirla(){
+  if(!confirm('Logo kaldırılacak. Emin misiniz?')) return;
+  const cfg = depoyuYukle() || {};
+  delete cfg.logo;
+  depoyaKaydet(cfg);
+  const onizleme = document.getElementById('logoOnizleme');
+  const logoYok = document.getElementById('logoYok');
+  if(onizleme){ onizleme.src=''; onizleme.style.display='none'; }
+  if(logoYok) logoYok.style.display='block';
+  const msgEl = document.getElementById('logoMsg');
+  msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
+  msgEl.textContent='✅ Logo kaldırıldı.';
+}
+
+function loginMetinleriKaydet(){
+  const cfg = depoyuYukle() || {};
+  if(!cfg.metinler) cfg.metinler = {};
+  ['loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
+    const el = document.getElementById('m-'+k);
+    if(el) cfg.metinler[k] = el.value;
+  });
+  depoyaKaydet(cfg);
+  toast('✅ Login sayfası ayarları kaydedildi');
 }
 
 // ─── SEKMELER ────────────────────────────────────────────────────────────────
@@ -757,6 +924,7 @@ function tab(id, btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ak'));
   if(id==='kullanicilar') kullaniciTabYukle();
   if(id==='girislog') girisLogYukle();
+  if(id==='logologin') logoTabYukle();
   document.getElementById('tab-'+id).classList.add('ak');
   btn.classList.add('ak');
 }
@@ -961,34 +1129,42 @@ async function kullaniciEkle(){
 async function kullanicilariYukle(){
   const sb=sbCfg(); if(!sb) return;
   const el=document.getElementById('kullaniciListesi');
-  el.textContent='Yükleniyor…';
+  el.innerHTML='<span style="color:#8c97a8;font-size:.83rem;">Yükleniyor…</span>';
   try{
-    const r=await fetch(sb.url+'/auth/v1/admin/users?per_page=50',{
-      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key}
+    // giris_log'dan unique kullanıcıları çek (anon key ile erişilebilir)
+    const r=await fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=500',{
+      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
     });
     const d=await r.json();
-    const users=d.users||d;
-    if(!Array.isArray(users)||users.length===0){
-      el.textContent='Henüz kullanıcı yok.'; return;
+    if(!Array.isArray(d)||d.length===0){
+      el.innerHTML='<span style="color:#8c97a8;font-size:.83rem;">Henüz giriş yapan kullanıcı yok.</span>'; return;
     }
+    // Her kullanıcının son giriş tarihini ve toplam giriş sayısını hesapla
+    const kullaniciMap={};
+    d.forEach(row=>{
+      if(!row.email) return;
+      if(!kullaniciMap[row.email]){
+        kullaniciMap[row.email]={email:row.email, sonGiris:row.giris_tarihi, girisAdedi:0};
+      }
+      kullaniciMap[row.email].girisAdedi++;
+      if(row.giris_tarihi > kullaniciMap[row.email].sonGiris)
+        kullaniciMap[row.email].sonGiris = row.giris_tarihi;
+    });
+    const users=Object.values(kullaniciMap).sort((a,b)=>b.sonGiris.localeCompare(a.sonGiris));
     el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.83rem;">
       <thead><tr style="background:#f0f2f5;">
         <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">E-posta</th>
-        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Kayıt Tarihi</th>
+        <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Toplam Giriş</th>
         <th style="padding:8px 10px;text-align:left;color:#4a5568;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Son Giriş</th>
-        <th style="padding:8px 10px;"></th>
       </tr></thead>
       <tbody>${users.map(u=>`<tr style="border-bottom:1px solid #e2e6eb;">
-        <td style="padding:9px 10px;font-weight:600;color:#1a2535;">${u.email||'—'}</td>
-        <td style="padding:9px 10px;color:#8c97a8;">${u.created_at?new Date(u.created_at).toLocaleDateString('tr-TR'):'-'}</td>
-        <td style="padding:9px 10px;color:#8c97a8;">${u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleDateString('tr-TR'):'-'}</td>
-        <td style="padding:9px 10px;text-align:right;">
-          <button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:3px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">Sil</button>
-        </td>
+        <td style="padding:9px 10px;font-weight:600;color:#1a2535;">${u.email}</td>
+        <td style="padding:9px 10px;color:#2563eb;font-weight:600;text-align:center;">${u.girisAdedi}</td>
+        <td style="padding:9px 10px;color:#8c97a8;">${u.sonGiris?new Date(u.sonGiris).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'-'}</td>
       </tr>`).join('')}</tbody>
     </table>`;
   }catch(e){
-    el.textContent='Hata: '+e.message;
+    el.innerHTML='<span style="color:#b91c1c;font-size:.83rem;">Hata: '+e.message+'</span>';
   }
 }
 
@@ -1054,7 +1230,7 @@ function kurlariKaydet(){
 function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','heroAlt','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','heroAlt','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });

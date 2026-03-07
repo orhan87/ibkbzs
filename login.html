@@ -136,7 +136,7 @@
     </button>
   </div>
   <div class="iletisim"><div class="iletisim-baslik">İletişim</div><div id="loginIletisim"></div></div>
-  <div class="foot">© 2025 <strong>GÖVDAĞ</strong> — Tüm hakları saklıdır.</div>
+  <div class="foot">© 2026 <strong>GÖVDAĞ</strong> — Tüm hakları saklıdır.</div>
 </div>
 
 <script>
@@ -148,24 +148,63 @@ let sbUrl = SUPABASE_URL;
 let sbKey  = SUPABASE_KEY;
 
 window.onload = function(){
-  // Enter tuşu
-  // İletişim JS ile yaz
-  var ep = ['orhankel','ahmet','@','gmail','.com'].join('');
-  var li = document.getElementById('loginIletisim');
-  if(li){
-    li.innerHTML =
-      '<div class="iletisim-satir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><a href="mailto:'+ep+'">'+ep+'</a></div>'
-      + '<div class="iletisim-satir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><a href="tel:+905331987033">+90 533 198 70 33</a></div>';
-  }
+  // Admin ayarlarını uygula
+  try{
+    var cfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
+    var met = cfg.metinler || {};
 
-  document.getElementById('parola').addEventListener('keydown', e => {
+    // Sekme başlığı
+    if(met.loginBaslik) document.title = met.loginBaslik;
+
+    // Logo
+    var logoImg = document.querySelector('.marka img');
+    if(logoImg && cfg.logo){
+      logoImg.src = cfg.logo;
+    }
+
+    // Marka alt metni
+    var markaP = document.querySelector('.marka p');
+    if(markaP && met.loginAlt) markaP.textContent = met.loginAlt;
+
+    // Form etiketleri
+    var labels = document.querySelectorAll('label');
+    labels.forEach(function(l){
+      if(l.textContent.trim() === 'E-posta Adresi' && met.loginEpostaLabel) l.textContent = met.loginEpostaLabel;
+      if(l.textContent.trim() === 'Parola' && met.loginParolaLabel) l.textContent = met.loginParolaLabel;
+    });
+
+    // Placeholder
+    var epostaInput = document.getElementById('eposta');
+    if(epostaInput && met.loginEpostaPlaceholder) epostaInput.placeholder = met.loginEpostaPlaceholder;
+
+    // Buton yazısı
+    var btnText = document.getElementById('btnText');
+    if(btnText && met.loginBtnYazi) btnText.textContent = met.loginBtnYazi;
+
+    // Footer
+    var foot = document.querySelector('.foot');
+    if(foot && met.loginFooter) foot.innerHTML = met.loginFooter;
+
+    // İletişim
+    var ep  = met.loginEmail || 'orhankelahmet@gmail.com';
+    var tel = met.loginTel   || '+90 533 198 70 33';
+    var telRaw = tel.replace(/[^+0-9]/g,'');
+    var li = document.getElementById('loginIletisim');
+    if(li){
+      li.innerHTML =
+        '<div class="iletisim-satir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><a href="mailto:'+ep+'">'+ep+'</a></div>'
+        + '<div class="iletisim-satir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><a href="tel:'+telRaw+'">'+tel+'</a></div>';
+    }
+  } catch(e){}
+
+  document.getElementById('parola').addEventListener('keydown', function(e){
     if(e.key === 'Enter') girisYap();
   });
-  document.getElementById('eposta').addEventListener('keydown', e => {
+  document.getElementById('eposta').addEventListener('keydown', function(e){
     if(e.key === 'Enter') girisYap();
   });
   // Zaten giriş yapılmışsa yönlendir
-  const token = sessionStorage.getItem('govdag_token');
+  var token = sessionStorage.getItem('govdag_token');
   if(token) window.location.replace('./index.html');
 };
 

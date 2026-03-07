@@ -19,6 +19,11 @@ if(!sessionStorage.getItem('govdag_token')){
       var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
       var met = cfg.metinler || {};
       if(met.siteBaslik) document.title = met.siteBaslik;
+      // Logo
+      if(cfg.logo){
+        var logoEls = document.querySelectorAll('img[alt="gövdag"]');
+        logoEls.forEach(function(img){ img.src = cfg.logo; });
+      }
       var hb = document.getElementById('heroBaslik');
       if(hb && met.heroBaslik) hb.textContent = met.heroBaslik;
       var ha = document.getElementById('heroAlt');
