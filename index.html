@@ -14,9 +14,6 @@ if(!sessionStorage.getItem('govdag_token')){
     var em = document.getElementById('kullanicEmail');
     if(em) em.textContent = email;
 
-    // Supabase'den geçmiş sorgular yükle
-    supabaseSorguYukle();
-
     // Admin'den gelen metinleri uygula
     try{
       var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
@@ -1131,6 +1128,12 @@ let sorguGecmisi = [];
 // tarih alanı boş başlıyor
 listele();
 
+// Sayfa tamamen yüklenince Supabase geçmişini çek
+document.addEventListener('DOMContentLoaded', function(){
+  // Fonksiyonlar hazır, geçmişi yükle
+  setTimeout(supabaseSorguYukle, 100);
+});
+
 function gecmiseKaydet(kayit){
   sorguGecmisi.unshift(kayit); // en yenisi başa
   gecmisPanelGuncelle();
@@ -1138,55 +1141,72 @@ function gecmiseKaydet(kayit){
   supabaseSorguKaydet(kayit);
 }
 
+function jwtUserId(token){
+  // JWT payload'dan sub (user_id) alanını çıkar
+  try{
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.sub || null;
+  }catch(e){ return null; }
+}
+
 async function supabaseSorguKaydet(kayit){
   try{
     const token = sessionStorage.getItem('govdag_token');
     const email = sessionStorage.getItem('govdag_email');
     if(!token) return;
-    const sbUrl = SB_URL;
-    const sbKey = SB_KEY;
-    // htmlDetay hariç kaydet (çok büyük)
+    const userId = jwtUserId(token);
     const veri = Object.assign({}, kayit);
     delete veri.htmlDetay;
-    await fetch(sbUrl + '/rest/v1/sorgular', {
+    const body = { email: email, veri: veri };
+    if(userId) body.user_id = userId;
+    const res = await fetch(SB_URL + '/rest/v1/sorgular', {
       method:'POST',
       headers:{
-        'apikey': sbKey,
+        'apikey': SB_KEY,
         'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
+        'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ email: email, veri: veri })
+      body: JSON.stringify(body)
     });
+    if(res.ok){
+      const rows = await res.json();
+      if(rows && rows[0] && rows[0].id){
+        kayit._sbId = rows[0].id;
+      }
+    } else {
+      const err = await res.text();
+      console.warn('SB kayıt hatası:', res.status, err);
+    }
   }catch(e){ console.warn('Supabase sorgu kaydedilemedi:', e); }
 }
 
 async function supabaseSorguYukle(){
   try{
     const token = sessionStorage.getItem('govdag_token');
-    if(!token) return;
-    const sbUrl = SB_URL;
-    const sbKey = SB_KEY;
-    const res = await fetch(sbUrl + '/rest/v1/sorgular?order=tarih.desc&limit=200', {
+    if(!token){ console.warn('SB Yükle: token yok'); return; }
+    const res = await fetch(SB_URL + '/rest/v1/sorgular?order=tarih.desc&limit=500', {
       headers:{
-        'apikey': sbKey,
+        'apikey': SB_KEY,
         'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
       }
     });
-    if(!res.ok) return;
     const rows = await res.json();
-    if(!Array.isArray(rows) || rows.length === 0) return;
-    // Mevcut oturum sorguları + sunucudaki sorgular birleştir (duplicate önle)
+    console.log('SB Yükle: status=' + res.status + ' rows=' + (Array.isArray(rows)?rows.length:JSON.stringify(rows)));
+    if(!res.ok || !Array.isArray(rows) || rows.length === 0) return;
+    // Mevcut oturum sorgularıyla birleştir (duplicate önle)
     const mevcutSaatler = new Set(sorguGecmisi.map(q=>q.saat));
     rows.forEach(row=>{
       if(row.veri && !mevcutSaatler.has(row.veri.saat)){
-        sorguGecmisi.push(row.veri);
+        const kayit = Object.assign({}, row.veri, { _sbId: row.id, _sbTarih: row.tarih });
+        sorguGecmisi.push(kayit);
         mevcutSaatler.add(row.veri.saat);
       }
     });
-    // Tarihe göre sırala (yeniden eskiye)
-    sorguGecmisi.sort((a,b)=> new Date(b.saat||0) - new Date(a.saat||0));
-    if(sorguGecmisi.length > 0) gecmisPanelGuncelle();
+    // Yeniden eskiye sırala (ISO tarih string karşılaştırması)
+    sorguGecmisi.sort((a,b)=>(b._sbTarih||'').localeCompare(a._sbTarih||''));
+    gecmisPanelGuncelle();
   }catch(e){ console.warn('Supabase sorgu yüklenemedi:', e); }
 }
 
@@ -1318,16 +1338,18 @@ async function gecmisSatirSil(idx){
   // Supabase'den sil
   try{
     const token = sessionStorage.getItem('govdag_token');
-    if(token && kayit && kayit.saat){
-      // saat eşleşen kaydı sil
-      const saatEncoded = encodeURIComponent(kayit.saat);
-      await fetch(SB_URL + '/rest/v1/sorgular?veri->>saat=eq.' + saatEncoded, {
-        method: 'DELETE',
-        headers:{
-          'apikey': SB_KEY,
-          'Authorization': 'Bearer ' + token,
-        }
-      });
+    if(token && kayit){
+      const sbId = kayit._sbId;
+      if(sbId){
+        // id ile direkt sil
+        await fetch(SB_URL + '/rest/v1/sorgular?id=eq.' + sbId, {
+          method: 'DELETE',
+          headers:{
+            'apikey': SB_KEY,
+            'Authorization': 'Bearer ' + token,
+          }
+        });
+      }
     }
   }catch(e){ console.warn('Supabase satır silme hatası:', e); }
   // Listeden kaldır
