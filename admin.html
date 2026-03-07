@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>İBKB Admin — Kontrol Paneli</title>
+<title>İBKB Yönetim Paneli</title>
 <style>
   :root{
     --navy:#0d1f3c;--blue:#1a56a0;--blue-light:#2a6fc4;
@@ -316,47 +316,103 @@
 
     <!-- METİNLER -->
     <div id="tab-metinler" class="tab-content">
+
+      <!-- FORM NOTLARI -->
       <div class="panel-card">
-        <div class="pc-head"><div><h3>Form Uyarı Notları</h3><p>Form alanlarının altında görünen açıklama notları</p></div></div>
+        <div class="pc-head"><div><h3>📋 Form Uyarı Notları</h3><p>Form alanlarının altında görünen yardım metinleri</p></div></div>
         <div class="pc-body">
           <div class="metin-item">
             <label>İhracat Tarihi Notu</label>
-            <textarea id="m-tarihNot" rows="2">⚠ Beyannamenin kapanma tarihini giriniz (fiili ihraç tarihi)</textarea>
+            <textarea id="m-tarihNot" rows="2"></textarea>
           </div>
           <div class="metin-item">
             <label>İhracat Bedeli Notu</label>
-            <textarea id="m-bedelNot" rows="2">📋 Beyannamenin 46. hanesinden alınız</textarea>
+            <textarea id="m-bedelNot" rows="2"></textarea>
           </div>
           <div class="metin-item">
             <label>Hedef Ülke Notu</label>
-            <textarea id="m-ulkeNot" rows="2">📋 Beyannamenin 17. hanesinden alınız</textarea>
+            <textarea id="m-ulkeNot" rows="2"></textarea>
           </div>
           <div class="metin-item">
-            <label>Disclaimer (Alt Bilgi)</label>
-            <textarea id="m-disclaimer" rows="3">Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.</textarea>
+            <label>Disclaimer (Alt Bilgi Uyarısı)</label>
+            <textarea id="m-disclaimer" rows="3"></textarea>
           </div>
-          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Metinleri Kaydet</button>
+          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
         </div>
       </div>
 
+      <!-- MUAFİYET METİNLERİ -->
       <div class="panel-card">
-        <div class="pc-head"><div><h3>Muafiyet Açıklama Metinleri</h3><p>Her kategori için badge ve sonuç açıklamaları</p></div></div>
+        <div class="pc-head"><div><h3>🏷 Muafiyet Açıklama Metinleri</h3><p>Her kategori için sonuç ekranında gösterilen açıklamalar</p></div></div>
         <div class="pc-body">
           <div class="metin-item">
-            <label>EK-2 Muafiyet Metni</label>
-            <textarea id="m-ek2" rows="2">Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.</textarea>
+            <label>EK-2 Muafiyet Açıklaması</label>
+            <textarea id="m-ek2" rows="2"></textarea>
           </div>
           <div class="metin-item">
-            <label>EK-3 Muafiyet Metni</label>
-            <textarea id="m-ek3" rows="2">Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.</textarea>
+            <label>EK-3 Açıklaması</label>
+            <textarea id="m-ek3" rows="2"></textarea>
           </div>
           <div class="metin-item">
-            <label>Özel Ülke (Md.4/4) Metni</label>
-            <textarea id="m-ozel" rows="3">Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir. Standart hesaplama uygulanır.</textarea>
+            <label>Özel Ülke (Md.4/4) Açıklaması</label>
+            <textarea id="m-ozel" rows="3"></textarea>
           </div>
-          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Metinleri Kaydet</button>
+          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
         </div>
       </div>
+
+      <!-- SAYFA METİNLERİ -->
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>🖊 Sayfa Başlık & Hero Metinleri</h3><p>Ana sayfanın üst bölümündeki başlık ve açıklamalar</p></div></div>
+        <div class="pc-body">
+          <div class="metin-item">
+            <label>Tarayıcı Sekme Başlığı</label>
+            <input type="text" id="m-siteBaslik">
+          </div>
+          <div class="metin-item">
+            <label>Hero Ana Başlık</label>
+            <input type="text" id="m-heroBaslik">
+          </div>
+          <div class="metin-item">
+            <label>Hero Alt Açıklama</label>
+            <textarea id="m-heroAlt" rows="2"></textarea>
+          </div>
+          <div class="metin-item">
+            <label>Footer Yazısı</label>
+            <input type="text" id="m-footerYazi">
+          </div>
+          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+        </div>
+      </div>
+
+      <!-- İLETİŞİM & LİNKLER -->
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>🔗 İletişim & Bağlantılar</h3><p>Footer iletişim bilgileri ve dış bağlantılar</p></div></div>
+        <div class="pc-body">
+          <div class="fg" style="margin-bottom:14px;">
+            <div class="fgg">
+              <label>İletişim E-postası</label>
+              <input type="email" id="m-iletisimEmail">
+            </div>
+            <div class="fgg">
+              <label>İletişim Telefonu</label>
+              <input type="text" id="m-iletisimTel">
+            </div>
+          </div>
+          <div class="metin-item">
+            <label>Döviz Dönüşüm Desteği Uygulama Talimatı URL</label>
+            <input type="url" id="m-destekUygulamaTalimat">
+            <p class="acik">Sonuç ekranındaki "Uygulama Talimatı (TCMB)" butonu</p>
+          </div>
+          <div class="metin-item">
+            <label>İhracat Genelgesi PDF URL</label>
+            <input type="url" id="m-genelgePdf">
+            <p class="acik">Disclaimer kutusundaki "İhracat Genelgesi ↗" bağlantısı</p>
+          </div>
+          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- PAROLA -->
@@ -392,10 +448,10 @@
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e6eb;">
             <p style="font-size:.8rem;color:#6b7a99;line-height:1.7;">
               <strong style="color:#4a5568;">Nasıl kurulur?</strong><br>
-              1. <a href="https://supabase.com" target="_blank" style="color:var(--blue);">supabase.com</a>'a gidin, ücretsiz hesap açın<br>
-              2. "New Project" ile proje oluşturun<br>
-              3. Authentication → Email Auth açık olduğunu doğrulayın<br>
-              4. Authentication → Email Confirm → <strong>kapatın</strong> (Confirm email: OFF)<br>
+              1. <a href="https://supabase.com" target="_blank" style="color:var(--blue);">supabase.com</a> adresine gidin ve ücretsiz hesap açın<br>
+              2. "New Project" ile yeni proje oluşturun<br>
+              3. Authentication → Providers → Email → "Enable email" açık olduğunu doğrulayın<br>
+              4. Authentication → Email → "Confirm email" → <strong>kapatın</strong> (OFF)<br>
               5. Yukarıdaki URL ve Key'i kopyalayıp yapıştırın
             </p>
           </div>
@@ -404,7 +460,7 @@
 
       <!-- Kullanıcı Ekle -->
       <div class="panel-card" style="max-width:560px;" id="sbKullanici" style="display:none;">
-        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı Ekle</h3><p>Sisteme erişim verilecek kişiyi tanımlayın</p></div></div>
+        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı Ekle</h3><p>Sisteme giriş yetkisi verilecek kullanıcıyı ekleyin</p></div></div>
         <div class="pc-body">
           <div class="fg" style="margin-bottom:12px;">
             <div class="fgg">
@@ -460,7 +516,7 @@
         <div class="pc-body">
           <div class="reset-box">
             <p>Tüm admin değişikliklerini sıfırlayıp fabrika ayarlarına dön.</p>
-            <button class="btn btn-danger btn-sm" onclick="tumunuSifirla()">⚠ Sıfırla</button>
+            <button class="btn btn-danger btn-sm" onclick="tumunuSifirla()">⚠ Fabrika Ayarlarına Sıfırla</button>
           </div>
         </div>
       </div>
@@ -469,7 +525,7 @@
     <div id="tab-girislog" class="tab-content">
       <div class="card">
         <div class="card-header">
-          <div><h3>📋 Giriş Geçmişi</h3><p>Sisteme giriş yapan kullanıcılar ve zamanları</p></div>
+          <div><h3>📋 Giriş Geçmişi</h3><p>Sisteme giriş yapan kullanıcılar, tarih ve saatleri</p></div>
           <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
         </div>
         <div id="girisLogListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
@@ -633,10 +689,18 @@ const VARSAYILAN_METINLER = {
   tarihNot:'⚠ Beyannamenin kapanma tarihini giriniz (fiili ihraç tarihi)',
   bedelNot:'📋 Beyannamenin 46. hanesinden alınız',
   ulkeNot:'📋 Beyannamenin 17. hanesinden alınız',
-  disclaimer:'Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir.',
+  disclaimer:'Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.',
   ek2:'Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.',
   ek3:"Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.",
   ozel:"Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir.",
+  heroBaslik:'İBKB Zorunluluğu Sorgulama Yazılımı',
+  heroAlt:'Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak ihracat bedelinizin asgari ne kadarını TCMB\'ye satmak zorunda olduğunuzu hesaplayın.',
+  siteBaslik:'GÖVDAĞ | İBKB Sorgulama',
+  footerYazi:'© 2026 GÖVDAĞ — Tüm hakları saklıdır.',
+  iletisimEmail:'orhankelahmet@gmail.com',
+  iletisimTel:'+90 533 198 70 33',
+  destekUygulamaTalimat:'https://www.tcmb.gov.tr/wps/wcm/connect/a474085d-0c69-42be-bb62-81afbb30ba15/2023-5.pdf?MOD=AJPERES&CACHEID=ROOTWORKSPACE-a474085d-0c69-42be-bb62-81afbb30ba15-oNrRH3t',
+  genelgePdf:'https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR',
 };
 
 // ─── GİRİŞ ───────────────────────────────────────────────────────────────────
@@ -665,20 +729,20 @@ function baslat(){
   ulkeler = JSON.parse(JSON.stringify((cfg && cfg.ulkeler && cfg.ulkeler.length>0) ? cfg.ulkeler : VARSAYILAN_ULKELER));
   ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
 
-  const sab = cfg ? cfg.sabitler : VARSAYILAN_SABITLER;
-  document.getElementById('s-tcmb').value    = sab.tcmb;
-  document.getElementById('s-esik').value    = sab.esik;
-  document.getElementById('s-gun').value     = sab.gun;
+  const sab = Object.assign({}, VARSAYILAN_SABITLER, (cfg && cfg.sabitler) ? cfg.sabitler : {});
+  document.getElementById('s-tcmb').value     = sab.tcmb;
+  document.getElementById('s-esik').value     = sab.esik;
+  document.getElementById('s-gun').value      = sab.gun;
   document.getElementById('s-ek3oran').value  = sab.ek3oran;
-  document.getElementById('s-destek').value    = sab.destek     !== undefined ? sab.destek    : 3;
-  document.getElementById('s-destek-son').value= sab.destekSon  || '30 Nisan 2026';
+  document.getElementById('s-destek').value   = sab.destek !== undefined ? sab.destek : 3;
+  document.getElementById('s-destek-son').value = sab.destekSon || '30 Nisan 2026';
 
-  const kur = cfg ? cfg.kurlar : VARSAYILAN_KURLAR;
+  const kur = Object.assign({}, VARSAYILAN_KURLAR, (cfg && cfg.kurlar) ? cfg.kurlar : {});
   ['EUR','GBP','JPY','CHF','TRY','OTHER'].forEach(k=>{
     document.getElementById('k-'+k).value = kur[k];
   });
 
-  const met = cfg ? cfg.metinler : VARSAYILAN_METINLER;
+  const met = Object.assign({}, VARSAYILAN_METINLER, cfg ? cfg.metinler : {});
   Object.keys(met).forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) el.value = met[k];
@@ -990,7 +1054,7 @@ function kurlariKaydet(){
 function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','heroAlt','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
