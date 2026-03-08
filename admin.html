@@ -104,6 +104,9 @@
   .kb-ek3 {background:rgba(194,65,12,.12);color:var(--org);}
   .kb-ozel{background:rgba(14,116,144,.12);color:var(--tel);}
   .kb-sb  {background:rgba(107,33,168,.12);color:#6b21a8;}
+  .kb-sb_ihracat{background:rgba(234,179,8,.15);color:#a16207;}
+  .kb-sb_yerlesik{background:rgba(107,33,168,.12);color:#6b21a8;}
+  .kb-kktc{background:rgba(16,185,129,.15);color:#065f46;}
 
   /* YENİ ÜLKE FORM */
   .add-form{background:var(--g100);border-radius:8px;padding:16px;margin-bottom:16px;border:1.5px dashed var(--g200);}
@@ -171,7 +174,7 @@
         <span>Admin</span>
       </div>
       <div class="h-actions">
-        <a href="ibkb-sorgulama.html" class="btn-export btn" style="text-decoration:none;">← Ana Sayfa</a>
+        <a href="./index.html" class="btn-export btn" style="text-decoration:none;">← Ana Sayfa</a>
         <button class="btn-export btn" onclick="konfigKopyala()">📋 Yapılandırmayı Kopyala</button>
         <button class="btn-logout" onclick="cikisYap()">Çıkış</button>
       </div>
@@ -195,6 +198,7 @@
       <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
       <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
       <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
+      <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular</button>
     </div>
 
     <!-- ÜLKELER -->
@@ -217,7 +221,9 @@
                   <option value="ek2">⛔ EK-2 Muafiyet</option>
                   <option value="ek3">⚠ EK-3 %50</option>
                   <option value="ozel">🔵 Özel (Md.4/4)</option>
-                  <option value="sb">🏭 Serbest Bölge</option>
+                  <option value="sb_ihracat">🏭 Serbest Bölgeye İhracat</option>
+                  <option value="sb_yerlesik">🏭 Serbest Bölgeden İhracat</option>
+                  <option value="kktc">🇹🇷 KKTC</option>
                 </select>
               </div>
             </div>
@@ -375,10 +381,6 @@
             <input type="text" id="m-heroBaslik">
           </div>
           <div class="metin-item">
-            <label>Hero Alt Açıklama</label>
-            <textarea id="m-heroAlt" rows="2"></textarea>
-          </div>
-          <div class="metin-item">
             <label>Footer Yazısı</label>
             <input type="text" id="m-footerYazi">
           </div>
@@ -456,6 +458,18 @@
           <div class="metin-item">
             <label>Kart Üst Yazısı (Marka Alt Metni)</label>
             <input type="text" id="m-loginAlt" placeholder="İBKB Zorunluluğu Sorgulama Yazılımı">
+          </div>
+          <div class="metin-item">
+            <label>🏷 Tanıtım Kutusu Metni</label>
+            <textarea id="m-tanitimMetin" rows="3" placeholder="Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak..."></textarea>
+            <p class="acik">Giriş sayfasındaki koyu tanıtım kutusunda görünür. Boş bırakılırsa varsayılan metin kullanılır.</p>
+          </div>
+          <div class="metin-item">
+            <label>Tanıtım Kutusunu Göster</label>
+            <select id="m-tanitimGoster">
+              <option value="evet">✅ Göster</option>
+              <option value="hayir">❌ Gizle</option>
+            </select>
           </div>
           <div class="metin-item">
             <label>E-posta Alan Etiketi</label>
@@ -640,6 +654,17 @@
       </div>
     </div>
 
+    <!-- BAŞVURULAR -->
+    <div id="tab-basvurular" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div><h3>📬 Lisans Başvuruları</h3><p>Login sayfasından gelen satın alma ve demo talepleri</p></div>
+          <button class="btn btn-secondary" onclick="basvurulariYukle()">🔄 Yenile</button>
+        </div>
+        <div id="basvuruListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
+      </div>
+    </div>
+
     <div id="tab-girislog" class="tab-content">
       <div class="card">
         <div class="card-header">
@@ -670,7 +695,9 @@
         <option value="ek2">⛔ EK-2 Muafiyet</option>
         <option value="ek3">⚠ EK-3 %50</option>
         <option value="ozel">🔵 Özel (Md.4/4)</option>
-        <option value="sb">🏭 Serbest Bölge</option>
+        <option value="sb_ihracat">🏭 Serbest Bölgeye İhracat</option>
+        <option value="sb_yerlesik">🏭 Serbest Bölgeden İhracat</option>
+        <option value="kktc">🇹🇷 KKTC</option>
       </select>
     </div>
     <div style="display:flex;gap:8px;">
@@ -722,7 +749,8 @@ const VARSAYILAN_ULKELER = [
   {a:"Kazakistan",k:"ek3"},{a:"Özbekistan",k:"ek3"},
   {a:"Tunus",k:"ek3"},{a:"Türkmenistan",k:"ek3"},{a:"Ukrayna",k:"ek3"},
   {a:"Irak",k:"ozel"},{a:"Libya",k:"ozel"},{a:"Moritanya",k:"ozel"},
-  {a:"Yurt İçi Serbest Bölge",k:"sb"},
+  {a:"Serbest Bölgeye İhracat",k:"sb_ihracat"},
+  {a:"Serbest Bölgeden İhracat",k:"sb_yerlesik"},
   {a:"Almanya",k:"std"},{a:"Amerika Birleşik Devletleri",k:"std"},
   {a:"Andorra",k:"std"},{a:"Antigua ve Barbuda",k:"std"},
   {a:"Arjantin",k:"std"},{a:"Arnavutluk",k:"std"},
@@ -759,7 +787,7 @@ const VARSAYILAN_ULKELER = [
   {a:"Japonya",k:"std"},{a:"Kamboçya",k:"std"},
   {a:"Kanada",k:"std"},{a:"Katar",k:"std"},
   {a:"Karadağ",k:"std"},{a:"Kiribati",k:"std"},
-  {a:"KKTC",k:"std"},{a:"Kolombiya",k:"std"},
+  {a:"KKTC",k:"kktc"},{a:"Kolombiya",k:"std"},
   {a:"Komorlar",k:"std"},{a:"Kosova",k:"std"},
   {a:"Kosta Rika",k:"std"},{a:"Kuveyt",k:"std"},
   {a:"Kıbrıs",k:"std"},{a:"Laos",k:"std"},
@@ -812,7 +840,7 @@ const VARSAYILAN_METINLER = {
   ek3:"Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.",
   ozel:"Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir.",
   heroBaslik:'İBKB Zorunluluğu Sorgulama Yazılımı',
-  heroAlt:'Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak ihracat bedelinizin asgari ne kadarını TCMB\'ye satmak zorunda olduğunuzu hesaplayın.',
+  tanitimMetin:'Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak ihracat bedelinizin asgari ne kadarını TCMB\'ye satmak zorunda olduğunuzu hesaplayın.',
   siteBaslik:'GÖVDAĞ | İBKB Sorgulama',
   footerYazi:'© 2026 GÖVDAĞ — Tüm hakları saklıdır.',
   iletisimEmail:'orhankelahmet@gmail.com',
@@ -901,10 +929,13 @@ function logoTabYukle(){
   }
   // Login metinleri
   const met = Object.assign({}, VARSAYILAN_METINLER, cfg.metinler || {});
-  ['loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
+  ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) el.value = met[k] || '';
   });
+  // Tanıtım göster/gizle
+  const tanitimGosterEl = document.getElementById('m-tanitimGoster');
+  if(tanitimGosterEl) tanitimGosterEl.value = met.tanitimGoster || 'evet';
   // Fiyat alanları
   const fiyatGosterEl = document.getElementById('m-fiyatGoster');
   if(fiyatGosterEl) fiyatGosterEl.value = met.fiyatGoster || 'evet';
@@ -973,10 +1004,12 @@ function logoSifirla(){
 function loginMetinleriKaydet(){
   const cfg = depoyuYukle() || {};
   if(!cfg.metinler) cfg.metinler = {};
-  ['loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
+  ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
+  const tgEl = document.getElementById('m-tanitimGoster');
+  if(tgEl) cfg.metinler.tanitimGoster = tgEl.value;
   depoyaKaydet(cfg);
   toast('✅ Login sayfası ayarları kaydedildi');
 }
@@ -987,6 +1020,7 @@ function tab(id, btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ak'));
   if(id==='kullanicilar') kullaniciTabYukle();
   if(id==='girislog') girisLogYukle();
+  if(id==='basvurular') basvurulariYukle();
   if(id==='logologin') logoTabYukle();
   document.getElementById('tab-'+id).classList.add('ak');
   btn.classList.add('ak');
@@ -995,7 +1029,7 @@ function tab(id, btn){
 // ─── ÜLKE TABLOSU ─────────────────────────────────────────────────────────────
 const N=s=>(s||'').replace(/İ/g,'i').replace(/I/g,'ı').replace(/Ş/g,'ş').replace(/Ğ/g,'ğ').replace(/Ö/g,'ö').replace(/Ü/g,'ü').replace(/Ç/g,'ç').replace(/[A-Z]/g,x=>x.toLowerCase());
 
-const KATLBL={std:'Standart',ek2:'EK-2',ek3:'EK-3',ozel:'Özel',sb:'Serbest Bölge'};
+const KATLBL={std:'Standart',ek2:'EK-2',ek3:'EK-3',ozel:'Özel',sb_ihracat:'SB İhracat',sb_yerlesik:'SB Yerleşik',kktc:'KKTC'};
 
 function katFiltre(kat, btn){
   aktifKatFiltre = kat; sayfa=1;
@@ -1338,7 +1372,7 @@ function kurlariKaydet(){
 function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','heroAlt','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
@@ -1418,6 +1452,58 @@ function toast(msg){
 document.getElementById('modal').addEventListener('click', function(e){
   if(e.target===this) modalKapat();
 });
+async function basvurulariYukle(){
+  const sb  = sbCfg();
+  const el  = document.getElementById('basvuruListesi');
+  if(!el) return;
+  el.innerHTML = '<p style="padding:20px;color:#6b7a99;">Yükleniyor...</p>';
+  try{
+    const key = sb.serviceKey || sb.key;
+    const r = await fetch(sb.url + '/rest/v1/basvurular?order=tarih.desc&limit=200',{
+      headers:{'apikey':key,'Authorization':'Bearer '+key}
+    });
+    const d = await r.json();
+    if(!r.ok){
+      el.innerHTML = '<p style="color:#b91c1c;padding:20px;">Hata: '+(d.message||JSON.stringify(d))+'<br><small style=\"color:#6b7a99;\">Tabloyu oluşturmak icin SQL Editor araciligiyla asagidaki kodu calistirin.</small></p>'
+        + '<pre style="margin:0 20px 20px;background:#f8fafc;border:1px solid #dde3ef;border-radius:8px;padding:14px;font-size:.78rem;overflow-x:auto;">create table if not exists basvurular (\n  id uuid default gen_random_uuid() primary key,\n  ad_soyad text not null,\n  firma text not null,\n  email text not null,\n  telefon text,\n  talep text,\n  mesaj text,\n  tarih timestamptz default now(),\n  okundu boolean default false\n);\nalter table basvurular enable row level security;\ncreate policy \"Herkes basvuru yapabilir\"\n  on basvurular for insert with check (true);\ncreate policy \"Service role gorebilir\"\n  on basvurular for select using (false);</pre>';
+      return;
+    }
+    if(!Array.isArray(d) || d.length === 0){
+      el.innerHTML = '<p style="text-align:center;color:#6b7a99;padding:30px;">Henüz başvuru yok.</p>';
+      return;
+    }
+    const talepMap = {'satin-alma':'🛒 Satın Alma','demo':'🎥 Demo','fiyat':'💰 Fiyat Bilgisi','kurumsal':'🏢 Kurumsal','diger':'📝 Diğer',''  :'—'};
+    el.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;">'
+      + '<thead><tr style="background:#f0f4f8;">'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;white-space:nowrap;">Tarih</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Ad Soyad</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Firma</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">E-posta</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Telefon</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Talep</th>'
+      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Mesaj</th>'
+      + '</tr></thead><tbody>'
+      + d.map(function(row,i){
+          const t   = new Date(row.tarih).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
+          const tlp = talepMap[row.talep||''] || (row.talep||'—');
+          const msg = row.mesaj ? ('<span title="'+row.mesaj.replace(/"/g,"'")+'">'+row.mesaj.substring(0,40)+(row.mesaj.length>40?'…':'')+'</span>') : '<span style="color:#94a3b8;">—</span>';
+          return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
+            + '<td style="padding:9px 14px;color:#4a5568;white-space:nowrap;">'+t+'</td>'
+            + '<td style="padding:9px 14px;color:#1e293b;font-weight:600;">'+row.ad_soyad+'</td>'
+            + '<td style="padding:9px 14px;color:#334155;">'+row.firma+'</td>'
+            + '<td style="padding:9px 14px;"><a href="mailto:'+row.email+'" style="color:#2563eb;text-decoration:none;">'+row.email+'</a></td>'
+            + '<td style="padding:9px 14px;color:#334155;">'+(row.telefon||'<span style=\"color:#94a3b8;\">—</span>')+'</td>'
+            + '<td style="padding:9px 14px;">'+tlp+'</td>'
+            + '<td style="padding:9px 14px;color:#4a5568;font-size:.8rem;max-width:160px;">'+msg+'</td>'
+            + '</tr>';
+        }).join('')
+      + '</tbody></table></div>';
+  } catch(e){
+    el.innerHTML = '<p style="color:#b91c1c;padding:20px;">Hata: '+e.message+'</p>';
+  }
+}
+
+
 async function girisLogYukle(){
   const sb=sbCfg();
   const el=document.getElementById('girisLogListesi');

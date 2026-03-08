@@ -152,7 +152,9 @@ if(!sessionStorage.getItem('govdag_token')){
   .uk-kat.ek2{background:rgba(220,38,38,.3);color:#fca5a5;}
   .uk-kat.ek3{background:rgba(234,88,12,.3);color:#fdba74;}
   .uk-kat.ozel{background:rgba(8,145,178,.3);color:#67e8f9;}
-  .uk-kat.sb{background:rgba(124,58,237,.3);color:#d8b4fe;}
+  .uk-kat.sb_ihracat{background:rgba(234,179,8,.25);color:#a16207;}
+  .uk-kat.kktc{background:rgba(16,185,129,.25);color:#065f46;}
+  .uk-kat.sb_yerlesik{background:rgba(124,58,237,.3);color:#d8b4fe;}
   .udg{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);font-size:.68rem;padding:3px 9px;border-radius:6px;cursor:pointer;font-family:'DM Sans',system-ui,sans-serif;transition:all .2s;width:auto;}
   .udg:hover{border-color:rgba(255,255,255,.5);color:#fff;}
 
@@ -161,6 +163,9 @@ if(!sessionStorage.getItem('govdag_token')){
   .mb.tam  {display:flex;background:var(--err-bg);color:var(--err);border:1px solid var(--err2);}
   .mb.yari {display:flex;background:var(--org-bg);color:var(--org);border:1px solid var(--org2);}
   .mb.sb   {display:flex;background:var(--pur-bg);color:var(--pur);border:1px solid var(--pur2);}
+  .mb.sb_yerlesik{display:flex;background:var(--pur-bg);color:var(--pur);border:1px solid var(--pur2);}
+  .mb.kktc  {display:flex;background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;}
+  .mb.try   {display:flex;background:#fffbeb;color:#92400e;border:1px solid #fcd34d;}
   .mb.norm {display:flex;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok2);}
   .mb.ozel {display:flex;background:var(--tel-bg);color:var(--tel);border:1px solid var(--tel2);}
 
@@ -323,7 +328,7 @@ if(!sessionStorage.getItem('govdag_token')){
 <div class="hero">
 <div class="hero-ic">
 <h2 id="heroBaslik">İBKB Zorunluluğu Sorgulama Yazılımı</h2>
-  <p id="heroAlt">Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak ihracat bedelinizin asgari ne kadarını TCMB'ye satmak zorunda olduğunuzu hesaplayın.</p>
+  <p id="heroAlt" style="display:none"></p>
 </div>
 
 <div class="print-rapor" id="printRapor"></div>
@@ -375,14 +380,22 @@ if(!sessionStorage.getItem('govdag_token')){
 
           <div class="fgg">
             <label>Para Birimi</label>
-            <input type="hidden" id="para" value="USD">
-            <div style="border:1.5px solid var(--g200);border-radius:7px;padding:11px 14px;font-size:.95rem;background:var(--g100);color:var(--g400);">USD — Amerikan Doları</div>
+            <select id="para" onchange="paraSec(this.value)" style="width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:7px;font-size:.95rem;background:#fff;color:var(--g700);cursor:pointer;">
+              <option value="USD">USD — Amerikan Doları</option>
+              <option value="TRY">TRY — Türk Lirası</option>
+            </select>
+          </div>
+
+          <div class="fgg" id="kurAlani" style="display:none;">
+            <label>USD/TRY Kuru <span class="rs">*</span></label>
+            <input type="text" id="kurInput" placeholder="Örn: 38,50" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
+            <span class="fnot">💱 TL bedeli USD'ye çevirmek için güncel kuru giriniz (TCMB döviz satış kuru)</span>
           </div>
 
           <div class="fgg full">
             <label>Daha Önce Düzenlenen İBKB Tutarı</label>
             <input type="text" id="oncekiIbkb" placeholder="0,00 — Yoksa boş bırakın" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
-            <span class="fnot">💡 Bu ihracata ait daha önce kısmi İBKB düzenlendiyse tutarı giriniz. Matrahtan düşülerek kalan yükümlülük hesaplanır.</span>
+            <span class="fnot" id="oncekiIbkbNot">💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz <strong>(USD cinsinden)</strong>. TL modunda girilen kur ile TL'ye çevrilerek matrahtan düşülür.</span>
           </div>
 
           <div class="fgg full">
@@ -535,7 +548,7 @@ const GUN    = _sab.gun    || 180;
 const DESTEK     = (_dest.oran  !== undefined ? _dest.oran  : 3) / 100;
 const DESTEK_SON = _dest.son || '30 Nisan 2026';
 const KUR={USD:1,EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
-const KATLBL={std:'Standart',ek2:'EK-2 Muaf',ek3:'EK-3 %50',sb:'Serbest Bölge',ozel:'Özel Md.4/4'};
+const KATLBL={std:'Standart',ek2:'EK-2 Muaf',ek3:'EK-3 %50',sb_ihracat:'Serbest Bölgeye İhracat',sb_yerlesik:'Serbest Bölgeden İhracat',ozel:'Özel Md.4/4',kktc:'KKTC'};
 
 // ─── ÜLKE VERİTABANI — tüm BM üyesi ülkeler Türkçe ─────────────────────────
 const U=[
@@ -558,7 +571,8 @@ const U=[
   // Özel Md.4/4
   {a:"Irak",k:"ozel"},{a:"Libya",k:"ozel"},{a:"Moritanya",k:"ozel"},
   // Serbest Bölge
-  {a:"Yurt İçi Serbest Bölge",k:"sb"},
+  {a:"Serbest Bölgeye İhracat",k:"sb_ihracat"},
+  {a:"Serbest Bölgeden İhracat",k:"sb_yerlesik"},
   // Standart — tüm BM üyeleri + diğer tanınmış bölgeler
   {a:"Almanya",k:"std"},{a:"Amerika Birleşik Devletleri",k:"std"},
   {a:"Andorra",k:"std"},{a:"Angola (std)",k:"std"},
@@ -596,7 +610,7 @@ const U=[
   {a:"Jamaika",k:"std"},{a:"Japonya",k:"std"},
   {a:"Kamboçya",k:"std"},{a:"Kanada",k:"std"},
   {a:"Katar",k:"std"},{a:"Karadağ",k:"std"},
-  {a:"Kiribati",k:"std"},{a:"KKTC",k:"std"},
+  {a:"Kiribati",k:"std"},{a:"KKTC",k:"kktc"},
   {a:"Kolombiya",k:"std"},{a:"Komorlar",k:"std"},
   {a:"Kosova",k:"std"},{a:"Kosta Rika",k:"std"},
   {a:"Kuveyt",k:"std"},{a:"Kıbrıs",k:"std"},
@@ -721,9 +735,32 @@ function listele(){
 }
 
 // ─── SEÇİM ────────────────────────────────────────────────────────────────────
+function paraSec(p){
+  const notEl=document.getElementById('bedelNotEl');
+  const kurAlani=document.getElementById('kurAlani');
+  const kurInput=document.getElementById('kurInput');
+  const ibkbNot=document.getElementById('oncekiIbkbNot');
+  if(p==='TRY'){
+    if(notEl) notEl.innerHTML='📋 Beyannamenin <strong>46. hanesi</strong>nden alınız (TL cinsinden)';
+    if(kurAlani) kurAlani.style.display='';
+    if(kurInput) kurInput.required=true;
+    if(ibkbNot) ibkbNot.innerHTML='💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz <strong>(USD cinsinden)</strong>. Güncel kur üzerinden TL matrahtan düşülür.';
+  } else {
+    if(ibkbNot) ibkbNot.innerHTML='💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz <strong>(USD cinsinden)</strong>. TL modunda girilen kur ile TL\'ye çevrilerek matrahtan düşülür.';
+    if(notEl) notEl.innerHTML='📋 Beyannamenin <strong>46. hanesi</strong>nden alınız (USD cinsinden)';
+    if(kurAlani) kurAlani.style.display='none';
+    if(kurInput){ kurInput.required=false; kurInput.value=''; }
+  }
+}
+
 function ulkeSec(a,k){
   secili={a,k};
   document.getElementById('ulkePaneli').style.display='none';
+  // KKTC seçilince TRY kuru zorunlu — dropdown'ı TRY'ye çek ve kur alanını aç
+  if(k==='kktc'){
+    const sel=document.getElementById('para');
+    if(sel){ sel.value='TRY'; paraSec('TRY'); }
+  }
   const kart=document.getElementById('ulkeKart');
   kart.classList.add('goster');
   document.getElementById('ulkeAd').textContent=a;
@@ -749,7 +786,9 @@ function muafiyetGoster(k){
   const m={
     ek2:[`tam`,`<strong>EK-2 Tam Muafiyet:</strong> Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.`],
     ek3:[`yari`,`<strong>EK-3 — %50 Yurda Getirme:</strong> Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.`],
-    sb:[`sb`,`<strong>Yurt İçi Serbest Bölge:</strong> İBKB ve TCMB satış yükümlülüğü dışındadır (3218 sy. Kanun).`],
+    kktc:[`kktc`,`<strong>KKTC'ye İhracat — Özel Düzenleme:</strong> 5 Aralık 2022'den itibaren GB'nin 22. hanesi <strong>Türk Lirası</strong> olarak beyan edilmeli ve bedel <strong>TL olarak tahsil edilmelidir</strong>. TCMB'ye döviz satışı söz konusu değildir. Lütfen para birimini TRY seçiniz.`],
+    sb_ihracat:[`norm`,`<strong>Serbest Bölgeye İhracat:</strong> Mal Türkiye'den serbest bölgeye ihraç ediliyor. 2018-32/48 sayılı Tebliğ kapsamındadır. 15.000 USD muaf dilim düşüldükten sonra standart İBKB zorunluluğu uygulanır.`],
+    sb_yerlesik:[`sb`,`<strong>Serbest Bölgede Yerleşik Firmaya İhracat:</strong> Alıcı firma kambiyo mevzuatı kapsamında yurtdışında yerleşik sayıldığından <strong>İBKB düzenlenmesine gerek yoktur</strong> (TCMB İhracat Genelgesi Md. 22).`],
     ozel:[`ozel`,`<strong>Özel Transfer Ülkesi (Md. 4/4):</strong> Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir. Standart hesaplama uygulanır.`],
     std:[`norm`,`<strong>Standart Yükümlülük:</strong> 15.000 USD muaf dilim düşüldükten sonra kalan tutar üzerinden %35 TCMB satışı yapılır.`],
   };
@@ -872,6 +911,15 @@ function hesapla(){
   const tarihRaw=document.getElementById('tarih').value;
   let tarih=tarihRaw;
   if(/^\d{2}\.\d{2}\.\d{4}$/.test(tarihRaw)){const [g,a,y]=tarihRaw.split('.');tarih=y+'-'+a+'-'+g;}
+  // TRY için kur zorunlu
+  const kurRaw = sayiDegerAl('kurInput');
+  if(para==='TRY' && !(kurRaw>0)){
+    const ki=document.getElementById('kurInput');
+    if(ki){ki.focus();ki.style.border='2px solid var(--err)';}
+    alert('TL para birimi seçildiğinde USD/TRY kuru girilmesi zorunludur.');
+    return;
+  }
+  if(para!=='TRY'){const ki=document.getElementById('kurInput');if(ki)ki.style.border='';}
   // Eksik alan kontrolü
   const uyariEl = document.getElementById('uyariKutu');
   const eksikler = [];
@@ -908,14 +956,22 @@ function hesaplaCore(){
   let tarih=tarihRaw;
   if(/^\d{2}\.\d{2}\.\d{4}$/.test(tarihRaw)){const [g,a,y]=tarihRaw.split('.');tarih=y+'-'+a+'-'+g;}
   const {a:ulke,k}=secili;
-  const oncekiIbkb = Math.max(0, sayiDegerAl('oncekiIbkb'));
-  const bUSD=bedel*(KUR[para]||1);
+  // TRY için kullanıcının girdiği kuru kullan, yoksa sabit KUR tablosu
+  const kurGirilen = sayiDegerAl('kurInput');
+  const dovizKur = (para==='TRY' && kurGirilen>0) ? (1/kurGirilen) : (KUR[para]||1);
+  const bUSD = bedel * dovizKur;              // bedelin USD karşılığı
+  const esik = ESIK / dovizKur;               // 15.000 USD'nin yerel para birimi karşılığı
+  // oncekiIbkb: HER ZAMAN USD cinsinden girilir
+  // TRY modunda kur ile çarpılarak TL'ye çevrilir; diğer para birimlerinde doğrudan kullanılır
+  const oncekiIbkbUSD = Math.max(0, sayiDegerAl('oncekiIbkb'));
+  const oncekiIbkb = (para==='TRY' && kurGirilen>0)
+    ? oncekiIbkbUSD * kurGirilen   // USD × kur = TL
+    : oncekiIbkbUSD / (KUR[para]||1); // diğer para birimlerinde de yerel birime çevir
   const st=sonT(tarih,GUN);
   // 180 gün doldu mu kontrolü
   const bugun = new Date(); bugun.setHours(0,0,0,0);
   const sonTarihObj = new Date(tarih); sonTarihObj.setDate(sonTarihObj.getDate()+GUN);
   const sureDoldu = sonTarihObj < bugun;
-  const esik=ESIK/(KUR[para]||1);
 
   const IO=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"/></svg>`;
   const IW=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"/></svg>`;
@@ -925,18 +981,81 @@ function hesaplaCore(){
 
   let cls,bsl,ico,adimlar=[],sat=0,ser=bedel,acik,ref,ek='',ibkbMatrah=0;
 
-  if(k==='ek2'){
+  // ─── Kontrol zinciri ─────────────────────────────────────────────────────────
+  if(k==='kktc'){
+    // KKTC: TL tahsilat zorunlu, TCMB döviz satışı yok — standart matrah hesabı yapılır
+    const mat = Math.max(0, bedel - esik);
+    const matU = Math.max(0, bUSD - ESIK);
+    const kalanMat = Math.max(0, mat - oncekiIbkb);
+    sat=0; ser=bedel; ibkbMatrah=kalanMat;
+    cls='rc-i'; ico=IO; bsl='KKTC İhracatı — TL Tahsilat Zorunlu';
+    if(matU <= 0){
+      adimlar=[
+        {l:'Bedel (TL)',v:F(bedel,'TRY'),c:''},
+        {l:`USD karşılığı (~${FU(bUSD)})`,v:'Eşik altı — İBKB gerekmez',c:'grn'},
+        {l:'TCMB döviz satışı',v:'Yok (TL işlem)',c:'grn'},
+      ];
+      acik=`<strong>KKTC'ye ihracatta bedel TL olarak tahsil edilmelidir</strong> (TCMB Genelgesi Md. 9/2 — 04.11.2022 değişikliği). Bedelin USD karşılığı (~${FU(bUSD)}) 15.000 USD eşiğinin altında kaldığından <strong>İBKB düzenlenmesine gerek yoktur.</strong> TCMB'ye döviz satışı söz konusu değildir.`;
+    } else if(kalanMat <= 0){
+      adimlar=[
+        {l:'Bedel (TL)',v:F(bedel,'TRY'),c:''},
+        {l:`USD karşılığı (~${FU(bUSD)})`,v:'Eşik üstü',c:'gld'},
+        {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,'TRY'),c:'grn'},
+        {l:'Düzenlenmesi Gereken İBKB',v:F(mat,'TRY'),c:'gld'},
+        {l:'Daha önce düzenlenen İBKB',v:'− '+F(oncekiIbkb,'TRY'),c:'grn'},
+        {l:'Kalan matrah',v:F(0,'TRY')+' ✓',c:'grn'},
+        {l:'TCMB döviz satışı',v:'Yok (TL işlem)',c:'grn'},
+      ];
+      acik=`<strong>KKTC'ye ihracatta bedel TL olarak tahsil edilmelidir.</strong> Daha önce düzenlenen <strong>${F(oncekiIbkb,'TRY')}</strong> tutarındaki İBKB matrahın tamamını karşıladığından <strong>ek İBKB düzenlenmesine gerek yoktur.</strong> TCMB'ye döviz satışı söz konusu değildir.`;
+    } else {
+      adimlar=[
+        {l:'Bedel (TL)',v:F(bedel,'TRY'),c:''},
+        {l:`USD karşılığı (~${FU(bUSD)})`,v:'Eşik üstü — İBKB gerekli',c:'gld'},
+        {l:'15.000 USD muaf dilim (~)',v:'− '+F(esik,'TRY'),c:'grn'},
+        {l:'Brüt İBKB matrahı',v:F(mat,'TRY'),c:'gld'},
+        ...(oncekiIbkb>0?[{l:'Daha önce düzenlenen İBKB',v:'− '+F(oncekiIbkb,'TRY'),c:'grn'},{l:'Düzenlenmesi Gereken İBKB',v:F(kalanMat,'TRY'),c:'gld'}]:[{l:'Düzenlenmesi Gereken İBKB',v:F(mat,'TRY'),c:'gld'}]),
+        {l:'TCMB döviz satışı',v:'Yok (TL işlem)',c:'grn'},
+      ];
+      acik=`<strong>KKTC'ye ihracatta bedel TL olarak tahsil edilmelidir</strong> (TCMB Genelgesi Md. 9/2 — 04.11.2022 değişikliği). Bedel 15.000 USD eşiğini aştığından <strong>İBKB düzenlenmesi gereklidir.</strong>${oncekiIbkb>0?' Daha önce düzenlenen <strong>'+F(oncekiIbkb,'TRY')+'</strong> düşüldükten sonra kalan':' Muaf dilim düşüldükten sonra'} <strong>${F(kalanMat,'TRY')}</strong> üzerinden İBKB düzenlenmelidir. TCMB'ye döviz satışı söz konusu <strong>değildir.</strong>`;
+    }
+    ref='TCMB Genelgesi Md. 9/2 — Hazine Bakanlığı 04.11.2022 yazısı';
+
+  } else if(k==='ek2'){
     cls='rc-i';ico=IW;bsl='Döviz Bozturma Yükümlülüğü Yok — EK-2 Tam Muafiyet';
     adimlar=[{l:'EK-2 Tam Muafiyet — Kambiyo takibi uygulanmaz',v:'✓',c:'grn'}];
     acik=`<em>${ulke}</em>, EK-2 listesindedir. <strong>İBKB düzenlenmesi zorunlu değildir.</strong>`;
     ref='TCMB Genelgesi Md. 4/6 — EK-2';
     if(ulke==='Filistin') ek=filistinKutu();
 
-  } else if(k==='sb'){
-    cls='rc-n';ico=IO;bsl='Döviz Bozturma Yükümlülüğü Yok — Serbest Bölge';
-    adimlar=[{l:'Yurt içi serbest bölge — Yükümlülük dışı',v:'✓',c:'grn'}];
-    acik=`3218 sayılı Kanun kapsamında <strong>İBKB ve TCMB satış yükümlülüğü dışındadır.</strong>`;
-    ref='3218 Sayılı Serbest Bölgeler Kanunu';
+  } else if(k==='sb_yerlesik'){
+    cls='rc-n';ico=IO;bsl='İBKB Zorunluluğu Yok — Serbest Bölgede Yerleşik Alıcı';
+    adimlar=[
+      {l:'Alıcı firma kambiyo mevzuatında yurtdışında yerleşik sayılır',v:'✓',c:'grn'},
+      {l:'İBKB düzenlenmesi zorunlu değildir',v:'✓',c:'grn'},
+      {l:'TCMB satış yükümlülüğü bulunmamaktadır',v:'✓',c:'grn'},
+    ];
+    acik=`Serbest bölgelerde yerleşik firmalar kambiyo mevzuatı kapsamında <strong>yurtdışında yerleşik sayıldığından</strong> bu firmalara yapılan ihracatta <strong>İBKB düzenlenmesine ve TCMB'ye satış yapılmasına gerek yoktur.</strong>`;
+    ref='TCMB İhracat Genelgesi Md. 22 / KPMG S&C Cevap 9';
+
+  } else if(k==='sb_ihracat'){
+    // Serbest bölgeye ihracat: Türkiye'den mal sevk ediliyor, standart İBKB kuralları geçerli
+    const brütMatrah = Math.max(0, bedel - esik);
+    const kalanMatrah = Math.max(0, brütMatrah - oncekiIbkb);
+    sat = kalanMatrah * TCMB; ser = bedel - sat; ibkbMatrah = kalanMatrah;
+    cls='rc-y'; ico=IW; bsl='Serbest Bölgeye İhracat — Standart İBKB Zorunluluğu';
+    adimlar=[
+      {l:'Toplam ihracat bedeli', v:F(bedel,para)},
+      {l:'15.000 USD muaf dilim', v:'− '+F(esik,para), c:'grn'},
+      {l:'Brüt İBKB matrahı', v:F(brütMatrah,para), c:'gld'},
+      ...(oncekiIbkb>0 ? [
+        {l:'Daha önce düzenlenen İBKB', v:'− '+F(oncekiIbkb,para), c:'grn'},
+        {l:'Düzenlenmesi gereken İBKB', v:F(kalanMatrah,para), c:'gld'},
+      ] : []),
+      {l:'TCMB Zorunlu Satış (%35)', v:F(sat,para), c:'red'},
+      {l:'Serbest kullanım', v:F(ser,para), c:'grn'},
+    ];
+    acik=`Mal Türkiye'den serbest bölgeye ihraç ediliyor. <strong>2018-32/48 sayılı Tebliğ kapsamındadır.</strong> Serbest bölge işlem formu kapsamında 5.000 USD veya altı işlemlerde İBKB aranmaz; bu işlem ${FU(bUSD)} olduğundan standart hesaplama uygulanmaktadır.`;
+    ref='2018-32/48 Tebliğ Md. 5 / TCMB Genelgesi Md. 22';
 
   } else if(k==='ek3'){
     const yg=bedel*.5, ygU=bUSD*.5;
@@ -1025,6 +1144,16 @@ function hesaplaCore(){
   }
 
 
+
+  // TRY para birimi: TCMB döviz satışı zorunluluğu yok (yalnızca USD/EUR/GBP için geçerli)
+  if(para==='TRY' && k!=='kktc'){
+    sat=0; ser=bedel;
+    // TCMB satış satırını adımlardan çıkar, yerine "Uygulanmaz" satırı ekle
+    adimlar = adimlar.filter(a => !a.l.includes('TCMB') && !a.l.includes('Serbest kullanım'));
+    adimlar.push({l:'TCMB döviz satışı (yalnızca USD/EUR/GBP için)',v:'Uygulanmaz — TL işlem',c:'grn'});
+    // Başlık güncelle — TL notu ekle
+    if(!bsl.includes('TL')) bsl = bsl + ' — TL Tahsilat';
+  }
 
   const md29Html = (sureDoldu && ibkbMatrah > 0) ? md29Kutu(st) : '';
 
