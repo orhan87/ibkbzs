@@ -1454,7 +1454,8 @@ async function davetGonder(){
   el.textContent='⏳ Davet gönderiliyor…';
 
   try{
-    // Supabase invite: admin/users ile kullanıcı oluştur + davet maili gönder
+    // 1. Adım: Kullanıcıyı oluştur (email_confirm:false → onay maili gönderilir)
+    const tmpPass = Math.random().toString(36).slice(-10) + 'Aa1!';
     const r = await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
       headers:{
@@ -1464,15 +1465,44 @@ async function davetGonder(){
       },
       body: JSON.stringify({
         email: email,
-        email_confirm: false,   // false = davet maili gönder, kullanıcı linke tıklayarak onaylasın
-        password: Math.random().toString(36).slice(-12) + 'A1!'  // geçici rastgele parola (kullanıcı değiştirecek)
+        password: tmpPass,
+        email_confirm: false
       })
     });
     const rawText = await r.text();
     let d = {};
     try{ d = JSON.parse(rawText); }catch(e){ d = {msg: rawText||'Boş yanıt (HTTP '+r.status+')'}; }
 
+    // 2. Adım: Kullanıcı oluşturulduysa generate_link ile davet linki üret ve mail gönder
     if(r.ok && d.id){
+      // 2. Adım: generate_link ile davet maili gönder
+      try{
+        const mlR = await fetch(sb.url+'/auth/v1/admin/generate_link',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'apikey': sb.serviceKey,
+            'Authorization': 'Bearer '+sb.serviceKey
+          },
+          body: JSON.stringify({
+            type: 'magiclink',
+            email: email,
+            redirect_to: 'https://ibkbsorgulama.com/login.html'
+          })
+        });
+        const mlText = await mlR.text();
+        let mlD = {};
+        try{ mlD = JSON.parse(mlText); }catch(e){}
+        if(!mlR.ok){
+          console.warn('generate_link hatası:', mlR.status, mlText);
+          // Fallback: recovery (parola sıfırlama) maili gönder
+          await fetch(sb.url+'/auth/v1/recover',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','apikey':sb.serviceKey},
+            body: JSON.stringify({email, redirect_to:'https://ibkbsorgulama.com/login.html'})
+          });
+        }
+      }catch(e){ console.warn('Mail gönderilemedi:', e.message); }
       // Tip ve not kaydet
       const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
       notlar[email] = {tip, aciklama};
