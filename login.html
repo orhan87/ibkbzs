@@ -496,23 +496,20 @@ async function basvuruGonder(){
   btn.disabled = true;
   btn.textContent = '⏳ Kontrol ediliyor...';
 
-  // ── Kayıtlı kullanıcı kontrolü ──────────────────────────────────────────────
+  // ── Kayıtlı kullanıcı kontrolü (basvurular tablosunda aynı e-posta var mı) ──
   try {
-    const kontrol = await fetch(sbUrl + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':sbKey},
-      body: JSON.stringify({email, password:'__kontrol_sadece__'})
+    const kontrol = await fetch(sbUrl + '/rest/v1/basvurular?email=eq.' + encodeURIComponent(email) + '&select=id&limit=1', {
+      headers: {'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey}
     });
-    // Eğer 400 ve "Invalid login credentials" dönerse kullanıcı VARDIR (hatalı parola = hesap var)
-    // Eğer 400 ve "Email not confirmed" dönerse de hesap var
-    const kData = await kontrol.json();
-    const kMsg = (kData.error_description||kData.msg||'').toLowerCase();
-    if(kMsg.includes('invalid login') || kMsg.includes('email not confirmed') || kMsg.includes('invalid credentials')){
-      hataEl.textContent = '⚠ Bu e-posta adresi zaten sistemde kayıtlıdır. Giriş yapmayı deneyin veya parolanızı sıfırlayın.';
-      hataEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = '📩 Başvuruyu Gönder';
-      return;
+    if(kontrol.ok){
+      const kData = await kontrol.json();
+      if(Array.isArray(kData) && kData.length > 0){
+        hataEl.textContent = '⚠ Bu e-posta adresiyle daha önce başvuru yapılmıştır. Ekibimiz sizinle iletişime geçecektir.';
+        hataEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '📩 Başvuruyu Gönder';
+        return;
+      }
     }
   } catch(e){ /* kontrol başarısız olsa bile devam et */ }
 
