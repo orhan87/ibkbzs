@@ -571,6 +571,11 @@
             <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
             <p class="acik">Supabase → Project Settings → API → anon public</p>
           </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Service Role Key <span style="background:#fef3c7;color:#92400e;font-size:.65rem;padding:1px 7px;border-radius:8px;font-weight:700;margin-left:4px;">Başvurular için zorunlu</span></label>
+            <input type="password" id="sb-service-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            <p class="acik">Supabase → Project Settings → API → service_role (secret) — Yalnızca admin panelinde saklanır, dışarıya açılmaz.</p>
+          </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
             <button class="btn btn-primary" onclick="supabaseKaydet()">💾 Bağlantıyı Kaydet</button>
             <button class="btn" onclick="supabaseTest()" id="btnSbTest" style="display:none;">🔍 Bağlantıyı Test Et</button>
@@ -1131,17 +1136,19 @@ function sbCfg(){
     const raw=localStorage.getItem('ibkb_config');
     const cfg=raw?JSON.parse(raw):{};
     const sb=cfg.supabase||{};
-    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:sb.serviceKey||''};
-  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:''};}
+    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:sb.serviceKey||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKIhhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY'};
+  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKIhhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY'};}
 }
 
 function supabaseKaydet(){
   const url = document.getElementById('sb-url').value.trim().replace(/\/$/,'');
   const key = document.getElementById('sb-key').value.trim();
+  const serviceKey = (document.getElementById('sb-service-key')||{}).value?.trim() || '';
   if(!url||!key){ toast('⚠ URL ve Key alanları boş olamaz'); return; }
   if(!url.startsWith('https://')){ toast('⚠ URL https:// ile başlamalı'); return; }
   const cfg = depoyuYukle() || {};
-  cfg.supabase = {url, key};
+  cfg.supabase = {url, key, serviceKey};
+  depoyaKaydet(cfg);
   depoyaKaydet(cfg);
   document.getElementById('sbDurum').textContent='Bağlı ✓';
   document.getElementById('sbDurum').style.background='#e8f5ef';
@@ -1332,6 +1339,8 @@ function kullaniciTabYukle(){
   if(sb&&sb.url&&sb.key){
     document.getElementById('sb-url').value=sb.url;
     document.getElementById('sb-key').value=sb.key;
+    const svcEl = document.getElementById('sb-service-key');
+    if(svcEl) svcEl.value = sb.serviceKey||'';
     document.getElementById('sbDurum').textContent='Bağlı ✓';
     document.getElementById('sbDurum').style.background='#e8f5ef';
     document.getElementById('sbDurum').style.color='#1a7a4a';
@@ -1456,9 +1465,19 @@ async function basvurulariYukle(){
   const sb  = sbCfg();
   const el  = document.getElementById('basvuruListesi');
   if(!el) return;
+
+  if(!sb.serviceKey){
+    el.innerHTML = '<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:18px 20px;margin:10px 0;">'
+      + '<div style="font-weight:700;color:#92400e;margin-bottom:6px;">⚠ Service Role Key gerekli</div>'
+      + '<div style="font-size:.85rem;color:#78350f;line-height:1.6;">Başvuruları görmek için <strong>Supabase → Project Settings → API → service_role key</strong> değerini'
+      + ' <a href="#" onclick="tab(\'sayisalDegerler\');return false;" style="color:#d97706;font-weight:700;">Sayısal Değerler</a> sekmesine girin.</div>'
+      + '</div>';
+    return;
+  }
+
   el.innerHTML = '<p style="padding:20px;color:#6b7a99;">Yükleniyor...</p>';
   try{
-    const key = sb.serviceKey || sb.key;
+    const key = sb.serviceKey;
     const r = await fetch(sb.url + '/rest/v1/basvurular?order=tarih.desc&limit=200',{
       headers:{'apikey':key,'Authorization':'Bearer '+key}
     });
