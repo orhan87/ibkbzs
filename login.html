@@ -494,6 +494,28 @@ async function basvuruGonder(){
 
   const btn = document.getElementById('basvuruBtn');
   btn.disabled = true;
+  btn.textContent = '⏳ Kontrol ediliyor...';
+
+  // ── Kayıtlı kullanıcı kontrolü ──────────────────────────────────────────────
+  try {
+    const kontrol = await fetch(sbUrl + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':sbKey},
+      body: JSON.stringify({email, password:'__kontrol_sadece__'})
+    });
+    // Eğer 400 ve "Invalid login credentials" dönerse kullanıcı VARDIR (hatalı parola = hesap var)
+    // Eğer 400 ve "Email not confirmed" dönerse de hesap var
+    const kData = await kontrol.json();
+    const kMsg = (kData.error_description||kData.msg||'').toLowerCase();
+    if(kMsg.includes('invalid login') || kMsg.includes('email not confirmed') || kMsg.includes('invalid credentials')){
+      hataEl.textContent = '⚠ Bu e-posta adresi zaten sistemde kayıtlıdır. Giriş yapmayı deneyin veya parolanızı sıfırlayın.';
+      hataEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '📩 Başvuruyu Gönder';
+      return;
+    }
+  } catch(e){ /* kontrol başarısız olsa bile devam et */ }
+
   btn.textContent = '⏳ Gönderiliyor...';
 
   try {

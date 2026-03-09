@@ -1431,6 +1431,26 @@ async function davetGonder(){
 
   el.style.display='block';
   el.style.background='#f0f2f5'; el.style.color='#4a5568';
+  el.textContent='⏳ Kontrol ediliyor…';
+
+  // ── Daha önce davet/kayıt var mı kontrol et ─────────────────────────────────
+  try{
+    const mevcut = await fetch(sb.url+'/auth/v1/admin/users?email='+encodeURIComponent(email),{
+      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
+    });
+    if(mevcut.ok){
+      const mData = await mevcut.json();
+      const users = mData.users || mData || [];
+      const bulunan = Array.isArray(users) ? users.find(u=>u.email===email) : null;
+      if(bulunan){
+        el.style.background='#fff7ed'; el.style.color='#92400e';
+        el.innerHTML='⚠ <strong>'+email+'</strong> adresi zaten sistemde kayıtlı.'
+          +'<br><span style="font-weight:400;font-size:.78rem;">Parola sıfırlama özelliğini kullanabilirsiniz.</span>';
+        return;
+      }
+    }
+  }catch(e){ /* kontrol başarısız, devam et */ }
+
   el.textContent='⏳ Davet gönderiliyor…';
 
   try{
@@ -1443,7 +1463,9 @@ async function davetGonder(){
       },
       body: JSON.stringify({ email })
     });
-    const d = await r.json();
+    const rawText = await r.text();
+    let d = {};
+    try{ d = JSON.parse(rawText); }catch(e){ d = {msg: rawText||'Boş yanıt (HTTP '+r.status+')'}; }
 
     if(r.ok && d.id){
       // Tip ve not kaydet
@@ -1459,12 +1481,14 @@ async function davetGonder(){
       if(tipEl) tipEl.value='lisans';
       kullanicilariYukle();
     } else {
-      const msg = d.msg || d.message || d.error_description || JSON.stringify(d);
+      const msg = d.msg || d.message || d.error_description || d.error || JSON.stringify(d);
       el.style.background='#fef2f2'; el.style.color='#b91c1c';
       if(msg.includes('already registered') || msg.includes('already been registered')){
         el.textContent='⚠ Bu e-posta zaten kayıtlı. Parola sıfırlama kullanın.';
+      } else if(msg.includes('invalid') || msg.includes('unauthorized') || msg.includes('401')){
+        el.textContent='⚠ Yetki hatası — Service Role Key doğru mu? HTTP '+r.status;
       } else {
-        el.textContent='✗ Hata: '+msg;
+        el.textContent='✗ Hata (HTTP '+r.status+'): '+msg;
       }
     }
   }catch(e){
