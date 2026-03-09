@@ -409,7 +409,7 @@ window.onload = function(){
     if(foot && met.loginFooter) foot.innerHTML = met.loginFooter;
 
     // İletişim
-    var ep  = met.loginEmail || 'orhankelahmet@gmail.com';
+    var ep  = met.loginEmail || 'destek@ibkbsorgulama.com';
     var tel = met.loginTel   || '+90 533 198 70 33';
     var telRaw = tel.replace(/[^+0-9]/g,'');
     var li = document.getElementById('loginIletisim');
@@ -554,7 +554,7 @@ async function basvuruGonder(){
         basariEl.style.display = 'block';
         // E-posta ile bildir (mailto fallback)
         var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-        var hedefEmail = (cfg.metinler && cfg.metinler.loginEmail) || 'orhankelahmet@gmail.com';
+        var hedefEmail = (cfg.metinler && cfg.metinler.loginEmail) || 'destek@ibkbsorgulama.com';
         var konu = encodeURIComponent('İBKB Yazılım Lisans Başvurusu - ' + firma);
         var govde = encodeURIComponent('Ad Soyad: ' + ad + '\nFirma: ' + firma + '\nE-posta: ' + email + (tel?'\nTelefon: '+tel:'') + (mesaj?'\nMesaj: '+mesaj:''));
         setTimeout(function(){ window.location.href = 'mailto:' + hedefEmail + '?subject=' + konu + '&body=' + govde; }, 800);
@@ -568,7 +568,7 @@ async function basvuruGonder(){
     gosterBasari(talep);
     basariEl.style.display = 'block';
     var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-    var hedefEmail = (cfg.metinler && cfg.metinler.loginEmail) || 'orhankelahmet@gmail.com';
+    var hedefEmail = (cfg.metinler && cfg.metinler.loginEmail) || 'destek@ibkbsorgulama.com';
     var konu = encodeURIComponent('İBKB Yazılım Lisans Başvurusu - ' + firma);
     var govde = encodeURIComponent('Ad Soyad: ' + ad + '\nFirma: ' + firma + '\nE-posta: ' + email + (tel?'\nTelefon: '+tel:'') + (mesaj?'\nMesaj: '+mesaj:''));
     setTimeout(function(){ window.location.href = 'mailto:' + hedefEmail + '?subject=' + konu + '&body=' + govde; }, 800);
