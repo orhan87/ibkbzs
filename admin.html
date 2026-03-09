@@ -1454,14 +1454,19 @@ async function davetGonder(){
   el.textContent='⏳ Davet gönderiliyor…';
 
   try{
-    const r = await fetch(sb.url+'/auth/v1/admin/invite',{
+    // Supabase invite: admin/users ile kullanıcı oluştur + davet maili gönder
+    const r = await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
         'apikey': sb.serviceKey,
         'Authorization': 'Bearer '+sb.serviceKey
       },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({
+        email: email,
+        email_confirm: false,   // false = davet maili gönder, kullanıcı linke tıklayarak onaylasın
+        password: Math.random().toString(36).slice(-12) + 'A1!'  // geçici rastgele parola (kullanıcı değiştirecek)
+      })
     });
     const rawText = await r.text();
     let d = {};
