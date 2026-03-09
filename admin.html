@@ -1473,6 +1473,13 @@ async function basvurulariYukle(){
       return;
     }
     const talepMap = {'satin-alma':'🛒 Satın Alma','demo':'🎥 Demo','fiyat':'💰 Fiyat Bilgisi','kurumsal':'🏢 Kurumsal','diger':'📝 Diğer',''  :'—'};
+    const talepBadge = function(talep){
+      if(talep==='demo') return '<span style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🎥 Demo</span>';
+      if(talep==='satin-alma') return '<span style="background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🛒 Satın Alma</span>';
+      if(talep==='kurumsal') return '<span style="background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🏢 Kurumsal</span>';
+      if(talep==='fiyat') return '<span style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">💰 Fiyat</span>';
+      return talepMap[talep||''] || (talep||'—');
+    };
     el.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;">'
       + '<thead><tr style="background:#f0f4f8;">'
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;white-space:nowrap;">Tarih</th>'
@@ -1485,9 +1492,11 @@ async function basvurulariYukle(){
       + '</tr></thead><tbody>'
       + d.map(function(row,i){
           const t   = new Date(row.tarih).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
-          const tlp = talepMap[row.talep||''] || (row.talep||'—');
+          const tlp = talepBadge(row.talep||'');
           const msg = row.mesaj ? ('<span title="'+row.mesaj.replace(/"/g,"'")+'">'+row.mesaj.substring(0,40)+(row.mesaj.length>40?'…':'')+'</span>') : '<span style="color:#94a3b8;">—</span>';
-          return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
+          const isDemo = row.talep === 'demo';
+          const rowBg = isDemo ? '#fffbeb' : (i%2===0?'#fff':'#f8fafc');
+          return '<tr style="border-bottom:1px solid #edf2f7;background:'+rowBg+(isDemo?';border-left:3px solid #f59e0b;':'')+'">"'
             + '<td style="padding:9px 14px;color:#4a5568;white-space:nowrap;">'+t+'</td>'
             + '<td style="padding:9px 14px;color:#1e293b;font-weight:600;">'+row.ad_soyad+'</td>'
             + '<td style="padding:9px 14px;color:#334155;">'+row.firma+'</td>'
