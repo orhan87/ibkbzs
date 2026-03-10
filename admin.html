@@ -1357,9 +1357,12 @@ async function kullanicilariYukle(){
           <span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.78rem;padding:2px 10px;border-radius:12px;">${u.girisAdedi}</span>
         </td>
         <td style="padding:10px 12px;text-align:center;">
-          ${u.silinebilir
-            ? `<button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>`
-            : `<span style="font-size:.7rem;color:#94a3b8;">—</span>`}
+          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+            <button onclick="parolaSifirla('${u.id}','${u.email}')" style="font-size:.72rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Sıfırla</button>
+            ${u.silinebilir
+              ? `<button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>`
+              : `<span style="font-size:.7rem;color:#94a3b8;"></span>`}
+          </div>
         </td>
       </tr>`).join('')}</tbody>
     </table>
@@ -1367,6 +1370,42 @@ async function kullanicilariYukle(){
   }catch(e){
     el.innerHTML='<div style="color:#b91c1c;font-size:.83rem;padding:12px;">Hata: '+e.message+'</div>';
   }
+}
+
+async function parolaSifirla(id, email){
+  const yeniPass = prompt('⚠ ' + email + ' için yeni geçici parola belirleyin (boş bırakırsanız otomatik oluşturulur):');
+  if(yeniPass === null) return; // iptal
+  const sb = sbCfg(); if(!sb) return;
+  const tmpPass = yeniPass.trim() || (Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '1!');
+  if(tmpPass.length < 6){ toast('⚠ Parola en az 6 karakter olmalı'); return; }
+  try{
+    const r = await fetch(sb.url + '/auth/v1/admin/users/' + id, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json','apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey},
+      body: JSON.stringify({password: tmpPass, user_metadata: {ilk_giris: true}})
+    });
+    if(r.ok){
+      const box = document.createElement('div');
+      box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      box.innerHTML=`<div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18);">
+        <div style="font-size:1.3rem;font-weight:700;color:#1a3a5c;margin-bottom:6px;">🔑 Parola Sıfırlandı</div>
+        <div style="color:#4a5568;font-size:.88rem;margin-bottom:18px;">${email} için yeni geçici parola:</div>
+        <div style="display:flex;align-items:center;gap:8px;background:#f0f4f8;border-radius:8px;padding:10px 14px;margin-bottom:18px;">
+          <code style="flex:1;font-size:1.05rem;font-weight:700;letter-spacing:.06em;color:#1a3a5c;">${tmpPass}</code>
+          <button id="kopyalaSfr" style="background:#1a56a0;color:#fff;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:.82rem;font-family:inherit;">📋 Kopyala</button>
+        </div>
+        <div style="font-size:.75rem;color:#64748b;margin-bottom:20px;">⚠ Kullanıcı bir sonraki girişte yeni parola belirlemek zorunda kalacak.</div>
+        <button onclick="this.closest('div[style]').remove()" style="width:100%;padding:10px;background:#1a56a0;color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;">Tamam</button>
+      </div>`;
+      document.body.appendChild(box);
+      box.querySelector('#kopyalaSfr').addEventListener('click', function(){
+        navigator.clipboard.writeText(tmpPass).then(()=>{this.textContent='✓ Kopyalandı'; setTimeout(()=>this.textContent='📋 Kopyala',2000);});
+      });
+    } else {
+      const d = await r.json();
+      toast('✗ Sıfırlanamadı: ' + (d.message||d.msg||r.status));
+    }
+  }catch(e){ toast('✗ Hata: ' + e.message); }
 }
 
 async function kullanicisil(id, email){
