@@ -747,7 +747,7 @@
           <!-- DAVET FORMU -->
           <div id="formDavet">
             <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:12px 15px;margin-bottom:16px;font-size:.82rem;color:#1e40af;line-height:1.6;">
-              📧 Kullanıcıya <strong>Supabase üzerinden otomatik e-posta</strong> gönderilir. E-postadaki linke tıklayarak kendi parolasını belirler ve sisteme giriş yapar.
+              📧 Kullanıcı hesabı oluşturulur ve <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a6a7b1b6a7a982aba0a9a0b1adb0a5b7aea3afa3eca1adaf">[email&#160;protected]</a></strong> adresinden otomatik e-posta gönderilir. Kullanıcı e-postadaki linke tıklayarak kendi parolasını belirler ve sisteme giriş yapar.
             </div>
             <div class="fg" style="margin-bottom:12px;">
               <div class="fgg">
@@ -927,7 +927,7 @@
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ─── VARSAYILAN PAROLA ──────────────────────────────────────────────────────
 const VARSAYILAN_PAROLA = 'ibkb2025';
 
@@ -1454,7 +1454,7 @@ async function davetGonder(){
   el.textContent='⏳ Davet gönderiliyor…';
 
   try{
-    // 1. Adım: Kullanıcıyı oluştur (email_confirm:false → onay maili gönderilir)
+    // 1. Adım: Kullanıcıyı oluştur (email_confirm:true → onay maili YOK, direkt aktif)
     const tmpPass = Math.random().toString(36).slice(-10) + 'Aa1!';
     const r = await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
@@ -1466,51 +1466,32 @@ async function davetGonder(){
       body: JSON.stringify({
         email: email,
         password: tmpPass,
-        email_confirm: false
+        email_confirm: true
       })
     });
     const rawText = await r.text();
     let d = {};
     try{ d = JSON.parse(rawText); }catch(e){ d = {msg: rawText||'Boş yanıt (HTTP '+r.status+')'}; }
 
-    // 2. Adım: Kullanıcı oluşturulduysa generate_link ile davet linki üret ve mail gönder
     if(r.ok && d.id){
-      // 2. Adım: generate_link ile davet maili gönder
-      try{
-        const mlR = await fetch(sb.url+'/auth/v1/admin/generate_link',{
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'apikey': sb.serviceKey,
-            'Authorization': 'Bearer '+sb.serviceKey
-          },
-          body: JSON.stringify({
-            type: 'magiclink',
-            email: email,
-            redirect_to: 'https://ibkbsorgulama.com/login.html'
-          })
-        });
-        const mlText = await mlR.text();
-        let mlD = {};
-        try{ mlD = JSON.parse(mlText); }catch(e){}
-        if(!mlR.ok){
-          console.warn('generate_link hatası:', mlR.status, mlText);
-          // Fallback: recovery (parola sıfırlama) maili gönder
-          await fetch(sb.url+'/auth/v1/recover',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','apikey':sb.serviceKey},
-            body: JSON.stringify({email, redirect_to:'https://ibkbsorgulama.com/login.html'})
-          });
-        }
-      }catch(e){ console.warn('Mail gönderilemedi:', e.message); }
       // Tip ve not kaydet
       const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
       notlar[email] = {tip, aciklama};
       localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar));
 
+      // Geçici parolayı ekranda göster
       el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
-      el.innerHTML='✅ Davet gönderildi: <strong>'+email+'</strong><br>'
-        +'<span style="font-weight:400;font-size:.78rem;">Kullanıcı e-postasındaki linke tıklayarak parolasını belirleyecek.</span>';
+      el.innerHTML=
+        '✅ Kullanıcı oluşturuldu: <strong>'+email+'</strong><br><br>'
+        +'<div style="background:#fff;border:2px solid #1a7a4a;border-radius:8px;padding:12px 16px;margin-top:4px;">'
+        +'<div style="font-size:.75rem;color:#4a5568;margin-bottom:4px;">GEÇİCİ PAROLA (kullanıcıya iletin):</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<code id="tmpPassGoster" style="font-size:1.1rem;font-weight:700;letter-spacing:.08em;color:#1a3a5c;background:#f0f4f8;padding:6px 12px;border-radius:6px;flex:1;">'+tmpPass+'</code>'
+        +'<button onclick="navigator.clipboard.writeText(''+tmpPass+'');this.textContent='✓ Kopyalandı';setTimeout(()=>this.textContent='📋 Kopyala',2000)" '
+        +'style="background:#1a56a0;color:#fff;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:.82rem;white-space:nowrap;">📋 Kopyala</button>'
+        +'</div>'
+        +'<div style="font-size:.73rem;color:#666;margin-top:8px;">⚠ Kullanıcı ilk girişten sonra parolasını değiştirebilir.</div>'
+        +'</div>';
       document.getElementById('davet-eposta').value='';
       if(notEl) notEl.value='';
       if(tipEl) tipEl.value='lisans';
@@ -2123,11 +2104,3 @@ async function girisLogYukle(){
         const t=new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
         return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
           +'<td style="padding:10px 14px;color:#1e293b;font-weight:500;">'+row.email+'</td>'
-          +'<td style="padding:10px 14px;color:#4a5568;">'+t+'</td></tr>';
-      }).join('')+'</tbody></table>';
-  }catch(e){el.innerHTML='<p style="color:#b91c1c;padding:20px;">Hata: '+e.message+'</p>';}
-}
-
-</script>
-</body>
-</html>
