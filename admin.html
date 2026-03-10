@@ -191,80 +191,18 @@
 
   <main>
     <div class="tab-bar">
-      <button class="tab-btn ak" onclick="tab('dashboard',this)" id="tabDashboard">📊 Dashboard</button>
-      <button class="tab-btn" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
+      <button class="tab-btn ak" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
       <button class="tab-btn"    onclick="tab('sabitler',this)">⚙ Sayısal Değerler</button>
       <button class="tab-btn"    onclick="tab('metinler',this)">📝 Metinler & Notlar</button>
       <button class="tab-btn"    onclick="tab('logologin',this)">🖼 Logo & Login Sayfası</button>
       <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
       <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
       <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
-      <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular <span id="basvuruBadge" style="background:#ef4444;color:#fff;font-size:.65rem;padding:1px 6px;border-radius:10px;margin-left:3px;display:none;"></span></button>
+      <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular</button>
     </div>
 
     <!-- ÜLKELER -->
-    <!-- DASHBOARD -->
-    <div id="tab-dashboard" class="tab-content ak">
-
-      <!-- İSTATİSTİK KARTLARI -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
-        <div class="panel-card" style="margin-bottom:0;">
-          <div class="pc-body" style="text-align:center;padding:24px 16px;">
-            <div style="font-size:2rem;font-weight:800;color:#1a56a0;" id="ds-kullanici">—</div>
-            <div style="font-size:.78rem;color:#8c97a8;margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Aktif Kullanıcı</div>
-          </div>
-        </div>
-        <div class="panel-card" style="margin-bottom:0;">
-          <div class="pc-body" style="text-align:center;padding:24px 16px;">
-            <div style="font-size:2rem;font-weight:800;color:#1a7a4a;" id="ds-giris">—</div>
-            <div style="font-size:.78rem;color:#8c97a8;margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Toplam Giriş</div>
-          </div>
-        </div>
-        <div class="panel-card" style="margin-bottom:0;">
-          <div class="pc-body" style="text-align:center;padding:24px 16px;">
-            <div style="font-size:2rem;font-weight:800;color:#c2410c;" id="ds-basvuru">—</div>
-            <div style="font-size:.78rem;color:#8c97a8;margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Toplam Başvuru</div>
-          </div>
-        </div>
-        <div class="panel-card" style="margin-bottom:0;">
-          <div class="pc-body" style="text-align:center;padding:24px 16px;">
-            <div style="font-size:2rem;font-weight:800;color:#b91c1c;" id="ds-okunmamis">—</div>
-            <div style="font-size:.78rem;color:#8c97a8;margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Okunmamış Başvuru</div>
-          </div>
-        </div>
-        <div class="panel-card" style="margin-bottom:0;">
-          <div class="pc-body" style="text-align:center;padding:24px 16px;">
-            <div style="font-size:2rem;font-weight:800;color:#92400e;" id="ds-demo">—</div>
-            <div style="font-size:.78rem;color:#8c97a8;margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Demo Talebi</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SON BAŞVURULAR -->
-      <div class="panel-card">
-        <div class="pc-head">
-          <div><h3>📬 Son Başvurular</h3><p>En son 5 başvuru</p></div>
-          <button class="btn btn-sm btn-ghost" onclick="tab('basvurular')">Tümünü Gör →</button>
-        </div>
-        <div class="pc-body" id="ds-son-basvurular" style="padding:12px 20px;">
-          <div style="color:#8c97a8;font-size:.83rem;">Yükleniyor…</div>
-        </div>
-      </div>
-
-      <!-- SON GİRİŞLER -->
-      <div class="panel-card">
-        <div class="pc-head">
-          <div><h3>🔑 Son Girişler</h3><p>En son 5 kullanıcı girişi</p></div>
-          <button class="btn btn-sm btn-ghost" onclick="tab('girislog')">Tümünü Gör →</button>
-        </div>
-        <div class="pc-body" id="ds-son-girisler" style="padding:12px 20px;">
-          <div style="color:#8c97a8;font-size:.83rem;">Yükleniyor…</div>
-        </div>
-      </div>
-
-    </div>
-
-    <div id="tab-ulkeler" class="tab-content">
+    <div id="tab-ulkeler" class="tab-content ak">
       <div class="panel-card">
         <div class="pc-head">
           <div><h3>Yeni Ülke Ekle</h3></div>
@@ -569,78 +507,6 @@
         </div>
       </div>
 
-      <!-- YAZILIM HAKKINDA — ÖZELLİK KUTULARI -->
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>🧩 Yazılım Hakkında — Özellik Kutuları</h3><p>Login sayfasındaki 4 özellik kutusunun ikon, başlık ve alt yazıları</p></div></div>
-        <div class="pc-body">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div style="background:#f8fafc;border:1.5px solid #e2e6eb;border-radius:10px;padding:14px;">
-              <div style="font-size:.72rem;font-weight:700;color:#4a5568;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">Kutu 1</div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>İkon (emoji)</label>
-                <input type="text" id="m-oz1Ikon" placeholder="🌍" style="max-width:80px;">
-              </div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>Başlık</label>
-                <input type="text" id="m-oz1Baslik" placeholder="197 Ülke ve Bölge">
-              </div>
-              <div class="metin-item" style="margin-bottom:0;">
-                <label>Alt Yazı</label>
-                <input type="text" id="m-oz1Alt" placeholder="EK-2, EK-3, Özel kategoriler">
-              </div>
-            </div>
-            <div style="background:#f8fafc;border:1.5px solid #e2e6eb;border-radius:10px;padding:14px;">
-              <div style="font-size:.72rem;font-weight:700;color:#4a5568;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">Kutu 2</div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>İkon (emoji)</label>
-                <input type="text" id="m-oz2Ikon" placeholder="⚡" style="max-width:80px;">
-              </div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>Başlık</label>
-                <input type="text" id="m-oz2Baslik" placeholder="Anlık Hesaplama">
-              </div>
-              <div class="metin-item" style="margin-bottom:0;">
-                <label>Alt Yazı</label>
-                <input type="text" id="m-oz2Alt" placeholder="TCMB mevzuatı otomatik">
-              </div>
-            </div>
-            <div style="background:#f8fafc;border:1.5px solid #e2e6eb;border-radius:10px;padding:14px;">
-              <div style="font-size:.72rem;font-weight:700;color:#4a5568;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">Kutu 3</div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>İkon (emoji)</label>
-                <input type="text" id="m-oz3Ikon" placeholder="💱" style="max-width:80px;">
-              </div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>Başlık</label>
-                <input type="text" id="m-oz3Baslik" placeholder="TL / Döviz Desteği">
-              </div>
-              <div class="metin-item" style="margin-bottom:0;">
-                <label>Alt Yazı</label>
-                <input type="text" id="m-oz3Alt" placeholder="ve daha fazlası">
-              </div>
-            </div>
-            <div style="background:#f8fafc;border:1.5px solid #e2e6eb;border-radius:10px;padding:14px;">
-              <div style="font-size:.72rem;font-weight:700;color:#4a5568;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">Kutu 4</div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>İkon (emoji)</label>
-                <input type="text" id="m-oz4Ikon" placeholder="📄" style="max-width:80px;">
-              </div>
-              <div class="metin-item" style="margin-bottom:8px;">
-                <label>Başlık</label>
-                <input type="text" id="m-oz4Baslik" placeholder="PDF veya Excel">
-              </div>
-              <div class="metin-item" style="margin-bottom:0;">
-                <label>Alt Yazı</label>
-                <input type="text" id="m-oz4Alt" placeholder="PDF veya Excel olarak rapor">
-              </div>
-            </div>
-          </div>
-          <div style="margin-top:16px;">
-            <button class="btn btn-primary" onclick="loginMetinleriKaydet()">💾 Kaydet</button>
-          </div>
-        </div>
-      </div>
-
       <!-- FİYAT KARTI -->
       <div class="panel-card">
         <div class="pc-head"><div><h3>💰 Fiyat Bilgisi</h3><p>Login sayfasında görünen fiyat kartı</p></div></div>
@@ -730,94 +596,33 @@
       </div>
 
       <!-- Kullanıcı Ekle -->
-      <div class="panel-card" style="max-width:700px;" id="sbKullanici" style="display:none;">
-        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı</h3><p>Kullanıcıya davet gönderin veya direkt parola belirleyin</p></div></div>
+      <div class="panel-card" style="max-width:620px;" id="sbKullanici">
+        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı</h3><p>Kullanıcı hesabı oluşturun — geçici parola ekranda görünür</p></div></div>
         <div class="pc-body">
-
-          <!-- YÖNTEm SEÇİCİ -->
-          <div style="display:flex;gap:0;margin-bottom:20px;border:1.5px solid #e2e6eb;border-radius:9px;overflow:hidden;">
-            <button id="yontemDavet" onclick="yontemSec('davet')" style="flex:1;padding:11px 8px;border:none;background:#1a56a0;color:#fff;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;">
-              ✉ Davet Gönder <span style="display:block;font-size:.72rem;font-weight:400;opacity:.85;">Kullanıcı parolayı kendisi belirler</span>
-            </button>
-            <button id="yontemManuel" onclick="yontemSec('manuel')" style="flex:1;padding:11px 8px;border:none;background:#f0f2f5;color:#4a5568;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border-left:1.5px solid #e2e6eb;">
-              🔑 Manuel Ekle <span style="display:block;font-size:.72rem;font-weight:400;opacity:.75;">Siz parola belirlersiniz</span>
-            </button>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:12px 15px;margin-bottom:16px;font-size:.82rem;color:#1e40af;line-height:1.6;">
+            🔑 Kullanıcı hesabı oluşturulur ve size <strong>geçici parola</strong> gösterilir. Bu parolayı WhatsApp veya telefon ile kullanıcıya iletirsiniz. Kullanıcı giriş yaptıktan sonra parolasını değiştirebilir.
           </div>
-
-          <!-- DAVET FORMU -->
-          <div id="formDavet">
-            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:12px 15px;margin-bottom:16px;font-size:.82rem;color:#1e40af;line-height:1.6;">
-              📧 Kullanıcı hesabı oluşturulur ve <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a6a7b1b6a7a982aba0a9a0b1adb0a5b7aea3afa3eca1adaf">[email&#160;protected]</a></strong> adresinden otomatik e-posta gönderilir. Kullanıcı e-postadaki linke tıklayarak kendi parolasını belirler ve sisteme giriş yapar.
-            </div>
-            <div class="fg" style="margin-bottom:12px;">
-              <div class="fgg">
-                <label>E-posta Adresi</label>
-                <input type="email" id="davet-eposta" placeholder="kullanici@sirket.com">
-              </div>
-              <div class="fgg">
-                <label>Kullanıcı Tipi</label>
-                <select id="davet-tip" style="border:1.5px solid #e2e6eb;border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;background:#f0f2f5;outline:none;">
-                  <option value="lisans">🟢 Lisans</option>
-                  <option value="demo">🎥 Demo</option>
-                </select>
-              </div>
-            </div>
-            <div class="fgg" style="margin-bottom:16px;">
-              <label>Not (opsiyonel — firma adı vb.)</label>
-              <input type="text" id="davet-not" placeholder="ABC Dış Ticaret A.Ş.">
-            </div>
-            <button class="btn btn-primary" onclick="davetGonder()" style="background:linear-gradient(135deg,#1a56a0,#4f46e5);">✉ Davet E-postası Gönder</button>
-            <div id="davetMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:10px 14px;border-radius:7px;"></div>
-          </div>
-
-          <!-- MANUEL FORM -->
-          <div id="formManuel" style="display:none;">
-            <div class="fg" style="margin-bottom:12px;">
-              <div class="fgg">
-                <label>E-posta Adresi</label>
-                <input type="email" id="yeni-eposta" placeholder="kullanici@sirket.com">
-              </div>
-              <div class="fgg">
-                <label>Parola</label>
-                <input type="password" id="yeni-parola" placeholder="En az 6 karakter">
-              </div>
-            </div>
-            <div class="fg" style="margin-bottom:14px;">
-              <div class="fgg">
-                <label>Kullanıcı Tipi</label>
-                <select id="yeni-tip" style="border:1.5px solid #e2e6eb;border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;background:#f0f2f5;outline:none;">
-                  <option value="lisans">🟢 Lisans</option>
-                  <option value="demo">🎥 Demo</option>
-                </select>
-              </div>
-              <div class="fgg">
-                <label>Not (opsiyonel)</label>
-                <input type="text" id="yeni-not" placeholder="Firma adı vb.">
-              </div>
-            </div>
-            <button class="btn btn-primary" onclick="kullaniciEkle()">➕ Kullanıcı Ekle</button>
-            <div id="ekleMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Parola Sıfırlama -->
-      <div class="panel-card" style="max-width:640px;" id="sbParolaSifirla" style="display:none;">
-        <div class="pc-head"><div><h3>🔑 Kullanıcı Parolası Sıfırla</h3><p>Seçili kullanıcının parolasını doğrudan değiştirin</p></div></div>
-        <div class="pc-body">
           <div class="fg" style="margin-bottom:12px;">
             <div class="fgg">
-              <label>Kullanıcı E-postası</label>
-              <input type="email" id="sifirla-eposta" placeholder="kullanici@sirket.com">
+              <label>E-posta Adresi</label>
+              <input type="email" id="davet-eposta" placeholder="kullanici@sirket.com">
             </div>
             <div class="fgg">
-              <label>Yeni Parola</label>
-              <input type="password" id="sifirla-parola" placeholder="En az 6 karakter">
+              <label>Kullanıcı Tipi</label>
+              <select id="davet-tip" style="border:1.5px solid #e2e6eb;border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;background:#f0f2f5;outline:none;">
+                <option value="lisans">🟢 Lisans</option>
+                <option value="demo">🎥 Demo</option>
+              </select>
             </div>
           </div>
-          <button class="btn btn-primary" onclick="kullaniciParolaSifirla()">🔑 Parolayı Güncelle</button>
-          <div id="sifirlaMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
+          <div class="fgg" style="margin-bottom:16px;">
+            <label>Not (opsiyonel — firma adı vb.)</label>
+            <input type="text" id="davet-not" placeholder="ABC Dış Ticaret A.Ş.">
+          </div>
+          <button class="btn btn-primary" onclick="davetGonder()" style="background:linear-gradient(135deg,#1a56a0,#4f46e5);">➕ Kullanıcı Oluştur</button>
+          <div id="davetMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:10px 14px;border-radius:7px;"></div>
+          <!-- Eski manuel form için geriye dönük uyumluluk -->
+          <input type="hidden" id="yeni-eposta"><input type="hidden" id="yeni-parola"><div id="ekleMsg" style="display:none;"></div>
         </div>
       </div>
 
@@ -868,20 +673,12 @@
 
     <!-- BAŞVURULAR -->
     <div id="tab-basvurular" class="tab-content">
-      <div class="panel-card">
-        <div class="pc-head">
+      <div class="card">
+        <div class="card-header">
           <div><h3>📬 Lisans Başvuruları</h3><p>Login sayfasından gelen satın alma ve demo talepleri</p></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <select id="basvuruFiltre" onchange="basvurulariYukle()" style="padding:6px 10px;border:1.5px solid #e2e6eb;border-radius:7px;font-size:.82rem;font-family:inherit;background:#f0f2f5;outline:none;">
-              <option value="">Tümü</option>
-              <option value="demo">🎥 Demo</option>
-              <option value="satin-alma">🛒 Satın Alma</option>
-              <option value="okunmamis">🔴 Okunmamış</option>
-            </select>
-            <button class="btn btn-sm btn-ghost" onclick="basvurulariYukle()">🔄 Yenile</button>
-          </div>
+          <button class="btn btn-secondary" onclick="basvurulariYukle()">🔄 Yenile</button>
         </div>
-        <div id="basvuruListesi" style="padding:0;"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
+        <div id="basvuruListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
       </div>
     </div>
 
@@ -927,7 +724,7 @@
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ─── VARSAYILAN PAROLA ──────────────────────────────────────────────────────
 const VARSAYILAN_PAROLA = 'ibkb2025';
 
@@ -1085,15 +882,21 @@ const VARSAYILAN_METINLER = {
 
 // ─── GİRİŞ ───────────────────────────────────────────────────────────────────
 function girisYap(){
-  const p = document.getElementById('parolaInput').value;
-  if(p === mevcutParolaAl()){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('adminPanel').style.display='block';
-    baslat();
-  } else {
-    document.getElementById('loginErr').style.display='block';
-    document.getElementById('parolaInput').value='';
-    document.getElementById('parolaInput').focus();
+  try{
+    const p = document.getElementById('parolaInput').value;
+    if(p === mevcutParolaAl()){
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('adminPanel').style.display='block';
+      baslat();
+    } else {
+      const errEl = document.getElementById('loginErr');
+      errEl.textContent = '⚠ Parola hatalı. Tekrar deneyin.';
+      errEl.style.display='block';
+      document.getElementById('parolaInput').value='';
+      document.getElementById('parolaInput').focus();
+    }
+  }catch(e){
+    alert('Giriş hatası: ' + e.message);
   }
 }
 function cikisYap(){
@@ -1130,8 +933,6 @@ function baslat(){
 
   ulkeTablosuGuncelle();
   logoTabYukle();
-  // Dashboard ilk açılışta yükle
-  if(sbCfg().url) dashboardYukle();
 }
 
 // ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
@@ -1151,7 +952,7 @@ function logoTabYukle(){
   }
   // Login metinleri
   const met = Object.assign({}, VARSAYILAN_METINLER, cfg.metinler || {});
-  ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','oz1Ikon','oz1Baslik','oz1Alt','oz2Ikon','oz2Baslik','oz2Alt','oz3Ikon','oz3Baslik','oz3Alt','oz4Ikon','oz4Baslik','oz4Alt'].forEach(k=>{
+  ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) el.value = met[k] || '';
   });
@@ -1226,7 +1027,7 @@ function logoSifirla(){
 function loginMetinleriKaydet(){
   const cfg = depoyuYukle() || {};
   if(!cfg.metinler) cfg.metinler = {};
-  ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','oz1Ikon','oz1Baslik','oz1Alt','oz2Ikon','oz2Baslik','oz2Alt','oz3Ikon','oz3Baslik','oz3Alt','oz4Ikon','oz4Baslik','oz4Alt'].forEach(k=>{
+  ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
@@ -1240,13 +1041,12 @@ function loginMetinleriKaydet(){
 function tab(id, btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('ak'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ak'));
-  if(id==='dashboard') dashboardYukle();
   if(id==='kullanicilar') kullaniciTabYukle();
   if(id==='girislog') girisLogYukle();
   if(id==='basvurular') basvurulariYukle();
   if(id==='logologin') logoTabYukle();
   document.getElementById('tab-'+id).classList.add('ak');
-  if(btn) btn.classList.add('ak');
+  btn.classList.add('ak');
 }
 
 // ─── ÜLKE TABLOSU ─────────────────────────────────────────────────────────────
@@ -1398,111 +1198,77 @@ async function supabaseTest(){
   }
 }
 
-
-// ─── YÖNTEM SEÇİCİ ───────────────────────────────────────────────────────────
-function yontemSec(yontem){
-  const davetBtn  = document.getElementById('yontemDavet');
-  const manuelBtn = document.getElementById('yontemManuel');
-  const davetForm = document.getElementById('formDavet');
-  const manuelForm= document.getElementById('formManuel');
-  if(yontem==='davet'){
-    davetBtn.style.background='#1a56a0'; davetBtn.style.color='#fff';
-    manuelBtn.style.background='#f0f2f5'; manuelBtn.style.color='#4a5568';
-    davetForm.style.display='block'; manuelForm.style.display='none';
-  } else {
-    manuelBtn.style.background='#1a56a0'; manuelBtn.style.color='#fff';
-    davetBtn.style.background='#f0f2f5'; davetBtn.style.color='#4a5568';
-    manuelForm.style.display='block'; davetForm.style.display='none';
-  }
-}
-
-// ─── DAVET GÖNDER ────────────────────────────────────────────────────────────
 async function davetGonder(){
-  const sb  = sbCfg();
-  const email = document.getElementById('davet-eposta').value.trim();
-  const tipEl = document.getElementById('davet-tip');
-  const notEl = document.getElementById('davet-not');
-  const tip   = tipEl ? tipEl.value : 'lisans';
-  const aciklama = notEl ? notEl.value.trim() : '';
-  const el    = document.getElementById('davetMsg');
+  const sb=sbCfg(); if(!sb){toast('⚠ Supabase yapılandırılmamış');return;}
+  const email=document.getElementById('davet-eposta').value.trim();
+  const tipEl=document.getElementById('davet-tip');
+  const notEl=document.getElementById('davet-not');
+  const tip=tipEl?tipEl.value:'lisans';
+  const aciklama=notEl?notEl.value.trim():'';
+  const el=document.getElementById('davetMsg');
+  if(!email){toast('⚠ E-posta adresi zorunludur');return;}
+  if(!sb.serviceKey){toast('⚠ Service Role Key gerekli');return;}
 
-  if(!email){ toast('⚠ E-posta adresi zorunludur'); return; }
-  if(!sb.serviceKey){ toast('⚠ Service Role Key gerekli'); return; }
-
-  el.style.display='block';
-  el.style.background='#f0f2f5'; el.style.color='#4a5568';
-  el.textContent='⏳ Kontrol ediliyor…';
-
-  // ── Daha önce davet/kayıt var mı kontrol et ─────────────────────────────────
+  // Kayıtlı kullanıcı kontrolü
   try{
-    const mevcut = await fetch(sb.url+'/auth/v1/admin/users?email='+encodeURIComponent(email),{
+    const mevcut=await fetch(sb.url+'/auth/v1/admin/users?per_page=200',{
       headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
     });
     if(mevcut.ok){
-      const mData = await mevcut.json();
-      const users = mData.users || mData || [];
-      const bulunan = Array.isArray(users) ? users.find(u=>u.email===email) : null;
+      const mData=await mevcut.json();
+      const users=mData.users||[];
+      const bulunan=Array.isArray(users)?users.find(u=>u.email===email):null;
       if(bulunan){
-        el.style.background='#fff7ed'; el.style.color='#92400e';
-        el.innerHTML='⚠ <strong>'+email+'</strong> adresi zaten sistemde kayıtlı.'
-          +'<br><span style="font-weight:400;font-size:.78rem;">Parola sıfırlama özelliğini kullanabilirsiniz.</span>';
+        el.style.display='block'; el.style.background='#fff7ed'; el.style.color='#92400e';
+        el.innerHTML='⚠ <strong>'+email+'</strong> adresi zaten sistemde kayıtlı.';
         return;
       }
     }
-  }catch(e){ /* kontrol başarısız, devam et */ }
+  }catch(e){}
 
-  el.textContent='⏳ Davet gönderiliyor…';
+  el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
+  el.textContent='⏳ Kullanıcı oluşturuluyor…';
 
   try{
-    // 1. Adım: Kullanıcıyı oluştur (email_confirm:true → onay maili YOK, direkt aktif)
-    const tmpPass = Math.random().toString(36).slice(-10) + 'Aa1!';
-    const r = await fetch(sb.url+'/auth/v1/admin/users',{
+    const tmpPass=Math.random().toString(36).slice(-8)+Math.random().toString(36).slice(-4).toUpperCase()+'1!';
+    const r=await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey': sb.serviceKey,
-        'Authorization': 'Bearer '+sb.serviceKey
-      },
-      body: JSON.stringify({
-        email: email,
-        password: tmpPass,
-        email_confirm: true
-      })
+      headers:{'Content-Type':'application/json','apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey},
+      body:JSON.stringify({email,password:tmpPass,email_confirm:true})
     });
-    const rawText = await r.text();
-    let d = {};
-    try{ d = JSON.parse(rawText); }catch(e){ d = {msg: rawText||'Boş yanıt (HTTP '+r.status+')'}; }
-
+    const rawText=await r.text();
+    let d={};
+    try{d=JSON.parse(rawText);}catch(e){d={msg:rawText||'Boş yanıt (HTTP '+r.status+')'};}
     if(r.ok && d.id){
-      // Tip ve not kaydet
-      const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
-      notlar[email] = {tip, aciklama};
-      localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar));
-
-      // Geçici parolayı ekranda göster
+      const notlar=JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
+      notlar[email]={tip,aciklama};
+      localStorage.setItem('ibkb_kullanici_notlari',JSON.stringify(notlar));
       el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
-      el.innerHTML=
-        '✅ Kullanıcı oluşturuldu: <strong>'+email+'</strong><br><br>'
-        +'<div style="background:#fff;border:2px solid #1a7a4a;border-radius:8px;padding:12px 16px;margin-top:4px;">'
-        +'<div style="font-size:.75rem;color:#4a5568;margin-bottom:4px;">GEÇİCİ PAROLA (kullanıcıya iletin):</div>'
-        +'<div style="display:flex;align-items:center;gap:8px;">'
-        +'<code id="tmpPassGoster" style="font-size:1.1rem;font-weight:700;letter-spacing:.08em;color:#1a3a5c;background:#f0f4f8;padding:6px 12px;border-radius:6px;flex:1;">'+tmpPass+'</code>'
-        +'<button onclick="navigator.clipboard.writeText(''+tmpPass+'');this.textContent='✓ Kopyalandı';setTimeout(()=>this.textContent='📋 Kopyala',2000)" '
-        +'style="background:#1a56a0;color:#fff;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:.82rem;white-space:nowrap;">📋 Kopyala</button>'
+      const passHtml='<div style="background:#e8f5ef;border:2px solid #1a7a4a;border-radius:8px;padding:12px 16px;margin-top:10px;">'
+        +'<div style="font-size:.75rem;color:#4a5568;margin-bottom:6px;font-weight:600;">GEÇİCİ PAROLA — Kullanıcıya iletin:</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        +'<code id="tmpPassGoster" style="font-size:1.1rem;font-weight:700;letter-spacing:.08em;color:#1a3a5c;background:#f0f4f8;padding:6px 14px;border-radius:6px;flex:1;">'+tmpPass+'</code>'
+        +'<button id="kopyalaBtn" style="background:#1a56a0;color:#fff;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.82rem;white-space:nowrap;font-family:inherit;">📋 Kopyala</button>'
         +'</div>'
-        +'<div style="font-size:.73rem;color:#666;margin-top:8px;">⚠ Kullanıcı ilk girişten sonra parolasını değiştirebilir.</div>'
+        +'<div style="font-size:.72rem;color:#555;margin-top:8px;">⚠ Kullanıcı ilk girişte parolasını değiştirebilir.</div>'
         +'</div>';
+      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
+      el.innerHTML='✅ Kullanıcı oluşturuldu: <strong>'+email+'</strong>'+passHtml;
+      document.getElementById('kopyalaBtn').addEventListener('click',function(){
+        navigator.clipboard.writeText(tmpPass).then(()=>{
+          this.textContent='✓ Kopyalandı';
+          setTimeout(()=>this.textContent='📋 Kopyala',2000);
+        });
+      });
       document.getElementById('davet-eposta').value='';
-      if(notEl) notEl.value='';
-      if(tipEl) tipEl.value='lisans';
+      if(notEl)notEl.value='';
+      if(tipEl)tipEl.value='lisans';
       kullanicilariYukle();
     } else {
-      const msg = d.msg || d.message || d.error_description || d.error || JSON.stringify(d);
+      const msg=d.msg||d.message||d.error_description||d.error||JSON.stringify(d);
       el.style.background='#fef2f2'; el.style.color='#b91c1c';
-      if(msg.includes('already registered') || msg.includes('already been registered')){
-        el.textContent='⚠ Bu e-posta zaten kayıtlı. Parola sıfırlama kullanın.';
-      } else if(msg.includes('invalid') || msg.includes('unauthorized') || msg.includes('401')){
-        el.textContent='⚠ Yetki hatası — Service Role Key doğru mu? HTTP '+r.status;
+      if(msg.includes('already registered')||msg.includes('already been')){
+        el.textContent='⚠ Bu e-posta zaten kayıtlı.';
       } else {
         el.textContent='✗ Hata (HTTP '+r.status+'): '+msg;
       }
@@ -1512,66 +1278,8 @@ async function davetGonder(){
     el.textContent='✗ Bağlantı hatası: '+e.message;
   }
 }
-
-async function kullaniciEkle(){
-  const sb=sbCfg(); if(!sb){toast('⚠ Supabase yapılandırılmamış');return;}
-  const email=document.getElementById('yeni-eposta').value.trim();
-  const pass=document.getElementById('yeni-parola').value;
-  const tipEl = document.getElementById('yeni-tip');
-  const notEl = document.getElementById('yeni-not');
-  const tip = tipEl ? tipEl.value : 'lisans';
-  const aciklama = notEl ? notEl.value.trim() : '';
-  const el=document.getElementById('ekleMsg');
-  if(!email||!pass){toast('⚠ E-posta ve parola zorunludur');return;}
-  if(pass.length<6){toast('⚠ Parola en az 6 karakter olmalı');return;}
-  el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
-  el.textContent='Ekleniyor…';
-  try{
-    // Önce service_role ile admin endpoint'i dene
-    const svcKey = sb.serviceKey || sb.key;
-    const r=await fetch(sb.url+'/auth/v1/admin/users',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':svcKey,'Authorization':'Bearer '+svcKey},
-      body:JSON.stringify({email,password:pass,email_confirm:true})
-    });
-    const d=await r.json();
-    if(r.ok && d.id){
-      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
-      el.textContent='✓ Kullanıcı eklendi: '+email+(tip==='demo'?' (Demo)':'');
-      // Tip ve not kaydet
-      const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
-      notlar[email] = {tip, aciklama};
-      localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar));
-      document.getElementById('yeni-eposta').value='';
-      document.getElementById('yeni-parola').value='';
-      if(tipEl) tipEl.value='lisans';
-      if(notEl) notEl.value='';
-      kullanicilariYukle();
-      return;
-    }
-    // Admin endpoint başarısız — signUp ile dene
-    const r2=await fetch(sb.url+'/auth/v1/signup',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':sb.key,'Authorization':'Bearer '+sb.key},
-      body:JSON.stringify({email,password:pass})
-    });
-    const d2=await r2.json();
-    if(r2.ok && (d2.id||d2.user)){
-      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
-      el.textContent='✓ Kullanıcı eklendi: '+email;
-      document.getElementById('yeni-eposta').value='';
-      document.getElementById('yeni-parola').value='';
-      kullanicilariYukle();
-    } else {
-      el.style.background='#fef2f2'; el.style.color='#b91c1c';
-      const msg=d2.msg||d2.message||d2.error_description||d.msg||d.message||JSON.stringify(d2);
-      el.textContent='✗ Hata: '+(msg==='User already registered'?'Bu e-posta zaten kayıtlı.':msg);
-    }
-  }catch(e){
-    el.style.background='#fef2f2'; el.style.color='#b91c1c';
-    el.textContent='✗ Bağlantı hatası: '+e.message;
-  }
-}
+// Geriye dönük uyumluluk
+async function kullaniciEkle(){ await davetGonder(); }
 
 async function kullanicilariYukle(){
   const sb=sbCfg(); if(!sb) return;
@@ -1632,46 +1340,28 @@ async function kullanicilariYukle(){
     const fmtTar = (iso)=> iso ? new Date(iso).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
     const fmtSon = (iso)=> iso ? new Date(iso).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
 
-    // Kullanıcı notları localStorage'dan oku
-    const kullaniciNotlari = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
-
-    el.innerHTML=`<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.82rem;">
       <thead><tr style="background:#f0f4f8;border-bottom:2px solid #e2e8f0;">
         <th style="padding:10px 12px;text-align:left;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">E-posta</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Tip</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Kayıt</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Kayıt Tarihi</th>
         <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Son Giriş</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Giriş</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Not</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">İşlemler</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Giriş Sayısı</th>
+        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">İşlem</th>
       </tr></thead>
-      <tbody>${users.map((u,i)=>{
-        const not = kullaniciNotlari[u.email]||{};
-        const tip = not.tip||'lisans';
-        const tipBadge = tip==='demo'
-          ? `<span style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:10px;padding:2px 8px;font-size:.7rem;font-weight:700;">🎥 Demo</span>`
-          : `<span style="background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:10px;padding:2px 8px;font-size:.7rem;font-weight:700;">🟢 Lisans</span>`;
-        return `<tr style="border-bottom:1px solid #edf2f7;background:${tip==='demo'?'#fffbeb':(i%2===0?'#fff':'#f8fafc')};">
-          <td style="padding:10px 12px;font-weight:600;color:#1a2535;">${u.email}</td>
-          <td style="padding:10px 12px;text-align:center;">${tipBadge}</td>
-          <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtTar(u.kayitTarihi)}</td>
-          <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtSon(u.sonGiris)}</td>
-          <td style="padding:10px 12px;text-align:center;">
-            <span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.78rem;padding:2px 10px;border-radius:12px;">${u.girisAdedi}</span>
-          </td>
-          <td style="padding:10px 12px;text-align:center;color:#64748b;font-size:.78rem;">${not.aciklama||'—'}</td>
-          <td style="padding:10px 12px;text-align:center;">
-            <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
-              <button onclick="kullaniciParolaFormAc('${u.email}')" style="font-size:.7rem;color:#1a56a0;background:#dbeafe;border:1px solid #93c5fd;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Parola</button>
-              <button onclick="kullaniciTipToggle('${u.email}','${tip}')" style="font-size:.7rem;color:#92400e;background:#fef3c7;border:1px solid #fcd34d;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;">🔄 Tip</button>
-              ${u.silinebilir
-                ? `<button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.7rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>`
-                : ''}
-            </div>
-          </td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>
+      <tbody>${users.map((u,i)=>`<tr style="border-bottom:1px solid #edf2f7;background:${i%2===0?'#fff':'#f8fafc'};">
+        <td style="padding:10px 12px;font-weight:600;color:#1a2535;">${u.email}</td>
+        <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtTar(u.kayitTarihi)}</td>
+        <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtSon(u.sonGiris)}</td>
+        <td style="padding:10px 12px;text-align:center;">
+          <span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.78rem;padding:2px 10px;border-radius:12px;">${u.girisAdedi}</span>
+        </td>
+        <td style="padding:10px 12px;text-align:center;">
+          ${u.silinebilir
+            ? `<button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>`
+            : `<span style="font-size:.7rem;color:#94a3b8;">—</span>`}
+        </td>
+      </tr>`).join('')}</tbody>
+    </table>
     ${authUsers.length===0?'<p style="font-size:.72rem;color:#94a3b8;margin-top:8px;padding:0 4px;">ℹ Silme işlemi için Supabase Service Role Key gereklidir.</p>':''}`;
   }catch(e){
     el.innerHTML='<div style="color:#b91c1c;font-size:.83rem;padding:12px;">Hata: '+e.message+'</div>';
@@ -1742,7 +1432,7 @@ function kurlariKaydet(){
 function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge','oz1Ikon','oz1Baslik','oz1Alt','oz2Ikon','oz2Baslik','oz2Alt','oz3Ikon','oz3Baslik','oz3Alt','oz4Ikon','oz4Baslik','oz4Alt'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
@@ -1839,13 +1529,7 @@ async function basvurulariYukle(){
   el.innerHTML = '<p style="padding:20px;color:#6b7a99;">Yükleniyor...</p>';
   try{
     const key = sb.serviceKey;
-    const filtreEl = document.getElementById('basvuruFiltre');
-    const filtre = filtreEl ? filtreEl.value : '';
-    let basvuruUrl = sb.url + '/rest/v1/basvurular?order=tarih.desc&limit=200';
-    if(filtre === 'demo') basvuruUrl += '&talep=eq.demo';
-    else if(filtre === 'satin-alma') basvuruUrl += '&talep=eq.satin-alma';
-    else if(filtre === 'okunmamis') basvuruUrl += '&okundu=eq.false';
-    const r = await fetch(basvuruUrl,{
+    const r = await fetch(sb.url + '/rest/v1/basvurular?order=tarih.desc&limit=200',{
       headers:{'apikey':key,'Authorization':'Bearer '+key}
     });
     const d = await r.json();
@@ -1875,31 +1559,21 @@ async function basvurulariYukle(){
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Telefon</th>'
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Talep</th>'
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Mesaj</th>'
-      + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;white-space:nowrap;">İşlemler</th>'
       + '</tr></thead><tbody>'
       + d.map(function(row,i){
           const t   = new Date(row.tarih).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
           const tlp = talepBadge(row.talep||'');
           const msg = row.mesaj ? ('<span title="'+row.mesaj.replace(/"/g,"'")+'">'+row.mesaj.substring(0,40)+(row.mesaj.length>40?'…':'')+'</span>') : '<span style="color:#94a3b8;">—</span>';
           const isDemo = row.talep === 'demo';
-          const isOkunmamis = !row.okundu;
-          const rowBg = isDemo ? '#fffbeb' : (isOkunmamis ? '#f0f9ff' : (i%2===0?'#fff':'#f8fafc'));
-          const leftBorder = isDemo ? ';border-left:3px solid #f59e0b;' : (isOkunmamis ? ';border-left:3px solid #0ea5e9;' : '');
-          const okunduHtml = isOkunmamis
-            ? '<button onclick="basvuruOkundu(\'' + row.id + '\',this)" style="font-size:.68rem;color:#0369a1;background:#e0f2fe;border:1px solid #7dd3fc;padding:2px 7px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;">✓ Okundu</button>'
-            : '<span style="font-size:.68rem;color:#16a34a;font-weight:600;">✓ Okundu</span>';
-          const silHtml = '<button onclick="basvuruSil(\'' + row.id + '\',this)" style="font-size:.68rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:2px 7px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;">🗑</button>';
-          const emailKonu = row.talep==='demo' ? 'Demo Talebiniz' : 'Başvurunuz Hakkında';
-          const emailHtml = '<a href="mailto:'+row.email+'?subject='+encodeURIComponent('İBKB Yazılım - '+emailKonu)+'&body='+encodeURIComponent('Sayın '+row.ad_soyad+',\n\n')+'" style="font-size:.68rem;color:#1a56a0;background:#dbeafe;border:1px solid #93c5fd;padding:2px 7px;border-radius:5px;font-family:inherit;font-weight:600;text-decoration:none;">✉ Yanıtla</a>';
-          return '<tr style="border-bottom:1px solid #edf2f7;background:'+rowBg+leftBorder+'">'
-            + '<td style="padding:9px 10px;color:#4a5568;white-space:nowrap;font-size:.78rem;">'+t+'</td>'
-            + '<td style="padding:9px 10px;color:#1e293b;font-weight:600;">'+(isOkunmamis?'<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#0ea5e9;margin-right:5px;vertical-align:middle;"></span>':'')+row.ad_soyad+'</td>'
-            + '<td style="padding:9px 10px;color:#334155;">'+row.firma+'</td>'
-            + '<td style="padding:9px 10px;"><a href="mailto:'+row.email+'" style="color:#2563eb;text-decoration:none;font-size:.82rem;">'+row.email+'</a></td>'
-            + '<td style="padding:9px 10px;color:#334155;font-size:.82rem;">'+(row.telefon||'<span style=\"color:#94a3b8;\">—</span>')+'</td>'
-            + '<td style="padding:9px 10px;">'+tlp+'</td>'
-            + '<td style="padding:9px 10px;color:#4a5568;font-size:.78rem;max-width:140px;">'+msg+'</td>'
-            + '<td style="padding:9px 10px;"><div style="display:flex;gap:4px;flex-wrap:wrap;">'+okunduHtml+' '+emailHtml+' '+silHtml+'</div></td>'
+          const rowBg = isDemo ? '#fffbeb' : (i%2===0?'#fff':'#f8fafc');
+          return '<tr style="border-bottom:1px solid #edf2f7;background:'+rowBg+(isDemo?';border-left:3px solid #f59e0b;':'')+'">"'
+            + '<td style="padding:9px 14px;color:#4a5568;white-space:nowrap;">'+t+'</td>'
+            + '<td style="padding:9px 14px;color:#1e293b;font-weight:600;">'+row.ad_soyad+'</td>'
+            + '<td style="padding:9px 14px;color:#334155;">'+row.firma+'</td>'
+            + '<td style="padding:9px 14px;"><a href="mailto:'+row.email+'" style="color:#2563eb;text-decoration:none;">'+row.email+'</a></td>'
+            + '<td style="padding:9px 14px;color:#334155;">'+(row.telefon||'<span style=\"color:#94a3b8;\">—</span>')+'</td>'
+            + '<td style="padding:9px 14px;">'+tlp+'</td>'
+            + '<td style="padding:9px 14px;color:#4a5568;font-size:.8rem;max-width:160px;">'+msg+'</td>'
             + '</tr>';
         }).join('')
       + '</tbody></table></div>';
@@ -1909,177 +1583,6 @@ async function basvurulariYukle(){
 }
 
 
-
-// ─── DASHBOARD ────────────────────────────────────────────────────────────────
-async function dashboardYukle(){
-  const sb = sbCfg();
-  if(!sb || !sb.serviceKey) return;
-  const key = sb.serviceKey;
-
-  try{
-    // Paralel çek
-    const [rUsers, rLog, rBasvuru] = await Promise.all([
-      fetch(sb.url+'/auth/v1/admin/users?per_page=200', {headers:{'apikey':key,'Authorization':'Bearer '+key}}),
-      fetch(sb.url+'/rest/v1/giris_log?select=id', {headers:{'apikey':key,'Authorization':'Bearer '+key}}),
-      fetch(sb.url+'/rest/v1/basvurular?select=id,okundu,talep&order=tarih.desc', {headers:{'apikey':key,'Authorization':'Bearer '+key}})
-    ]);
-
-    const usersData = rUsers.ok ? await rUsers.json() : {};
-    const logData   = rLog.ok   ? await rLog.json()   : [];
-    const basvData  = rBasvuru.ok ? await rBasvuru.json() : [];
-
-    const kullaniciSayisi = (usersData.users||[]).length;
-    const girisSayisi     = Array.isArray(logData) ? logData.length : 0;
-    const basvuruSayisi   = Array.isArray(basvData) ? basvData.length : 0;
-    const okunmamisSayisi = Array.isArray(basvData) ? basvData.filter(b=>!b.okundu).length : 0;
-    const demoSayisi      = Array.isArray(basvData) ? basvData.filter(b=>b.talep==='demo').length : 0;
-
-    const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-    set('ds-kullanici', kullaniciSayisi);
-    set('ds-giris',     girisSayisi);
-    set('ds-basvuru',   basvuruSayisi);
-    set('ds-okunmamis', okunmamisSayisi);
-    set('ds-demo',      demoSayisi);
-
-    // Badge güncelle
-    const badge = document.getElementById('basvuruBadge');
-    if(badge){ if(okunmamisSayisi>0){badge.textContent=okunmamisSayisi;badge.style.display='inline';}else{badge.style.display='none';} }
-
-    // Son başvurular
-    const sbEl = document.getElementById('ds-son-basvurular');
-    if(sbEl){
-      const son5 = Array.isArray(basvData) ? basvData.slice(0,5) : [];
-      if(son5.length===0){ sbEl.innerHTML='<div style="color:#8c97a8;font-size:.83rem;">Henüz başvuru yok.</div>'; }
-      else {
-        const talepRenk = {demo:'#fef3c7','satin-alma':'#dcfce7'};
-        const talepYazi = {demo:'🎥 Demo','satin-alma':'🛒 Satın Alma'};
-        sbEl.innerHTML = son5.map(b=>{
-          const t = new Date(b.tarih||0).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
-          return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f2f5;">'
-            +'<span style="font-weight:600;color:#1a2535;font-size:.83rem;flex:1;">'+b.ad_soyad+' — '+b.firma+'</span>'
-            +'<span style="font-size:.75rem;background:'+(talepRenk[b.talep]||'#f0f2f5')+';padding:2px 8px;border-radius:8px;">'+(talepYazi[b.talep]||b.talep||'—')+'</span>'
-            +'<span style="font-size:.75rem;color:#8c97a8;">'+t+'</span>'
-            +'</div>';
-        }).join('');
-      }
-    }
-
-    // Son girişler
-    const rLog5 = await fetch(sb.url+'/rest/v1/giris_log?order=giris_tarihi.desc&limit=5', {headers:{'apikey':key,'Authorization':'Bearer '+key}});
-    const log5  = rLog5.ok ? await rLog5.json() : [];
-    const sgEl  = document.getElementById('ds-son-girisler');
-    if(sgEl){
-      if(!Array.isArray(log5)||log5.length===0){ sgEl.innerHTML='<div style="color:#8c97a8;font-size:.83rem;">Kayıt yok.</div>'; }
-      else {
-        sgEl.innerHTML = log5.map(l=>{
-          const t = new Date(l.giris_tarihi).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-          return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f2f5;">'
-            +'<span style="font-weight:600;color:#1a2535;font-size:.83rem;flex:1;">'+l.email+'</span>'
-            +'<span style="font-size:.75rem;color:#8c97a8;">'+t+'</span>'
-            +'</div>';
-        }).join('');
-      }
-    }
-
-  }catch(e){ console.error('Dashboard hata:',e); }
-}
-
-// ─── BAŞVURU OKUNDU İŞARETLE ─────────────────────────────────────────────────
-async function basvuruOkundu(id, btn){
-  const sb = sbCfg();
-  try{
-    const r = await fetch(sb.url+'/rest/v1/basvurular?id=eq.'+id,{
-      method:'PATCH',
-      headers:{'Content-Type':'application/json','apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey,'Prefer':'return=minimal'},
-      body:JSON.stringify({okundu:true})
-    });
-    if(r.ok||r.status===204){
-      if(btn){ btn.outerHTML='<span style="font-size:.68rem;color:#16a34a;font-weight:600;">✓ Okundu</span>'; }
-      dashboardYukle();
-      toast('✅ Okundu olarak işaretlendi');
-    } else { toast('⚠ Güncellenemedi'); }
-  }catch(e){ toast('✗ Hata: '+e.message); }
-}
-
-// ─── BAŞVURU SİL ─────────────────────────────────────────────────────────────
-async function basvuruSil(id, btn){
-  if(!confirm('Bu başvuruyu silmek istediğinizden emin misiniz?')) return;
-  const sb = sbCfg();
-  try{
-    const r = await fetch(sb.url+'/rest/v1/basvurular?id=eq.'+id,{
-      method:'DELETE',
-      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey,'Prefer':'return=minimal'}
-    });
-    if(r.ok||r.status===204){
-      const row = btn ? btn.closest('tr') : null;
-      if(row) row.remove();
-      dashboardYukle();
-      toast('🗑 Başvuru silindi');
-    } else { toast('⚠ Silinemedi'); }
-  }catch(e){ toast('✗ Hata: '+e.message); }
-}
-
-// ─── KULLANICI PAROLA SIFIRLAMA ───────────────────────────────────────────────
-function kullaniciParolaFormAc(email){
-  const panel = document.getElementById('sbParolaSifirla');
-  if(panel) panel.style.display='block';
-  const emailEl = document.getElementById('sifirla-eposta');
-  if(emailEl){ emailEl.value=email; emailEl.focus(); }
-  panel.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-async function kullaniciParolaSifirla(){
-  const sb  = sbCfg();
-  const email = document.getElementById('sifirla-eposta').value.trim();
-  const pass  = document.getElementById('sifirla-parola').value;
-  const el    = document.getElementById('sifirlaMsg');
-  if(!email||!pass){ toast('⚠ E-posta ve yeni parola zorunludur'); return; }
-  if(pass.length<6){ toast('⚠ Parola en az 6 karakter olmalı'); return; }
-  el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
-  el.textContent='Güncelleniyor…';
-
-  // Önce kullanıcı ID'sini bul
-  try{
-    const svcKey = sb.serviceKey;
-    const rList = await fetch(sb.url+'/auth/v1/admin/users?per_page=200',{
-      headers:{'apikey':svcKey,'Authorization':'Bearer '+svcKey}
-    });
-    const data = rList.ok ? await rList.json() : {};
-    const user = (data.users||[]).find(u=>u.email===email);
-    if(!user){ el.style.background='#fef2f2'; el.style.color='#b91c1c'; el.textContent='✗ Kullanıcı bulunamadı'; return; }
-
-    const r = await fetch(sb.url+'/auth/v1/admin/users/'+user.id,{
-      method:'PUT',
-      headers:{'Content-Type':'application/json','apikey':svcKey,'Authorization':'Bearer '+svcKey},
-      body:JSON.stringify({password:pass})
-    });
-    if(r.ok){
-      el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
-      el.textContent='✅ Parola güncellendi: '+email;
-      document.getElementById('sifirla-parola').value='';
-    } else {
-      const d = await r.json();
-      el.style.background='#fef2f2'; el.style.color='#b91c1c';
-      el.textContent='✗ Hata: '+(d.message||JSON.stringify(d));
-    }
-  }catch(e){
-    el.style.background='#fef2f2'; el.style.color='#b91c1c';
-    el.textContent='✗ Bağlantı hatası: '+e.message;
-  }
-}
-
-// ─── KULLANICI TİP DEĞİŞTİR ──────────────────────────────────────────────────
-function kullaniciTipToggle(email, mevcutTip){
-  const yeniTip = mevcutTip === 'demo' ? 'lisans' : 'demo';
-  const notlar  = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
-  if(!notlar[email]) notlar[email]={};
-  notlar[email].tip = yeniTip;
-  localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar));
-  toast((yeniTip==='demo'?'🎥':'🟢')+' '+email+' → '+yeniTip);
-  kullanicilariYukle();
-}
-
-// ─── KUL. EKLEME — tip/not kaydet ───────────────────────────────────────────
 async function girisLogYukle(){
   const sb=sbCfg();
   const el=document.getElementById('girisLogListesi');
@@ -2104,3 +1607,11 @@ async function girisLogYukle(){
         const t=new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
         return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
           +'<td style="padding:10px 14px;color:#1e293b;font-weight:500;">'+row.email+'</td>'
+          +'<td style="padding:10px 14px;color:#4a5568;">'+t+'</td></tr>';
+      }).join('')+'</tbody></table>';
+  }catch(e){el.innerHTML='<p style="color:#b91c1c;padding:20px;">Hata: '+e.message+'</p>';}
+}
+
+</script>
+</body>
+</html>
