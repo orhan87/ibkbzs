@@ -52,13 +52,13 @@ if(!sessionStorage.getItem('govdag_token')){
       try{
         var cfg2 = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
         var met2 = cfg2.metinler || {};
-        var ep = met2.iletisimEmail || ('orhankelahmet'+'@'+'gmail.com');
+        var ep = met2.iletisimEmail || 'destek@ibkbsorgulama.com';
         var tel = met2.iletisimTel || '+90 533 198 70 33';
         var telRaw = tel.replace(/[^+0-9]/g,'');
         links.innerHTML = '<a href="mailto:'+ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+ep+'</a>'
           + '<a href="tel:'+telRaw+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+tel+'</a>';
       }catch(e){
-        var ep2 = 'orhankelahmet'+'@'+'gmail.com';
+        var ep2 = 'destek@ibkbsorgulama.com';
         links.innerHTML = '<a href="mailto:'+ep2+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+ep2+'</a>';
       }
     }
@@ -1407,7 +1407,6 @@ async function supabaseSorguYukle(){
       }
     });
     const rows = await res.json();
-    console.log('SB Yükle: status=' + res.status + ' rows=' + (Array.isArray(rows)?rows.length:JSON.stringify(rows)));
     if(!res.ok || !Array.isArray(rows) || rows.length === 0) return;
     // Mevcut oturum sorgularıyla birleştir (duplicate önle)
     const mevcutSaatler = new Set(sorguGecmisi.map(q=>q.saat));
@@ -1819,23 +1818,6 @@ function pdfIndir(){
     setTimeout(function(){ gWin.print(); }, 250);
   });
 }
-function gecmisGoster(idx){
-  const q = sorguGecmisi[idx];
-  if(!q || !q.htmlDetay) return;
-  document.getElementById('result').innerHTML = q.htmlDetay;
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-function gecmisTemizle(){
-  if(sorguGecmisi.length === 0) return;
-  if(!confirm('Tüm sorgu geçmişi silinecek. Emin misiniz?')) return;
-  sorguGecmisi = [];
-  gecmisPanelGuncelle();
-  const r = document.getElementById('result');
-  r.style.display = 'none'; r.innerHTML = '';
-}
-
 // ─── PDF ──────────────────────────────────────────────────────────────────────
 
 // ─── EXCEL ────────────────────────────────────────────────────────────────────

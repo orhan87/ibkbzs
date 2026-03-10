@@ -191,18 +191,34 @@
 
   <main>
     <div class="tab-bar">
-      <button class="tab-btn ak" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
+      <button class="tab-btn ak" onclick="tab('dashboard',this)" id="tabDashboard">📊 Dashboard</button>
+      <button class="tab-btn" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
       <button class="tab-btn"    onclick="tab('sabitler',this)">⚙ Sayısal Değerler</button>
       <button class="tab-btn"    onclick="tab('metinler',this)">📝 Metinler & Notlar</button>
       <button class="tab-btn"    onclick="tab('logologin',this)">🖼 Logo & Login Sayfası</button>
       <button class="tab-btn"    onclick="tab('parola',this)">🔑 Parola</button>
       <button class="tab-btn"    onclick="tab('kullanicilar',this)" id="tabKullanici">👥 Kullanıcılar</button>
+      <button class="tab-btn"    onclick="tab('istatistik',this)" id="tabIstatistik">📈 İstatistik</button>
       <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
       <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular</button>
     </div>
 
-    <!-- ÜLKELER -->
-    <div id="tab-ulkeler" class="tab-content ak">
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content ak">
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>📊 Sistem Özeti</h3><p>Genel istatistikler ve anlık durum</p></div>
+          <button class="btn btn-secondary" onclick="dashboardYukle()">🔄 Yenile</button>
+        </div>
+        <div class="pc-body">
+          <div id="dashboardIcerik">
+            <div style="color:#8c97a8;font-size:.85rem;padding:20px 0;">Yükleniyor…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- ÜLKELER -->
+    <div id="tab-ulkeler" class="tab-content">
       <div class="panel-card">
         <div class="pc-head">
           <div><h3>Yeni Ülke Ekle</h3></div>
@@ -682,11 +698,33 @@
       </div>
     </div>
 
+    <!-- İSTATİSTİK -->
+    <div id="tab-istatistik" class="tab-content">
+      <div class="panel-card">
+        <div class="pc-head">
+          <div><h3>📈 Sorgu İstatistikleri</h3><p>Sorgular tablosundan ülke ve dönem bazlı analiz</p></div>
+          <button class="btn btn-secondary" onclick="istatistikYukle()">🔄 Yenile</button>
+        </div>
+        <div class="pc-body">
+          <div id="istatistikIcerik">
+            <div style="color:#8c97a8;font-size:.85rem;padding:20px 0;">Sekmeye tıklayınca yüklenir…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="tab-girislog" class="tab-content">
       <div class="card">
         <div class="card-header">
           <div><h3>📋 Giriş Geçmişi</h3><p>Sisteme giriş yapan kullanıcılar, tarih ve saatleri</p></div>
-          <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary" onclick="girisLogTemizle()" style="background:#fef2f2;color:#b91c1c;border-color:#fca5a5;">🗑 Temizle</button>
+            <button class="btn btn-secondary" onclick="girisLogCsvIndir()">⬇ CSV</button>
+            <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
+          </div>
+        </div>
+        <div style="padding:0 0 12px;">
+          <input type="text" id="girisLogArama" oninput="girisLogFiltrele()" placeholder="E-posta ile filtrele…" style="width:100%;max-width:320px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.83rem;font-family:inherit;">
         </div>
         <div id="girisLogListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
       </div>
@@ -933,6 +971,8 @@ function baslat(){
 
   ulkeTablosuGuncelle();
   logoTabYukle();
+  // Dashboard'u başlangıçta yükle
+  setTimeout(dashboardYukle, 300);
 }
 
 // ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
@@ -1044,6 +1084,7 @@ function tab(id, btn){
   if(id==='kullanicilar') kullaniciTabYukle();
   if(id==='girislog') girisLogYukle();
   if(id==='basvurular') basvurulariYukle();
+  if(id==='istatistik') istatistikYukle();
   if(id==='logologin') logoTabYukle();
   document.getElementById('tab-'+id).classList.add('ak');
   btn.classList.add('ak');
@@ -1316,18 +1357,24 @@ async function kullanicilariYukle(){
     // authUsers varsa onları kullan, yoksa logMap'ten oluştur
     let users = [];
     if(authUsers.length > 0){
+      const notlarMap = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
       users = authUsers.map(u=>({
         id: u.id,
         email: u.email||'-',
         kayitTarihi: u.created_at,
         sonGiris: (logMap[u.email]&&logMap[u.email].sonGiris) || u.last_sign_in_at,
         girisAdedi: (logMap[u.email]&&logMap[u.email].girisAdedi) || 0,
-        silinebilir: true
+        silinebilir: true,
+        tip: (notlarMap[u.email]&&notlarMap[u.email].tip) || '',
+        not: (notlarMap[u.email]&&notlarMap[u.email].aciklama) || ''
       }));
     } else {
       // Sadece log varsa
+      const notlarMap2 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
       users = Object.entries(logMap).map(([email,v])=>({
-        id:null, email, kayitTarihi:null, sonGiris:v.sonGiris, girisAdedi:v.girisAdedi, silinebilir:false
+        id:null, email, kayitTarihi:null, sonGiris:v.sonGiris, girisAdedi:v.girisAdedi, silinebilir:false,
+        tip: (notlarMap2[email]&&notlarMap2[email].tip)||'',
+        not: (notlarMap2[email]&&notlarMap2[email].aciklama)||''
       }));
     }
 
@@ -1344,6 +1391,7 @@ async function kullanicilariYukle(){
     el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.82rem;">
       <thead><tr style="background:#f0f4f8;border-bottom:2px solid #e2e8f0;">
         <th style="padding:10px 12px;text-align:left;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">E-posta</th>
+        <th style="padding:10px 12px;text-align:left;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Etiket / Not</th>
         <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Kayıt Tarihi</th>
         <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Son Giriş</th>
         <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Giriş Sayısı</th>
@@ -1351,6 +1399,17 @@ async function kullanicilariYukle(){
       </tr></thead>
       <tbody>${users.map((u,i)=>`<tr style="border-bottom:1px solid #edf2f7;background:${i%2===0?'#fff':'#f8fafc'};">
         <td style="padding:10px 12px;font-weight:600;color:#1a2535;">${u.email}</td>
+        <td style="padding:10px 12px;">
+          ${(()=>{
+            const tipRenk = {lisans:'#dcfce7|#166534|#86efac',demo:'#fef3c7|#92400e|#fcd34d',test:'#e0e7ff|#3730a3|#a5b4fc','':'#f1f5f9|#64748b|#cbd5e1'};
+            const tipAd   = {lisans:'Lisans',demo:'Demo',test:'Test',''  :''};
+            const [bg,fg,br] = (tipRenk[u.tip]||tipRenk['']).split('|');
+            const badge = u.tip ? '<span style="background:'+bg+';color:'+fg+';border:1px solid '+br+';border-radius:9px;padding:1px 8px;font-size:.7rem;font-weight:700;margin-right:4px;">'+tipAd[u.tip]+'</span>' : '';
+            const notText = u.not ? '<span title="'+u.not.replace(/"/g,"'")+'" style="font-size:.75rem;color:#64748b;cursor:default;">'+u.not.substring(0,28)+(u.not.length>28?'…':'')+'</span>' : '';
+            return (badge+notText) || '<span style="color:#cbd5e1;font-size:.75rem;">—</span>';
+          })()}
+          <button onclick="kullaniciNotDuzenle('${u.email}')" title="Etiket/Not düzenle" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:2px 4px;opacity:.5;vertical-align:middle;">✏️</button>
+        </td>
         <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtTar(u.kayitTarihi)}</td>
         <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtSon(u.sonGiris)}</td>
         <td style="padding:10px 12px;text-align:center;">
@@ -1614,6 +1673,12 @@ async function basvurulariYukle(){
             + '<td style="padding:9px 14px;color:#334155;">'+(row.telefon||'<span style=\"color:#94a3b8;\">—</span>')+'</td>'
             + '<td style="padding:9px 14px;">'+tlp+'</td>'
             + '<td style="padding:9px 14px;color:#4a5568;font-size:.8rem;max-width:160px;">'+msg+'</td>'
+            + '<td style="padding:9px 14px;text-align:center;white-space:nowrap;">'
+            + '<div style="display:flex;gap:5px;justify-content:center;">'
+            + '<a href="mailto:'+row.email+'?subject=Re: İBKB Sorgulama Başvurunuz&body=Sayın '+row.ad_soyad+'," style="font-size:.7rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;text-decoration:none;white-space:nowrap;">📧 Yanıtla</a>'
+            + '<button onclick="basvuruSil(\''+row.id+'\')" style="font-size:.7rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:3px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>'
+            + '</div>'
+            + '</td>'
             + '</tr>';
         }).join('')
       + '</tbody></table></div>';
@@ -1638,19 +1703,313 @@ async function girisLogYukle(){
     if(!Array.isArray(d)||d.length===0){
       el.innerHTML='<p style="text-align:center;color:#6b7a99;padding:20px;">Kayıt yok. Siteden çıkış yapıp tekrar giriş yapın.</p>';return;
     }
-    el.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
-      +'<thead><tr style="background:#f0f4f8;">'
-      +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">E-posta</th>'
-      +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Giriş Tarihi & Saati</th>'
-      +'</tr></thead><tbody>'
-      +d.map((row,i)=>{
-        const t=new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
-        return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
-          +'<td style="padding:10px 14px;color:#1e293b;font-weight:500;">'+row.email+'</td>'
-          +'<td style="padding:10px 14px;color:#4a5568;">'+t+'</td></tr>';
-      }).join('')+'</tbody></table>';
+    _girisLogTum = d;
+    const aramaEl = document.getElementById('girisLogArama');
+    if(aramaEl) aramaEl.value = '';
+    girisLogRender(d, el);
   }catch(e){el.innerHTML='<p style="color:#b91c1c;padding:20px;">Hata: '+e.message+'</p>';}
 }
+
+// ─── DASHBOARD ───────────────────────────────────────────────────────────────
+async function dashboardYukle(){
+  const el = document.getElementById('dashboardIcerik');
+  const sb = sbCfg();
+  if(!el) return;
+  el.innerHTML = '<div style="color:#8c97a8;font-size:.85rem;padding:20px 0;">Yükleniyor…</div>';
+
+  try{
+    const key = sb ? (sb.serviceKey || sb.key) : null;
+    const headers = key ? {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'} : {};
+
+    // Paralel fetch
+    const [rUsers, rLog, rSorgu, rBasv] = await Promise.allSettled([
+      key ? fetch(sb.url+'/auth/v1/admin/users?per_page=200', {headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key)}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000', {headers}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/sorgular?select=id,tarih&order=tarih.desc&limit=1000', {headers:{'apikey':key,'Authorization':'Bearer '+key}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/basvurular?select=id,tarih,talep&order=tarih.desc&limit=200', {headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}}) : Promise.resolve(null),
+    ]);
+
+    const usersData  = rUsers.value  && rUsers.value.ok  ? await rUsers.value.json()  : {};
+    const logData    = rLog.value    && rLog.value.ok    ? await rLog.value.json()    : [];
+    const sorguData  = rSorgu.value  && rSorgu.value.ok  ? await rSorgu.value.json()  : [];
+    const basvData   = rBasv.value   && rBasv.value.ok   ? await rBasv.value.json()   : [];
+
+    const kulSayi = (usersData.users||[]).length;
+    const logSayi = Array.isArray(logData) ? logData.length : 0;
+    const sorguSayi = Array.isArray(sorguData) ? sorguData.length : 0;
+    const basvSayi = Array.isArray(basvData) ? basvData.length : 0;
+
+    // Bugünkü girişler
+    const bugun = new Date().toISOString().slice(0,10);
+    const bugunGiris = Array.isArray(logData) ? logData.filter(r=>r.giris_tarihi&&r.giris_tarihi.startsWith(bugun)).length : 0;
+
+    // Son 7 gün sorgu
+    const yediGunOnce = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+    const son7Sorgu = Array.isArray(sorguData) ? sorguData.filter(r=>r.tarih && r.tarih > yediGunOnce).length : 0;
+
+    // En aktif kullanıcılar
+    const aktifMap = {};
+    if(Array.isArray(logData)){
+      logData.forEach(r=>{
+        if(r.email) aktifMap[r.email] = (aktifMap[r.email]||0)+1;
+      });
+    }
+    const top3 = Object.entries(aktifMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+    const kart = (emoji, baslik, deger, renk, alt) =>
+      '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px 22px;min-width:140px;flex:1;">'
+      +'<div style="font-size:1.6rem;margin-bottom:6px;">'+emoji+'</div>'
+      +'<div style="font-size:1.8rem;font-weight:800;color:'+renk+';">'+deger+'</div>'
+      +'<div style="font-size:.78rem;font-weight:700;color:#374162;margin-top:2px;">'+baslik+'</div>'
+      +(alt?'<div style="font-size:.72rem;color:#8c97a8;margin-top:3px;">'+alt+'</div>':'')
+      +'</div>';
+
+    const aktifListesi = top3.length > 0
+      ? '<div style="margin-top:20px;"><div style="font-size:.75rem;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">En Aktif Kullanıcılar</div>'
+        + top3.map(([email, sayi], i)=>
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:'+(i%2===0?'#f8fafc':'#fff')+';border-radius:7px;margin-bottom:4px;">'
+            +'<span style="font-size:.82rem;color:#1e293b;">'+email+'</span>'
+            +'<span style="background:#dbeafe;color:#1d4ed8;font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:10px;">'+sayi+' giriş</span>'
+            +'</div>'
+          ).join('')
+        +'</div>'
+      : '';
+
+    el.innerHTML = '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;">'
+      + kart('👥', 'Kayıtlı Kullanıcı', kulSayi||'—', '#1a56a0', '')
+      + kart('🔐', 'Toplam Giriş', logSayi||'0', '#047857', 'Bugün: '+bugunGiris)
+      + kart('🔍', 'Toplam Sorgu', sorguSayi||'0', '#7c3aed', 'Son 7 gün: '+son7Sorgu)
+      + kart('📬', 'Başvuru', basvSayi||'0', '#b45309', '')
+      + '</div>'
+      + aktifListesi
+      + (key ? '' : '<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:9px;padding:14px 18px;font-size:.83rem;color:#92400e;margin-top:12px;">⚠ Tam istatistik için Supabase Service Role Key gereklidir.</div>');
+  }catch(e){
+    el.innerHTML = '<div style="color:#b91c1c;font-size:.84rem;padding:12px;">Hata: '+e.message+'</div>';
+  }
+}
+
+// ─── BAŞVURU SİL ─────────────────────────────────────────────────────────────
+async function basvuruSil(id){
+  if(!confirm('Bu başvuru silinecek. Emin misiniz?')) return;
+  const sb = sbCfg();
+  if(!sb || !sb.serviceKey){ toast('⚠ Service Role Key gerekli'); return; }
+  try{
+    const r = await fetch(sb.url + '/rest/v1/basvurular?id=eq.'+id, {
+      method:'DELETE',
+      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
+    });
+    if(r.ok){ toast('✓ Başvuru silindi'); basvurulariYukle(); }
+    else { const d=await r.json(); toast('✗ '+(d.message||r.status)); }
+  }catch(e){ toast('✗ Hata: '+e.message); }
+}
+
+// ─── GİRİŞ LOG ARAMAFILTRELE ─────────────────────────────────────────────────
+let _girisLogTum = [];
+function girisLogFiltrele(){
+  const q = (document.getElementById('girisLogArama').value||'').toLowerCase().trim();
+  const el = document.getElementById('girisLogListesi');
+  if(!_girisLogTum.length) return;
+  const filtreli = q ? _girisLogTum.filter(r=>r.email&&r.email.toLowerCase().includes(q)) : _girisLogTum;
+  girisLogRender(filtreli, el);
+}
+
+function girisLogRender(data, el){
+  if(!data.length){ el.innerHTML='<p style="text-align:center;color:#6b7a99;padding:20px;">Kayıt yok.</p>'; return; }
+  el.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
+    +'<thead><tr style="background:#f0f4f8;">'
+    +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">E-posta</th>'
+    +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Giriş Tarihi & Saati</th>'
+    +'</tr></thead><tbody>'
+    +data.map((row,i)=>{
+      const t=new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
+      return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
+        +'<td style="padding:10px 14px;color:#1e293b;font-weight:500;">'+row.email+'</td>'
+        +'<td style="padding:10px 14px;color:#4a5568;">'+t+'</td></tr>';
+    }).join('')+'</tbody></table>';
+}
+
+function girisLogCsvIndir(){
+  if(!_girisLogTum.length){ toast('⚠ Önce giriş geçmişini yükleyin'); return; }
+  const bom = '\uFEFF';
+  const rows = [['E-posta','Giriş Tarihi']].concat(
+    _girisLogTum.map(r=>[r.email, new Date(r.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'})])
+  );
+  const csv = bom + rows.map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'giris_log_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+async function girisLogTemizle(){
+  if(!confirm('Tüm giriş geçmişi silinecek. Emin misiniz?')) return;
+  const sb = sbCfg();
+  if(!sb){ toast('⚠ Supabase yapılandırması gerekli'); return; }
+  try{
+    const key = sb.serviceKey || sb.key;
+    const r = await fetch(sb.url+'/rest/v1/giris_log?id=neq.00000000-0000-0000-0000-000000000000',{
+      method:'DELETE', headers:{'apikey':key,'Authorization':'Bearer '+key}
+    });
+    if(r.ok){ _girisLogTum=[]; toast('✓ Giriş geçmişi temizlendi'); girisLogYukle(); }
+    else { toast('✗ Silinemedi: '+r.status); }
+  }catch(e){ toast('✗ Hata: '+e.message); }
+}
+
+
+// ─── KULLANICI NOT/ETİKET DÜZENLE ─────────────────────────────────────────────
+function kullaniciNotDuzenle(email){
+  const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
+  const mevcut = notlar[email] || {tip:'', aciklama:''};
+
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  box.innerHTML = `
+    <div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18);">
+      <div style="font-size:1.1rem;font-weight:700;color:#1a3a5c;margin-bottom:4px;">✏️ Etiket / Not Düzenle</div>
+      <div style="font-size:.8rem;color:#64748b;margin-bottom:18px;">${email}</div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:.78rem;font-weight:700;color:#374162;display:block;margin-bottom:5px;">Kullanıcı Tipi</label>
+        <select id="_notTip" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-family:inherit;">
+          <option value="">— Seçiniz —</option>
+          <option value="lisans" ${mevcut.tip==='lisans'?'selected':''}>✅ Lisans</option>
+          <option value="demo" ${mevcut.tip==='demo'?'selected':''}>🎥 Demo</option>
+          <option value="test" ${mevcut.tip==='test'?'selected':''}>🧪 Test</option>
+        </select>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="font-size:.78rem;font-weight:700;color:#374162;display:block;margin-bottom:5px;">Not (firma, plan vb.)</label>
+        <input type="text" id="_notAciklama" value="${mevcut.aciklama||''}" placeholder="Örn: ABC İhracat Ltd., Yıllık Lisans" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button id="_notKaydet" style="flex:1;padding:10px;background:#1a56a0;color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;">💾 Kaydet</button>
+        <button id="_notSil" style="padding:10px 16px;background:#fef2f2;color:#b91c1c;border:1px solid #fca5a5;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;">Sil</button>
+        <button id="_notIptal" style="padding:10px 16px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;">İptal</button>
+      </div>
+    </div>`;
+  document.body.appendChild(box);
+  box.querySelector('#_notKaydet').addEventListener('click', ()=>{
+    const tip = box.querySelector('#_notTip').value;
+    const ac  = box.querySelector('#_notAciklama').value.trim();
+    const notlar2 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
+    notlar2[email] = {tip, aciklama: ac};
+    localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar2));
+    box.remove();
+    toast('✓ Not kaydedildi');
+    kullanicilariYukle();
+  });
+  box.querySelector('#_notSil').addEventListener('click', ()=>{
+    const notlar3 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
+    delete notlar3[email];
+    localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar3));
+    box.remove();
+    toast('✓ Not silindi');
+    kullanicilariYukle();
+  });
+  box.querySelector('#_notIptal').addEventListener('click', ()=> box.remove());
+}
+
+// ─── SORGU İSTATİSTİĞİ ────────────────────────────────────────────────────────
+async function istatistikYukle(){
+  const el = document.getElementById('istatistikIcerik');
+  const sb = sbCfg();
+  if(!el) return;
+  el.innerHTML = '<div style="color:#8c97a8;font-size:.85rem;padding:20px 0;">Yükleniyor…</div>';
+  if(!sb){ el.innerHTML='<div style="color:#b91c1c;">Supabase yapılandırılmamış.</div>'; return; }
+
+  try{
+    const key = sb.serviceKey || sb.key;
+    const r = await fetch(sb.url+'/rest/v1/sorgular?select=email,tarih,veri&order=tarih.desc&limit=2000',{
+      headers:{'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'}
+    });
+    if(!r.ok){ el.innerHTML='<div style="color:#b91c1c;padding:12px;">Hata: '+r.status+'</div>'; return; }
+    const rows = await r.json();
+    if(!Array.isArray(rows)||rows.length===0){ el.innerHTML='<div style="color:#8c97a8;padding:20px;">Henüz sorgu kaydı yok.</div>'; return; }
+
+    // Ülke sayımı
+    const ulkeMap = {};
+    const kulMap  = {};
+    const ayMap   = {};
+    rows.forEach(row=>{
+      const ulke = (row.veri&&row.veri.ulke) ? row.veri.ulke : (row.veri&&row.veri.ulkeAdi ? row.veri.ulkeAdi : '—');
+      ulkeMap[ulke] = (ulkeMap[ulke]||0)+1;
+      if(row.email) kulMap[row.email] = (kulMap[row.email]||0)+1;
+      if(row.tarih){
+        const ay = row.tarih.substring(0,7); // YYYY-MM
+        ayMap[ay] = (ayMap[ay]||0)+1;
+      }
+    });
+
+    const topUlke = Object.entries(ulkeMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
+    const topKul  = Object.entries(kulMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const aylar   = Object.entries(ayMap).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
+    const maxUlke = topUlke[0]?topUlke[0][1]:1;
+    const maxAy   = aylar.reduce((m,a)=>Math.max(m,a[1]),1);
+
+    const renk = ['#1a56a0','#047857','#7c3aed','#b45309','#0891b2','#dc2626','#16a34a','#9333ea','#c2410c','#0284c7','#65a30d','#db2777','#d97706','#2563eb','#15803d'];
+
+    const ulkeBarlar = topUlke.map(([ulke,sayi],i)=>{
+      const pct = Math.round(sayi/maxUlke*100);
+      return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;">'
+        +'<div style="min-width:130px;max-width:130px;font-size:.78rem;color:#374162;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+ulke+'">'+ulke+'</div>'
+        +'<div style="flex:1;background:#f1f5f9;border-radius:6px;height:18px;overflow:hidden;">'
+        +'<div style="width:'+pct+'%;background:'+renk[i%renk.length]+';height:100%;border-radius:6px;transition:width .3s;"></div></div>'
+        +'<div style="min-width:36px;text-align:right;font-size:.78rem;font-weight:700;color:'+renk[i%renk.length]+';">'+sayi+'</div>'
+        +'</div>';
+    }).join('');
+
+    const ayBarlar = aylar.map(([ay,sayi])=>{
+      const pct = Math.round(sayi/maxAy*100);
+      const [yy,mm] = ay.split('-');
+      const ayAd = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][parseInt(mm)-1];
+      return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:36px;">'
+        +'<div style="font-size:.72rem;font-weight:700;color:#374162;">'+sayi+'</div>'
+        +'<div style="width:100%;max-width:40px;background:#f1f5f9;border-radius:5px 5px 0 0;overflow:hidden;height:80px;display:flex;align-items:flex-end;">'
+        +'<div style="width:100%;height:'+pct+'%;background:#1a56a0;border-radius:4px 4px 0 0;min-height:4px;"></div></div>'
+        +'<div style="font-size:.65rem;color:#8c97a8;text-align:center;">'+ayAd+'<br>'+yy.slice(2)+'</div>'
+        +'</div>';
+    }).join('');
+
+    const kulSatir = topKul.map(([email,sayi],i)=>
+      '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
+      +'<td style="padding:8px 12px;font-size:.8rem;color:#1e293b;">'+email+'</td>'
+      +'<td style="padding:8px 12px;text-align:right;font-size:.8rem;font-weight:700;color:#1a56a0;">'+sayi+'</td>'
+      +'</tr>'
+    ).join('');
+
+    el.innerHTML =
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;">'
+      +'<div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:14px 20px;flex:1;min-width:130px;">'
+      +'<div style="font-size:1.6rem;font-weight:800;color:#1a56a0;">'+rows.length+'</div>'
+      +'<div style="font-size:.75rem;font-weight:700;color:#374162;margin-top:2px;">Toplam Sorgu</div></div>'
+      +'<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 20px;flex:1;min-width:130px;">'
+      +'<div style="font-size:1.6rem;font-weight:800;color:#047857;">'+Object.keys(ulkeMap).length+'</div>'
+      +'<div style="font-size:.75rem;font-weight:700;color:#374162;margin-top:2px;">Farklı Ülke</div></div>'
+      +'<div style="background:#faf5ff;border:1.5px solid #d8b4fe;border-radius:10px;padding:14px 20px;flex:1;min-width:130px;">'
+      +'<div style="font-size:1.6rem;font-weight:800;color:#7c3aed;">'+Object.keys(kulMap).length+'</div>'
+      +'<div style="font-size:.75rem;font-weight:700;color:#374162;margin-top:2px;">Aktif Kullanıcı</div></div>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap;">'
+      +'<div>'
+      +'<div style="font-size:.75rem;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">🌍 En Çok Sorgulanan Ülkeler</div>'
+      +ulkeBarlar
+      +'</div>'
+      +'<div>'
+      +'<div style="font-size:.75rem;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">📅 Aylık Sorgu Dağılımı</div>'
+      +'<div style="display:flex;align-items:flex-end;gap:4px;height:120px;padding-bottom:2px;">'+ayBarlar+'</div>'
+      +'<div style="font-size:.75rem;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:.06em;margin-top:20px;margin-bottom:10px;">👤 En Aktif Kullanıcılar</div>'
+      +'<table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f8fafc;">'
+      +'<th style="padding:8px 12px;text-align:left;font-size:.7rem;color:#4a5568;border-bottom:1.5px solid #e2e8f0;">E-posta</th>'
+      +'<th style="padding:8px 12px;text-align:right;font-size:.7rem;color:#4a5568;border-bottom:1.5px solid #e2e8f0;">Sorgu</th>'
+      +'</tr></thead><tbody>'+kulSatir+'</tbody></table>'
+      +'</div>'
+      +'</div>';
+  }catch(e){
+    el.innerHTML='<div style="color:#b91c1c;font-size:.84rem;padding:12px;">Hata: '+e.message+'</div>';
+  }
+}
+
 
 </script>
 </body>
