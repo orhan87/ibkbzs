@@ -1703,7 +1703,7 @@ async function kullanicisil(id, email){
   try{
     const r=await fetch(sb.url+'/auth/v1/admin/users/'+id,{
       method:'DELETE',
-      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key}
+      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
     });
     if(r.ok||r.status===204){
       toast('✅ Kullanıcı silindi: '+email);
