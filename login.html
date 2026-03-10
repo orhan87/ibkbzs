@@ -699,6 +699,15 @@ async function girisYap(){
     sessionStorage.setItem('govdag_token', data.access_token);
     sessionStorage.setItem('govdag_email', eposta);
     sessionStorage.setItem('govdag_refresh', data.refresh_token || '');
+    // İlk giriş kontrolü: admin paneli bu e-posta için flag bıraktıysa
+    try{
+      var ilkGirisler = JSON.parse(localStorage.getItem('ibkb_ilk_giris_listesi')||'{}');
+      if(ilkGirisler[eposta]){
+        sessionStorage.setItem('govdag_ilk_giris','1');
+        delete ilkGirisler[eposta];
+        localStorage.setItem('ibkb_ilk_giris_listesi', JSON.stringify(ilkGirisler));
+      }
+    }catch(e){}
 
     // Giriş logu kaydet (hata olsa da devam et)
     try{

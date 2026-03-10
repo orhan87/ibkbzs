@@ -1243,6 +1243,10 @@ async function davetGonder(){
       const notlar=JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
       notlar[email]={tip,aciklama};
       localStorage.setItem('ibkb_kullanici_notlari',JSON.stringify(notlar));
+      // İlk giriş flag: bu e-posta ilk girişte parola değiştirme modalı görsün
+      const ilkGirisler=JSON.parse(localStorage.getItem('ibkb_ilk_giris_listesi')||'{}');
+      ilkGirisler[email]=1;
+      localStorage.setItem('ibkb_ilk_giris_listesi',JSON.stringify(ilkGirisler));
       el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
       const passHtml='<div style="background:#e8f5ef;border:2px solid #1a7a4a;border-radius:8px;padding:12px 16px;margin-top:10px;">'
         +'<div style="font-size:.75rem;color:#4a5568;margin-bottom:6px;font-weight:600;">GEÇİCİ PAROLA — Kullanıcıya iletin:</div>'
