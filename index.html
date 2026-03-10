@@ -500,7 +500,79 @@ if(!sessionStorage.getItem('govdag_token')){
   </div>
 </main>
 
+<!-- ─── PAROLA DEĞİŞTİRME MODAL ──────────────────────────────────────────────── -->
+<div id="parolaModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:2rem;margin-bottom:8px;">🔑</div>
+      <h2 style="margin:0;font-size:1.2rem;font-weight:700;color:#1a3a5c;">Parolanızı Değiştirin</h2>
+      <p style="margin:8px 0 0;font-size:.85rem;color:#64748b;">İlk girişinizde güvenli bir parola belirlemeniz gerekmektedir.</p>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:.78rem;font-weight:600;color:#374151;margin-bottom:6px;">YENİ PAROLA</label>
+      <input id="yeniParola1" type="password" placeholder="En az 6 karakter" style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:inherit;box-sizing:border-box;outline:none;">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:.78rem;font-weight:600;color:#374151;margin-bottom:6px;">PAROLA TEKRAR</label>
+      <input id="yeniParola2" type="password" placeholder="Parolayı tekrar girin" style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:inherit;box-sizing:border-box;outline:none;">
+    </div>
+    <div id="parolaModalHata" style="display:none;background:#fef2f2;color:#b91c1c;border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:16px;"></div>
+    <button onclick="parolaDegistir()" id="parolaModalBtn" style="width:100%;padding:12px;background:linear-gradient(135deg,#1a56a0,#4f46e5);color:#fff;border:none;border-radius:9px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;">Parolayı Kaydet ve Devam Et</button>
+  </div>
+</div>
+
 <script>
+
+// ─── İLK GİRİŞ PAROLA DEĞİŞTİRME ─────────────────────────────────────────────
+(function(){
+  if(sessionStorage.getItem('govdag_ilk_giris') === '1'){
+    sessionStorage.removeItem('govdag_ilk_giris');
+    var m = document.getElementById('parolaModal');
+    if(m) m.style.display = 'flex';
+  }
+})();
+
+async function parolaDegistir(){
+  var p1 = document.getElementById('yeniParola1').value;
+  var p2 = document.getElementById('yeniParola2').value;
+  var hata = document.getElementById('parolaModalHata');
+  var btn = document.getElementById('parolaModalBtn');
+
+  hata.style.display = 'none';
+  if(p1.length < 6){ hata.textContent = 'Parola en az 6 karakter olmalıdır.'; hata.style.display = 'block'; return; }
+  if(p1 !== p2){ hata.textContent = 'Parolalar eşleşmiyor.'; hata.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Kaydediliyor...';
+
+  try{
+    var token = sessionStorage.getItem('govdag_token');
+    var res = await fetch(SB_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ password: p1 })
+    });
+    if(res.ok){
+      document.getElementById('parolaModal').style.display = 'none';
+    } else {
+      var d = await res.json();
+      hata.textContent = d.message || d.msg || 'Hata oluştu, tekrar deneyin.';
+      hata.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Parolayı Kaydet ve Devam Et';
+    }
+  }catch(e){
+    hata.textContent = 'Bağlantı hatası: ' + e.message;
+    hata.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Parolayı Kaydet ve Devam Et';
+  }
+}
+
 function cikisYap(){
   if(!confirm('Çıkış yapmak istediğinizden emin misiniz?')) return;
   sessionStorage.removeItem('govdag_token');
