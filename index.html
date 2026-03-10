@@ -554,7 +554,7 @@ async function parolaDegistir(){
         'apikey': SB_KEY,
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({ password: p1 })
+      body: JSON.stringify({ password: p1, data: { ilk_giris: false } })
     });
     if(res.ok){
       document.getElementById('parolaModal').style.display = 'none';
