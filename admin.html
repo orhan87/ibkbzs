@@ -312,6 +312,11 @@
               <input type="text" id="s-destek-son" placeholder="Örn: 30 Nisan 2026" value="30 Nisan 2026">
               <p class="acik">Geçici madde kapsamındaki bitiş tarihi (metinsel)</p>
             </div>
+            <div class="sayi-item">
+              <label>Demo Hesap Sorgu Limiti</label>
+              <input type="number" id="s-demo-limit" min="1" max="200" step="1" value="5">
+              <p class="acik">Demo hesapların toplam sorgu hakkı. Dolunca giriş engellenir.</p>
+            </div>
           </div>
           <div style="margin-top:18px;">
             <button class="btn btn-primary" onclick="sabitleriKaydet()">💾 Değerleri Kaydet</button>
@@ -957,6 +962,7 @@ function baslat(){
   document.getElementById('s-ek3oran').value  = sab.ek3oran;
   document.getElementById('s-destek').value   = sab.destek !== undefined ? sab.destek : 3;
   document.getElementById('s-destek-son').value = sab.destekSon || '30 Nisan 2026';
+  document.getElementById('s-demo-limit').value = sab.demoLimit !== undefined ? sab.demoLimit : 5;
 
   const kur = Object.assign({}, VARSAYILAN_KURLAR, (cfg && cfg.kurlar) ? cfg.kurlar : {});
   ['EUR','GBP','JPY','CHF','TRY','OTHER'].forEach(k=>{
@@ -1275,7 +1281,7 @@ async function davetGonder(){
     const r=await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey},
-      body:JSON.stringify({email,password:tmpPass,email_confirm:true,user_metadata:{ilk_giris:true}})
+      body:JSON.stringify({email,password:tmpPass,email_confirm:true,user_metadata:{ilk_giris:true,tip:tip,not:aciklama}})
     });
     const rawText=await r.text();
     let d={};
@@ -1358,16 +1364,22 @@ async function kullanicilariYukle(){
     let users = [];
     if(authUsers.length > 0){
       const notlarMap = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
-      users = authUsers.map(u=>({
-        id: u.id,
-        email: u.email||'-',
-        kayitTarihi: u.created_at,
-        sonGiris: (logMap[u.email]&&logMap[u.email].sonGiris) || u.last_sign_in_at,
-        girisAdedi: (logMap[u.email]&&logMap[u.email].girisAdedi) || 0,
-        silinebilir: true,
-        tip: (notlarMap[u.email]&&notlarMap[u.email].tip) || '',
-        not: (notlarMap[u.email]&&notlarMap[u.email].aciklama) || ''
-      }));
+      users = authUsers.map(u=>{
+        const uMeta = u.user_metadata || {};
+        const localNot = notlarMap[u.email] || {};
+        // Önce user_metadata'ya bak, yoksa localStorage'a
+        const tip = uMeta.tip || localNot.tip || '';
+        const not = uMeta.not || localNot.aciklama || '';
+        return {
+          id: u.id,
+          email: u.email||'-',
+          kayitTarihi: u.created_at,
+          sonGiris: (logMap[u.email]&&logMap[u.email].sonGiris) || u.last_sign_in_at,
+          girisAdedi: (logMap[u.email]&&logMap[u.email].girisAdedi) || 0,
+          silinebilir: true,
+          tip, not
+        };
+      });
     } else {
       // Sadece log varsa
       const notlarMap2 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
@@ -1505,12 +1517,13 @@ function kullaniciTabYukle(){
 function sabitleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.sabitler = {
-    tcmb:    parseFloat(document.getElementById('s-tcmb').value),
-    esik:    parseFloat(document.getElementById('s-esik').value),
-    gun:     parseInt(document.getElementById('s-gun').value),
+    tcmb:      parseFloat(document.getElementById('s-tcmb').value),
+    esik:      parseFloat(document.getElementById('s-esik').value),
+    gun:       parseInt(document.getElementById('s-gun').value),
     ek3oran:   parseFloat(document.getElementById('s-ek3oran').value),
     destek:    parseFloat(document.getElementById('s-destek').value),
     destekSon: document.getElementById('s-destek-son').value.trim(),
+    demoLimit: parseInt(document.getElementById('s-demo-limit').value) || 5,
   };
   // destek ayrı nesne olarak da kaydet (ibkb-sorgulama uyumluluğu)
   cfg.destek = {oran: cfg.sabitler.destek, son: cfg.sabitler.destekSon};
@@ -1658,6 +1671,7 @@ async function basvurulariYukle(){
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Telefon</th>'
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Talep</th>'
       + '<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Mesaj</th>'
+      + '<th style="padding:10px 14px;text-align:center;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">İşlem</th>'
       + '</tr></thead><tbody>'
       + d.map(function(row,i){
           const t   = new Date(row.tarih).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
@@ -1859,7 +1873,7 @@ async function girisLogTemizle(){
 
 
 // ─── KULLANICI NOT/ETİKET DÜZENLE ─────────────────────────────────────────────
-function kullaniciNotDuzenle(email){
+async function kullaniciNotDuzenle(email){
   const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
   const mevcut = notlar[email] || {tip:'', aciklama:''};
 
@@ -1889,12 +1903,33 @@ function kullaniciNotDuzenle(email){
       </div>
     </div>`;
   document.body.appendChild(box);
-  box.querySelector('#_notKaydet').addEventListener('click', ()=>{
+  box.querySelector('#_notKaydet').addEventListener('click', async ()=>{
     const tip = box.querySelector('#_notTip').value;
     const ac  = box.querySelector('#_notAciklama').value.trim();
     const notlar2 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
     notlar2[email] = {tip, aciklama: ac};
     localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar2));
+    // Supabase user_metadata'ya da yaz
+    try{
+      const sb2 = sbCfg();
+      if(sb2 && sb2.serviceKey){
+        // Kullanıcı id'sini bul
+        const rU = await fetch(sb2.url+'/auth/v1/admin/users?per_page=200',{
+          headers:{'apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey}
+        });
+        if(rU.ok){
+          const uData = await rU.json();
+          const hedef = (uData.users||[]).find(u=>u.email===email);
+          if(hedef){
+            await fetch(sb2.url+'/auth/v1/admin/users/'+hedef.id,{
+              method:'PUT',
+              headers:{'Content-Type':'application/json','apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey},
+              body:JSON.stringify({user_metadata:{tip:tip, not:ac, ilk_giris: hedef.user_metadata&&hedef.user_metadata.ilk_giris}})
+            });
+          }
+        }
+      }
+    }catch(e){ /* metadata güncelleme hatası sessiz */ }
     box.remove();
     toast('✓ Not kaydedildi');
     kullanicilariYukle();

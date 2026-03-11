@@ -496,15 +496,15 @@ async function basvuruGonder(){
   btn.disabled = true;
   btn.textContent = '⏳ Kontrol ediliyor...';
 
-  // ── Kayıtlı kullanıcı kontrolü (basvurular tablosunda aynı e-posta var mı) ──
+  // ── Duplicate başvuru kontrolü (aynı e-posta + aynı talep türü) ──
   try {
-    const kontrol = await fetch(sbUrl + '/rest/v1/basvurular?email=eq.' + encodeURIComponent(email) + '&select=id&limit=1', {
+    const kontrol = await fetch(sbUrl + '/rest/v1/basvurular?email=eq.' + encodeURIComponent(email) + '&talep=eq.' + encodeURIComponent(talep) + '&select=id&limit=1', {
       headers: {'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey}
     });
     if(kontrol.ok){
       const kData = await kontrol.json();
       if(Array.isArray(kData) && kData.length > 0){
-        hataEl.textContent = '⚠ Bu e-posta adresiyle daha önce başvuru yapılmıştır. Ekibimiz sizinle iletişime geçecektir.';
+        hataEl.textContent = '⚠ Bu talep türüyle daha önce başvuru yapılmıştır. Ekibimiz sizinle iletişime geçecektir.';
         hataEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = '📩 Başvuruyu Gönder';
@@ -720,6 +720,43 @@ async function girisYap(){
         body: JSON.stringify({ email: eposta })
       });
     } catch(e){ /* log hatası girişi engellemez */ }
+
+    // Demo sorgu limit kontrolü (user_metadata'dan oku - cihazdan bağımsız)
+    try {
+      const uMeta = (data.user && data.user.user_metadata) || {};
+      const localNot = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}')[eposta] || {};
+      const kulTip = uMeta.tip || localNot.tip || '';
+      if(kulTip === 'demo'){
+        const userId = data.user && data.user.id;
+        if(userId){
+          const rSorgu = await fetch(sbUrl + '/rest/v1/sorgular?user_id=eq.' + userId + '&select=id', {
+            headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + data.access_token }
+          });
+          const sorguData = rSorgu.ok ? await rSorgu.json() : [];
+          const cfg2 = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+          const DEMO_LIMIT = (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
+          if(Array.isArray(sorguData) && sorguData.length >= DEMO_LIMIT){
+            sessionStorage.clear();
+            const hataEl = document.getElementById('hataKutu');
+            const mesajEl = document.getElementById('hataMesaj');
+            if(mesajEl) mesajEl.innerHTML = '';
+            if(hataEl){
+              hataEl.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:10px;padding:16px 18px;color:#92400e;';
+              hataEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;">⚠ Demo Süreniz Doldu</div>'
+                + '<div style="font-size:.83rem;line-height:1.6;color:#78350f;">Demo hesabınızda kullanabileceğiniz <strong>' + DEMO_LIMIT + ' sorgu hakkınız</strong> tükenmiştir. Sistemi kullanmaya devam etmek için lisans satın alabilirsiniz.</div>'
+                + '<a href="javascript:void(0)" id="_demoSatinAlBtn" style="display:inline-block;background:#1a56a0;color:#fff;padding:9px 18px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;margin-top:2px;">🛒 Lisans Satın Al</a>';
+              document.getElementById('_demoSatinAlBtn') && document.getElementById('_demoSatinAlBtn').addEventListener('click', function(){
+                const bk = document.getElementById('basvuruKutu');
+                if(bk){ bk.scrollIntoView({behavior:'smooth'}); }
+                const tl = document.getElementById('bTalep');
+                if(tl) tl.value = 'satin-alma';
+              });
+            }
+            return;
+          }
+        }
+      }
+    } catch(e){ /* demo kontrol hatası girişi engellemesin */ }
 
     // Yönlendir
     window.location.replace('./index.html');
