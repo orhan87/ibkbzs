@@ -1534,12 +1534,13 @@ async function supabaseSorguTemizle(){
   try{
     const token = sessionStorage.getItem('govdag_token');
     if(!token) return;
-    const sbUrl = SB_URL;
-    const sbKey = SB_KEY;
-    await fetch(sbUrl + '/rest/v1/sorgular?id=neq.00000000-0000-0000-0000-000000000000', {
+    // Kullanıcının kendi user_id'sine göre sil (RLS uyumlu)
+    const userId = jwtUserId(token);
+    if(!userId) return;
+    await fetch(SB_URL + '/rest/v1/sorgular?user_id=eq.' + userId, {
       method:'DELETE',
       headers:{
-        'apikey': sbKey,
+        'apikey': SB_KEY,
         'Authorization': 'Bearer ' + token,
       }
     });
