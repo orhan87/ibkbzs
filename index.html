@@ -46,6 +46,38 @@ if(!sessionStorage.getItem('govdag_token')){
       if(fyEl && met.footerYazi) fyEl.textContent = met.footerYazi;
     }catch(e){}
 
+    // Bakım modu kontrolü
+    try{
+      var cfgBakim = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+      if(cfgBakim.bakim && cfgBakim.bakim.aktif){
+        document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;font-family:inherit;padding:24px;">'
+          + '<div style="background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.12);padding:48px 40px;max-width:440px;width:100%;text-align:center;">'
+          + '<div style="font-size:3rem;margin-bottom:16px;">🔧</div>'
+          + '<h2 style="margin:0 0 12px;font-size:1.3rem;font-weight:800;color:#1a2540;">Sistem Bakımda</h2>'
+          + '<p style="font-size:.9rem;color:#4a5568;line-height:1.7;margin:0 0 24px;">' + (cfgBakim.bakim.mesaj || 'Sistem şu anda bakımdadır. Kısa süre içinde tekrar hizmetinizde olacağız.') + '</p>'
+          + '<a href="mailto:destek@ibkbsorgulama.com" style="display:inline-block;background:#1a56a0;color:#fff;text-decoration:none;padding:10px 24px;border-radius:8px;font-size:.85rem;font-weight:600;">İletişime Geç</a>'
+          + '</div></div>';
+        sessionStorage.removeItem('govdag_token');
+        return;
+      }
+    }catch(e){}
+
+    // Sistem duyurusu banner
+    try{
+      var cfgDuyuru = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+      if(cfgDuyuru.duyuru && cfgDuyuru.duyuru.aktif && cfgDuyuru.duyuru.metin){
+        var tip = cfgDuyuru.duyuru.tip || 'bilgi';
+        var renkMap = {bilgi:{bg:'#eff6ff',border:'#bfdbfe',color:'#1e40af',ico:'ℹ'},uyari:{bg:'#fffbeb',border:'#fcd34d',color:'#92400e',ico:'⚠'},hata:{bg:'#fef2f2',border:'#fca5a5',color:'#991b1b',ico:'🔴'}};
+        var r = renkMap[tip] || renkMap.bilgi;
+        var banner = document.createElement('div');
+        banner.id = 'sistemDuyuruBanner';
+        banner.style.cssText = 'background:'+r.bg+';border-bottom:2px solid '+r.border+';padding:10px 20px;display:flex;align-items:center;gap:10px;font-size:.83rem;color:'+r.color+';font-weight:600;';
+        banner.innerHTML = '<span>'+r.ico+'</span><span style="flex:1;">'+cfgDuyuru.duyuru.metin+'</span>'
+          + '<button onclick="this.parentElement.remove()" type="button" style="background:none;border:none;cursor:pointer;font-size:1rem;color:'+r.color+';padding:0 4px;">✕</button>';
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+    }catch(e){}
+
     // İletişim
     var links = document.getElementById('iletisimLinks');
     if(links){
@@ -383,7 +415,9 @@ if(!sessionStorage.getItem('govdag_token')){
           <div class="fgg">
             <label>İhracat Bedeli<span class="rs">*</span></label>
             <input type="text" id="bedel" placeholder="0,00" inputmode="decimal" autocomplete="off" required oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
-            <span class="fnot" id="bedelNotEl">📋 Beyannamenin <strong>46. hanesi</strong>nden alınız</span>
+            <span class="fnot" id="bedelNotEl">📋 Beyannamenin <strong>22. hanesi</strong>nden alınız
+              <button onclick="madde10Goster(event)" type="button" title="Madde 10 - Detay" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;vertical-align:middle;line-height:1;font-size:.8rem;color:#2563eb;font-weight:700;text-decoration:underline;font-family:inherit;">ℹ</button>
+            </span>
           </div>
 
           <div class="fgg">
@@ -483,11 +517,37 @@ if(!sessionStorage.getItem('govdag_token')){
     </div>
   </div>
 
-  <div class="disc" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:12px 16px;font-size:.74rem;color:#78350f;line-height:1.65;display:flex;gap:9px;">
-    <svg viewBox="0 0 24 24" style="fill:#d97706;flex-shrink:0;width:15px;height:15px;margin-top:1px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+  <!-- ─── ÖNERİDE BULUN FLOATING BUTONU ──────────────────────────────────────── -->
+  <div id="oneriBtn" onclick="oneriGonder()" title="Öneride Bulun"
+    style="position:fixed;bottom:24px;right:24px;z-index:8888;
+      background:linear-gradient(135deg,#1a56a0,#1e40af);
+      color:#fff;border-radius:50px;padding:10px 18px;
+      font-size:.78rem;font-weight:700;font-family:inherit;
+      cursor:pointer;box-shadow:0 4px 18px rgba(26,86,160,.45);
+      display:flex;align-items:center;gap:7px;
+      transition:transform .15s,box-shadow .15s;
+      user-select:none;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+    Öneride Bulun
+  </div>
+  <script>
+    (function(){
+      var b = document.getElementById('oneriBtn');
+      if(b){
+        b.addEventListener('mouseenter',function(){ this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 24px rgba(26,86,160,.55)'; });
+        b.addEventListener('mouseleave',function(){ this.style.transform=''; this.style.boxShadow='0 4px 18px rgba(26,86,160,.45)'; });
+      }
+    })();
+  </script>
+
+  <div class="disc" style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:14px 16px;font-size:.74rem;color:#78350f;line-height:1.7;display:flex;gap:10px;">
+    <svg viewBox="0 0 24 24" style="fill:#d97706;flex-shrink:0;width:16px;height:16px;margin-top:2px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
     <div>
-      <span>Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.</span>
-      <div style="margin-top:8px;"><a href="https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR" target="_blank" rel="noopener" style="font-size:.75rem;color:#92400e;font-weight:600;text-decoration:none;">📄 İhracat Genelgesi ↗</a></div>
+      <div style="font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;color:#92400e;">⚠ Yasal Uyarı</div>
+      <span>Bu araç yalnızca <strong>bilgilendirme amaçlıdır</strong> ve hukuki, mali veya resmi danışmanlık niteliği taşımaz. Hesaplamalar, T.C. Merkez Bankası İhracat Genelgesi kapsamındaki mevzuat esas alınarak yapılmış olup <strong>mevzuat değişikliklerine tabidir.</strong> Elde edilen sonuçlar kesin ve bağlayıcı değildir; fiili yükümlülükleriniz için <strong>aracı bankanıza veya yetkili bir danışmana</strong> başvurmanız zorunludur. GÖVDAĞ, bu araçtan elde edilen bilgilerin kullanımından doğacak herhangi bir zarardan sorumlu tutulamaz.</span>
+      <div style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap;">
+        <a href="https://www.tcmb.gov.tr/wps/wcm/connect/e90670f7-fc2e-453c-acd3-88098334b484/%C4%B0hracat+Genelgesi.pdf?MOD=AJPERES&CACHEID=ROOTWOR" target="_blank" rel="noopener" style="font-size:.75rem;color:#92400e;font-weight:600;text-decoration:none;">📄 İhracat Genelgesi ↗</a>
+      </div>
     </div>
   </div>
 
@@ -496,8 +556,9 @@ if(!sessionStorage.getItem('govdag_token')){
     <div id="iletisimLinks" style="display:flex;gap:20px;flex-wrap:wrap;"></div>
   </div>
   <div style="text-align:center;padding:18px 0 28px;border-top:1px solid var(--border);margin-top:8px;">
-    <span style="font-size:.72rem;color:var(--g400);letter-spacing:.04em;">© 2025 <strong style="color:var(--g600);">GÖVDAĞ</strong> — Tüm hakları saklıdır.</span>
+    <span style="font-size:.72rem;color:var(--g400);letter-spacing:.04em;">© 2026 <strong style="color:var(--g600);">GÖVDAĞ</strong> — Tüm hakları saklıdır.</span>
   </div>
+</div><!-- /hero -->
 </main>
 
 <!-- ─── PAROLA DEĞİŞTİRME MODAL ──────────────────────────────────────────────── -->
@@ -587,9 +648,9 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 // ─── VARSAYILAN METİNLER ───────────────────────────────────────────────────
 const VARSAYILAN_METINLER = {
   tarihNot:'⚠ Beyannamenin kapanma tarihini giriniz (fiili ihraç tarihi)',
-  bedelNot:'📋 Beyannamenin 46. hanesinden alınız',
+  bedelNot:'📋 Beyannamenin 22. hanesinden alınız',
   ulkeNot:'📋 Beyannamenin 17. hanesinden alınız',
-  disclaimer:'Bilgilendirme amaçlıdır. TCMB satış oranı (%35) ve son tarih (30.04.2026) mevzuat değişikliklerine tabidir. USD karşılıkları tahmini kur üzerinden hesaplanmaktadır. Kesin bilgi için TCMB veya yetkili danışmanınıza başvurunuz.',
+  disclaimer:'Bu araç yalnızca bilgilendirme amaçlıdır ve hukuki, mali veya resmi danışmanlık niteliği taşımaz. Hesaplamalar mevzuat değişikliklerine tabidir; elde edilen sonuçlar kesin ve bağlayıcı değildir. Fiili yükümlülükleriniz için aracı bankanıza veya yetkili bir danışmana başvurmanız zorunludur. GÖVDAĞ, bu araçtan elde edilen bilgilerin kullanımından doğacak herhangi bir zarardan sorumlu tutulamaz.',
   ek2:'Kambiyo takibi yok; İBKB düzenlenmesi zorunlu değildir.',
   ek3:"Bedelin asgari %50'si yurda getirilmeli. Bu tutarın %35'i TCMB'ye satılır.",
   ozel:"Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir.",
@@ -821,13 +882,13 @@ function paraSec(p){
   const kurInput=document.getElementById('kurInput');
   const ibkbNot=document.getElementById('oncekiIbkbNot');
   if(p==='TRY'){
-    if(notEl) notEl.innerHTML='📋 Beyannamenin <strong>46. hanesi</strong>nden alınız (TL cinsinden)';
+    if(notEl) notEl.innerHTML='📋 Beyannamenin <strong>22. hanesi</strong>nden alınız (TL cinsinden) <button onclick="madde10Goster(event)" type="button" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;font-size:.8rem;color:#2563eb;font-weight:700;text-decoration:underline;font-family:inherit;">ℹ</button>';
     if(kurAlani) kurAlani.style.display='';
     if(kurInput) kurInput.required=true;
     if(ibkbNot) ibkbNot.innerHTML='💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz <strong>(USD cinsinden)</strong>. Güncel kur üzerinden TL matrahtan düşülür.';
   } else {
     if(ibkbNot) ibkbNot.innerHTML='💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz <strong>(USD cinsinden)</strong>. TL modunda girilen kur ile TL\'ye çevrilerek matrahtan düşülür.';
-    if(notEl) notEl.innerHTML='📋 Beyannamenin <strong>46. hanesi</strong>nden alınız (USD cinsinden)';
+    if(notEl) notEl.innerHTML='📋 Beyannamenin <strong>22. hanesi</strong>nden alınız (USD cinsinden) <button onclick="madde10Goster(event)" type="button" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;font-size:.8rem;color:#2563eb;font-weight:700;text-decoration:underline;font-family:inherit;">ℹ</button>';
     if(kurAlani) kurAlani.style.display='none';
     if(kurInput){ kurInput.required=false; kurInput.value=''; }
   }
@@ -1322,8 +1383,9 @@ function hesaplaCore(){
             </span>
           </div>
         </div>
-        <div class="pdf-btn-row">
+        <div class="pdf-btn-row" style="gap:10px;flex-wrap:wrap;">
           <button class="pdf-dl-btn" onclick="sayfaPdfIndir()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 17h8v1.5H8V17zm0-3h8v1.5H8V14zm0-3h3v1.5H8V11z"/></svg>Hesaplamayı PDF Olarak Kaydet</button>
+          <button class="pdf-dl-btn" id="hataBildirBtn" onclick="hataBildir()" style="background:#7f1d1d;border-color:rgba(255,255,255,.08);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Hata Bildir</button>
         </div>
       </div>
     </div>`;
@@ -1625,6 +1687,91 @@ function gecmisTemizle(){
 }
 
 // ─── PDF ──────────────────────────────────────────────────────────────────────
+function hataBildir(){
+  // Form bilgilerini topla (beyanname HARİÇ)
+  var bedel   = document.getElementById('bedel').value.trim();
+  var para    = document.getElementById('para');
+  var paraTxt = para ? (para.options[para.selectedIndex] ? para.options[para.selectedIndex].text : para.value) : '';
+  var tarih   = document.getElementById('tarih').value.trim();
+  var ulke    = document.getElementById('ulkeAd') ? document.getElementById('ulkeAd').textContent.trim() : '';
+  if(!ulke && window.secili && window.secili.a) ulke = window.secili.a;
+  var onceki  = document.getElementById('oncekiIbkb') ? document.getElementById('oncekiIbkb').value.trim() : '';
+  var email   = sessionStorage.getItem('govdag_email') || '';
+
+  // Satırları oluştur
+  var nl  = '%0A';
+  var tab = '%09';  // tab karakteri
+  var satirlar = [];
+  if(tarih)   satirlar.push(encodeURIComponent('İhracat Tarihi') + tab + encodeURIComponent(tarih));
+  if(bedel)   satirlar.push(encodeURIComponent('İhracat Bedeli') + tab + encodeURIComponent(bedel + (para?' '+para.value:'')));
+  if(paraTxt) satirlar.push(encodeURIComponent('Para Birimi')    + tab + encodeURIComponent(paraTxt));
+  if(ulke)    satirlar.push(encodeURIComponent('Hedef Ülke')     + tab + encodeURIComponent(ulke));
+  if(onceki)  satirlar.push(encodeURIComponent('Önceki İBKB')   + tab + encodeURIComponent(onceki));
+  if(email)   satirlar.push(encodeURIComponent('Kullanıcı')      + tab + encodeURIComponent(email));
+
+  var konu = encodeURIComponent('Hata Bildirimi - İBKB Sorgulama');
+  var body = encodeURIComponent('Merhaba,') + nl + nl
+    + encodeURIComponent('Aşağıdaki hesaplamada hata olduğunu düşünüyorum:') + nl + nl
+    + satirlar.join(nl) + nl + nl
+    + encodeURIComponent('Hatanın açıklaması:') + nl
+    + encodeURIComponent('[Lütfen buraya yazınız]');
+
+  window.location.href = 'mailto:destek@ibkbsorgulama.com?subject=' + konu + '&body=' + body;
+}
+
+function oneriGonder(){
+  var email = sessionStorage.getItem('govdag_email') || '';
+  var nl = '%0A';
+  var konu = encodeURIComponent('Oneri - IBKB Sorgulama');
+  var body = 'Merhaba,' + nl + nl
+    + 'Asagidaki oneriyi iletmek istedim:' + nl + nl
+    + '[Onerinizi buraya yaziniz]' + nl + nl
+    + '────────────────────' + nl
+    + 'Kullanici : ' + encodeURIComponent(email||'-');
+  window.location.href = 'mailto:destek@ibkbsorgulama.com?subject=' + konu + '&body=' + body;
+}
+
+function madde10Goster(e){
+  if(e) e.stopPropagation();
+  var old = document.getElementById('madde10Overlay');
+  if(old){ old.remove(); return; }
+  var ov = document.createElement('div');
+  ov.id = 'madde10Overlay';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:14px;max-width:580px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22);overflow:hidden;';
+
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'background:#1a2540;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;';
+  hdr.innerHTML = '<span style="font-size:.88rem;font-weight:700;letter-spacing:.02em;">&#128218; Madde 10 &mdash; İhracat Bedeli Tespiti</span>';
+  var btnKapat = document.createElement('button');
+  btnKapat.type = 'button';
+  btnKapat.textContent = '×';
+  btnKapat.style.cssText = 'background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;font-family:inherit;display:flex;align-items:center;justify-content:center;';
+  btnKapat.onclick = function(){ document.getElementById('madde10Overlay').remove(); };
+  hdr.appendChild(btnKapat)
+  box.appendChild(hdr);
+
+  var body = document.createElement('div');
+  body.style.cssText = 'padding:20px 20px 14px;';
+
+  var mainText = document.createElement('p');
+  mainText.style.cssText = 'font-size:.84rem;color:#1e293b;line-height:1.75;margin:0 0 14px;';
+  mainText.textContent = 'MADDE 10 – (1) İhracat bedelinin tespitinde GB’nin 22 nci hanesindeki değer esas alınır. Ancak bu hanede belirtilen tutarın mal bedelinin dışında navlun ve/veya sigorta da kapsaması ve ihracat bedeli olarak 22 nci hanede kayıtlı tutarın faturada kayıtlı tutara eşit olması halinde faturada kayıtlı bedel esas alınır. GB’nin 22 nci hanesinde kayıtlı tutarın faturada kayıtlı tutardan farklı olması ve GB’nin 22 nci hanesinde kayıtlı olan döviz tutarının ABD doları dışında bir döviz cinsinden olması halinde GB’nin 46 ncı hanesinde ABD doları olarak gösterilen değer dikkate alınır.';
+  body.appendChild(mainText);
+
+  var fnDiv = document.createElement('div');
+  fnDiv.style.cssText = 'background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 8px 8px;padding:10px 14px;font-size:.72rem;color:#6b7a99;line-height:1.65;';
+  fnDiv.textContent = '21 T.C. Hazine ve Maliye Bakanlığının 03.06.2021 tarih ve 338149 sayılı yazısı. 22 T.C. Hazine ve Maliye Bakanlığının 18.06.2021 tarih ve 723531 sayılı yazısı. 23 T.C. Hazine ve Maliye Bakanlığının 21.03.2022 tarih ve 1050661 sayılı yazısı. 24 T.C. Hazine ve Maliye Bakanlığının 04.11.2022 tarih ve 1648361 sayılı yazısı. (Yürürlük tarihi: 05.12.2022) 25 T.C. Hazine ve Maliye Bakanlığının 12.02.2026 tarih ve 4570001 sayılı yazısı.';
+  body.appendChild(fnDiv);
+
+  box.appendChild(body);
+  ov.appendChild(box);
+  ov.addEventListener('click', function(ev){ if(ev.target===ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
 function sayfaPdfIndir(){
   const simdi = new Date().toLocaleString('tr-TR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
 
@@ -1738,6 +1885,10 @@ td.sureok { font-weight: 700; color: #047857; background: #ecfdf5; }
   <div class="pdf-bi"><div class="pdf-bi-lbl">Hedef Ülke</div><div class="pdf-bi-val">${ulkeKart}</div></div>
 </div>
 ${resultHtml}
+<div style="margin-top:14px;background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;padding:10px 14px;font-size:7pt;color:#78350f;line-height:1.65;">
+  <strong style="font-size:6.5pt;text-transform:uppercase;letter-spacing:.05em;">⚠ Yasal Uyarı</strong><br>
+  Bu araç yalnızca <strong>bilgilendirme amaçlıdır</strong> ve hukuki, mali veya resmi danışmanlık niteliği taşımaz. Hesaplamalar, T.C. Merkez Bankası İhracat Genelgesi kapsamındaki mevzuat esas alınarak yapılmış olup <strong>mevzuat değişikliklerine tabidir.</strong> Elde edilen sonuçlar kesin ve bağlayıcı değildir; fiili yükümlülükleriniz için <strong>aracı bankanıza veya yetkili bir danışmana</strong> başvurmanız zorunludur. GÖVDAĞ, bu araçtan elde edilen bilgilerin kullanımından doğacak herhangi bir zarardan sorumlu tutulamaz.
+</div>
 </body></html>`;
 
   const win = window.open('', '_blank', 'width=900,height=700');
@@ -1844,7 +1995,7 @@ function pdfIndir(){
   const icerik = baslik
     + '<div class="altin"></div>'
     + '<table>' + thead + '<tbody>' + satirlar + '</tbody></table>'
-    + '<div class="footer"><span id="footerYaziEl">© 2026 GÖVDAĞ — Tüm hakları saklıdır.</span> | Bilgilendirme amaçlıdır, hukuki bağlayıcılığı yoktur. | TCMB Genelgesi Şubat 2025</div>';
+    + '<div class="footer">© 2026 GÖVDAĞ — Tüm hakları saklıdır. | Bu rapor yalnızca bilgilendirme amaçlıdır; hukuki veya mali danışmanlık niteliği taşımaz. Sonuçlar mevzuat değişikliklerine tabidir ve bağlayıcı değildir. Fiili yükümlülükler için aracı bankanıza veya yetkili bir danışmana başvurunuz. GÖVDAĞ bu araçtan doğacak zararlardan sorumlu tutulamaz.</div>';
 
   const gecmisHtml = '<!DOCTYPE html><html lang="tr"><head>'
     + '<meta charset="UTF-8">'

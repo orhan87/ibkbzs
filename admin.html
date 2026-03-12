@@ -150,6 +150,7 @@
     main{padding:20px 1rem 40px;}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -437,6 +438,47 @@
         </div>
       </div>
 
+      <!-- SİSTEM DUYURUSU -->
+      <div class="panel-card" style="margin-top:16px;">
+        <div class="pc-head"><div><h3>📢 Sistem Duyurusu</h3><p>Giriş yapan tüm kullanıcılara gösterilecek banner mesajı</p></div></div>
+        <div class="pc-body">
+          <div class="metin-item">
+            <label>Duyuru Metni</label>
+            <textarea id="m-duyuru" rows="2" placeholder="Boş bırakırsanız banner görünmez. Örn: Sistem 20.03.2026 tarihinde bakıma girecektir."></textarea>
+            <p class="acik">Kullanıcılar hesaplama sayfasının üstünde sarı bir banner olarak görür</p>
+          </div>
+          <div class="metin-item" style="display:flex;align-items:center;gap:12px;">
+            <label style="margin:0;flex-shrink:0;">Duyuru Tipi</label>
+            <select id="m-duyuruTip" style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:.85rem;background:#fff;font-family:inherit;">
+              <option value="bilgi">ℹ Bilgi (Mavi)</option>
+              <option value="uyari">⚠ Uyarı (Sarı)</option>
+              <option value="hata">🔴 Kritik (Kırmızı)</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="duyuruKaydet()" style="margin-top:8px;">📢 Duyuruyu Yayınla</button>
+          <button class="btn btn-secondary" onclick="duyuruKaldir()" style="margin-top:8px;margin-left:8px;">✕ Duyuruyu Kaldır</button>
+        </div>
+      </div>
+
+      <!-- BAKIM MODU -->
+      <div class="panel-card" style="margin-top:16px;">
+        <div class="pc-head"><div><h3>🔧 Bakım Modu</h3><p>Aktifken kullanıcılar sisteme giremez, sadece adminler erişebilir</p></div></div>
+        <div class="pc-body">
+          <div class="metin-item">
+            <label>Bakım Mesajı</label>
+            <textarea id="m-bakimMesaj" rows="2" placeholder="Örn: Sistem şu anda bakımdadır. Kısa süre içinde tekrar hizmetinizde olacağız.">Sistem şu anda bakımdadır. Kısa süre içinde tekrar hizmetinizde olacağız.</textarea>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:#374162;">
+              <input type="checkbox" id="m-bakimMod" style="width:16px;height:16px;cursor:pointer;">
+              Bakım Modunu Etkinleştir
+            </label>
+            <span id="bakimDurumBadge" style="display:none;font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:10px;background:#fef2f2;color:#991b1b;">🔴 AKTİF</span>
+          </div>
+          <button class="btn btn-primary" onclick="bakimKaydet()" style="margin-top:10px;">💾 Kaydet</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- LOGO & LOGIN -->
@@ -651,9 +693,29 @@
       <div class="panel-card" id="sbListe" style="display:none;">
         <div class="pc-head">
           <div><h3>👥 Kayıtlı Kullanıcılar</h3><p>Sisteme erişimi olan kullanıcılar</p></div>
-          <button class="btn" onclick="kullanicilariYukle()" style="font-size:.8rem;">↻ Yenile</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn" onclick="kullanicilariYukle()" style="font-size:.8rem;">↻ Yenile</button>
+            <button class="btn" onclick="kullaniciExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
+              Excel İndir
+            </button>
+          </div>
         </div>
         <div class="pc-body">
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="kulArama" placeholder="🔍  E-posta, ad soyad, firma veya telefon ara…"
+              oninput="kulAramaFiltrele()"
+              style="flex:1;min-width:220px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;"
+              onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
+            <select id="kulTipFiltre" onchange="kulAramaFiltrele()"
+              style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;background:#fff;">
+              <option value="">Tüm Tipler</option>
+              <option value="lisans">✅ Lisans</option>
+              <option value="demo">🎥 Demo</option>
+              <option value="durduruldu">🚫 Durduruldu</option>
+              <option value="">— Etiket Yok</option>
+            </select>
+          </div>
           <div id="kullaniciListesi" style="font-size:.87rem;color:#6b7a99;">Yükleniyor…</div>
         </div>
       </div>
@@ -697,7 +759,13 @@
       <div class="card">
         <div class="card-header">
           <div><h3>📬 Lisans Başvuruları</h3><p>Login sayfasından gelen satın alma ve demo talepleri</p></div>
-          <button class="btn btn-secondary" onclick="basvurulariYukle()">🔄 Yenile</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="basvurulariYukle()">🔄 Yenile</button>
+            <button class="btn" onclick="basvuruExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
+              Excel İndir
+            </button>
+          </div>
         </div>
         <div id="basvuruListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
       </div>
@@ -708,7 +776,13 @@
       <div class="panel-card">
         <div class="pc-head">
           <div><h3>📈 Sorgu İstatistikleri</h3><p>Sorgular tablosundan ülke ve dönem bazlı analiz</p></div>
-          <button class="btn btn-secondary" onclick="istatistikYukle()">🔄 Yenile</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="istatistikYukle()">🔄 Yenile</button>
+            <button class="btn" onclick="istatistikExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
+              Excel İndir
+            </button>
+          </div>
         </div>
         <div class="pc-body">
           <div id="istatistikIcerik">
@@ -725,6 +799,9 @@
           <div style="display:flex;gap:8px;">
             <button class="btn btn-secondary" onclick="girisLogTemizle()" style="background:#fef2f2;color:#b91c1c;border-color:#fca5a5;">🗑 Temizle</button>
             <button class="btn btn-secondary" onclick="girisLogCsvIndir()">⬇ CSV</button>
+            <button class="btn" onclick="girisLogExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:3px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>Excel
+            </button>
             <button class="btn btn-secondary" onclick="girisLogYukle()">🔄 Yenile</button>
           </div>
         </div>
@@ -1340,6 +1417,29 @@ async function kullanicilariYukle(){
     });
     const logData = rLog.ok ? await rLog.json() : [];
 
+    // sorgular tablosundan sorgu sayısını çek
+    const rSrg=await fetch(sb.url+'/rest/v1/sorgular?select=email&limit=2000',{
+      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+    });
+    const srgData = rSrg.ok ? await rSrg.json() : [];
+    const sorguMap={};
+    if(Array.isArray(srgData)) srgData.forEach(r=>{ if(r.email) sorguMap[r.email]=(sorguMap[r.email]||0)+1; });
+
+    // Başvurular tablosundan firma/tel/talep bilgilerini çek
+    const svcKey2 = sb.serviceKey || sb.key;
+    const rBas = await fetch(sb.url+'/rest/v1/basvurular?select=email,ad_soyad,firma,telefon,talep&order=tarih.desc&limit=500',{
+      headers:{'apikey':svcKey2,'Authorization':'Bearer '+svcKey2,'Accept':'application/json'}
+    });
+    const basData = rBas.ok ? await rBas.json() : [];
+    // Her email için en son başvuruyu al
+    const basMap = {};
+    if(Array.isArray(basData)){
+      basData.forEach(b=>{
+        if(!b.email) return;
+        if(!basMap[b.email]) basMap[b.email] = b; // order by desc - ilk = en yeni
+      });
+    }
+
     // Supabase admin/users ile kayıt tarihi almaya çalış
     const svcKey = sb.serviceKey || sb.key;
     const rAuth=await fetch(sb.url+'/auth/v1/admin/users?per_page=200',{
@@ -1370,14 +1470,22 @@ async function kullanicilariYukle(){
         // Önce user_metadata'ya bak, yoksa localStorage'a
         const tip = uMeta.tip || localNot.tip || '';
         const not = uMeta.not || localNot.aciklama || '';
+        const bas = basMap[u.email] || {};
         return {
           id: u.id,
           email: u.email||'-',
           kayitTarihi: u.created_at,
           sonGiris: (logMap[u.email]&&logMap[u.email].sonGiris) || u.last_sign_in_at,
           girisAdedi: (logMap[u.email]&&logMap[u.email].girisAdedi) || 0,
+          sorguSayisi: sorguMap[u.email] || 0,
           silinebilir: true,
-          tip, not
+          tip, not,
+          lisans_baslangic: uMeta.lisans_baslangic || localNot.lisans_baslangic || null,
+          lisans_bitis: uMeta.lisans_bitis || localNot.lisans_bitis || null,
+          ad_soyad: bas.ad_soyad || '',
+          firma: bas.firma || '',
+          telefon: bas.telefon || '',
+          talep: bas.talep || '',
         };
       });
     } else {
@@ -1386,62 +1494,105 @@ async function kullanicilariYukle(){
       users = Object.entries(logMap).map(([email,v])=>({
         id:null, email, kayitTarihi:null, sonGiris:v.sonGiris, girisAdedi:v.girisAdedi, silinebilir:false,
         tip: (notlarMap2[email]&&notlarMap2[email].tip)||'',
-        not: (notlarMap2[email]&&notlarMap2[email].aciklama)||''
+        not: (notlarMap2[email]&&notlarMap2[email].aciklama)||'',
+        sorguSayisi: sorguMap[email]||0,
       }));
     }
 
     users.sort((a,b)=>(b.sonGiris||'').localeCompare(a.sonGiris||''));
-
-    if(users.length===0){
-      el.innerHTML='<div style="color:#8c97a8;font-size:.83rem;padding:12px;">Henüz kullanıcı yok.</div>';
-      return;
-    }
-
-    const fmtTar = (iso)=> iso ? new Date(iso).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
-    const fmtSon = (iso)=> iso ? new Date(iso).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-
-    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.82rem;">
-      <thead><tr style="background:#f0f4f8;border-bottom:2px solid #e2e8f0;">
-        <th style="padding:10px 12px;text-align:left;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">E-posta</th>
-        <th style="padding:10px 12px;text-align:left;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Etiket / Not</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Kayıt Tarihi</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Son Giriş</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Giriş Sayısı</th>
-        <th style="padding:10px 12px;text-align:center;color:#4a5568;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">İşlem</th>
-      </tr></thead>
-      <tbody>${users.map((u,i)=>`<tr style="border-bottom:1px solid #edf2f7;background:${i%2===0?'#fff':'#f8fafc'};">
-        <td style="padding:10px 12px;font-weight:600;color:#1a2535;">${u.email}</td>
-        <td style="padding:10px 12px;">
-          ${(()=>{
-            const tipRenk = {lisans:'#dcfce7|#166534|#86efac',demo:'#fef3c7|#92400e|#fcd34d',test:'#e0e7ff|#3730a3|#a5b4fc','':'#f1f5f9|#64748b|#cbd5e1'};
-            const tipAd   = {lisans:'Lisans',demo:'Demo',test:'Test',''  :''};
-            const [bg,fg,br] = (tipRenk[u.tip]||tipRenk['']).split('|');
-            const badge = u.tip ? '<span style="background:'+bg+';color:'+fg+';border:1px solid '+br+';border-radius:9px;padding:1px 8px;font-size:.7rem;font-weight:700;margin-right:4px;">'+tipAd[u.tip]+'</span>' : '';
-            const notText = u.not ? '<span title="'+u.not.replace(/"/g,"'")+'" style="font-size:.75rem;color:#64748b;cursor:default;">'+u.not.substring(0,28)+(u.not.length>28?'…':'')+'</span>' : '';
-            return (badge+notText) || '<span style="color:#cbd5e1;font-size:.75rem;">—</span>';
-          })()}
-          <button onclick="kullaniciNotDuzenle('${u.email}')" title="Etiket/Not düzenle" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:2px 4px;opacity:.5;vertical-align:middle;">✏️</button>
-        </td>
-        <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtTar(u.kayitTarihi)}</td>
-        <td style="padding:10px 12px;color:#64748b;text-align:center;">${fmtSon(u.sonGiris)}</td>
-        <td style="padding:10px 12px;text-align:center;">
-          <span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.78rem;padding:2px 10px;border-radius:12px;">${u.girisAdedi}</span>
-        </td>
-        <td style="padding:10px 12px;text-align:center;">
-          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-            <button onclick="parolaSifirla('${u.id}','${u.email}')" style="font-size:.72rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Sıfırla</button>
-            ${u.silinebilir
-              ? `<button onclick="kullanicisil('${u.id}','${u.email}')" style="font-size:.72rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>`
-              : `<span style="font-size:.7rem;color:#94a3b8;"></span>`}
-          </div>
-        </td>
-      </tr>`).join('')}</tbody>
-    </table>
-    ${authUsers.length===0?'<p style="font-size:.72rem;color:#94a3b8;margin-top:8px;padding:0 4px;">ℹ Silme işlemi için Supabase Service Role Key gereklidir.</p>':''}`;
+    window._kullaniciTumu = users;
+    window._kulAuthLen = authUsers.length;
+    kullaniciTablosuRender(users, authUsers.length === 0);
   }catch(e){
     el.innerHTML='<div style="color:#b91c1c;font-size:.83rem;padding:12px;">Hata: '+e.message+'</div>';
   }
 }
+
+function kulAramaFiltrele(){
+  const q = (document.getElementById('kulArama')?.value || '').toLowerCase().trim();
+  const tipF = document.getElementById('kulTipFiltre')?.value || '';
+  const tum = window._kullaniciTumu || [];
+  const filtered = tum.filter(u=>{
+    const tipEsles = !tipF || u.tip === tipF || (tipF === '' && !u.tip);
+    if(!tipEsles) return false;
+    if(!q) return true;
+    return (u.email||'').toLowerCase().includes(q)
+      || (u.ad_soyad||'').toLowerCase().includes(q)
+      || (u.firma||'').toLowerCase().includes(q)
+      || (u.telefon||'').toLowerCase().includes(q)
+      || (u.not||'').toLowerCase().includes(q);
+  });
+  kullaniciTablosuRender(filtered, !(window._kulAuthLen));
+}
+
+function kullaniciTablosuRender(users, logOnly){
+  var el = document.getElementById('kullaniciListesi');
+  if(!el) return;
+  if(!users || users.length===0){
+    el.innerHTML='<div style="color:#8c97a8;font-size:.83rem;padding:12px;">Sonuç bulunamadı.</div>';
+    return;
+  }
+  function fmtTar(iso){ return iso ? new Date(iso).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—'; }
+  function fmtSon(iso){ return iso ? new Date(iso).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—'; }
+  var tipRenk = {lisans:'#dcfce7|#166534|#86efac',demo:'#fef3c7|#92400e|#fcd34d',durduruldu:'#fee2e2|#991b1b|#fca5a5','':'#f1f5f9|#64748b|#cbd5e1'};
+  var tipAd   = {lisans:'✅ Lisans',demo:'🎥 Demo',durduruldu:'🚫 Durduruldu','':''};
+  var tAd = {'demo':'Demo Talep','satin-alma':'Satın Alma','diger':'Diğer'};
+
+  var th = '<thead><tr style="background:#f0f4f8;border-bottom:2px solid #e2e8f0;">'
+    + ['E-posta','Ad Soyad','Firma','Telefon','Talep','Etiket / Not','Kayıt','Son Giriş','Giriş','Sorgu','İşlem'].map(function(h){
+        return '<th style="padding:9px 10px;text-align:'+(h==='İşlem'||h==='Kayıt'||h==='Son Giriş'||h==='Giriş'||h==='Sorgu'?'center':'left')+';color:#4a5568;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;white-space:nowrap;">'+h+'</th>';
+      }).join('')
+    + '</tr></thead>';
+
+  var rows = users.map(function(u,i){
+    var bgfgbr = (tipRenk[u.tip]||tipRenk['']).split('|');
+    var badge = u.tip ? '<span style="background:'+bgfgbr[0]+';color:'+bgfgbr[1]+';border:1px solid '+bgfgbr[2]+';border-radius:9px;padding:1px 8px;font-size:.7rem;font-weight:700;margin-right:4px;">'+tipAd[u.tip]+'</span>' : '';
+    var notText = u.not ? '<span title="'+u.not.replace(/"/g,"'")+'" style="font-size:.72rem;color:#64748b;cursor:default;">'+u.not.substring(0,22)+(u.not.length>22?'…':'')+'</span>' : '';
+    var lisansInfo = '';
+    if(u.tip === 'lisans' && u.lisans_bitis){
+      var bitis = new Date(u.lisans_bitis);
+      var kalanGun = Math.ceil((bitis - new Date()) / (1000*60*60*24));
+      var bitisStr = bitis.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
+      var renk = kalanGun < 30 ? '#b91c1c' : kalanGun < 90 ? '#b45309' : '#166534';
+      var renk2 = kalanGun < 30 ? '#fef2f2' : kalanGun < 90 ? '#fffbeb' : '#f0fdf4';
+      lisansInfo = '<div style="font-size:.65rem;color:'+renk+';background:'+renk2+';border-radius:5px;padding:1px 5px;margin-top:2px;display:inline-block;">'+(kalanGun>0?'📅 '+bitisStr+' · '+kalanGun+'g':'⛔ Doldu')+'</div>';
+    }
+    var rowBg = u.tip==='durduruldu' ? '#fff5f5' : (i%2===0?'#fff':'#f8fafc');
+    var eId = u.id ? u.id.replace(/'/g,'') : '';
+    var eEmail = (u.email||'').replace(/'/g,'');
+    var silBtn = u.silinebilir ? '<button data-id="'+eId+'" data-email="'+eEmail+'" class="_kulSil" style="font-size:.68rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🗑 Sil</button>' : '';
+    return '<tr style="border-bottom:1px solid #edf2f7;background:'+rowBg+';">'
+      + '<td style="padding:8px 10px;font-weight:600;color:#1a2535;white-space:nowrap;">'+(u.email||'—')+'</td>'
+      + '<td style="padding:8px 10px;color:#374162;">'+(u.ad_soyad||'<span style="color:#cbd5e1">—</span>')+'</td>'
+      + '<td style="padding:8px 10px;color:#374162;">'+(u.firma||'<span style="color:#cbd5e1">—</span>')+'</td>'
+      + '<td style="padding:8px 10px;color:#374162;white-space:nowrap;">'+(u.telefon||'<span style="color:#cbd5e1">—</span>')+'</td>'
+      + '<td style="padding:8px 10px;"><span style="font-size:.72rem;color:#374162;">'+(u.talep?(tAd[u.talep]||u.talep):'—')+'</span></td>'
+      + '<td style="padding:8px 10px;min-width:120px;">'
+      +   '<div>'+(badge+notText||'<span style="color:#cbd5e1;font-size:.72rem;">—</span>')+lisansInfo+'</div>'
+      +   '<button data-email="'+eEmail+'" class="_kulNot" title="Etiket/Not düzenle" style="background:none;border:none;cursor:pointer;font-size:.82rem;padding:1px 3px;opacity:.45;vertical-align:middle;">✏️</button>'
+      + '</td>'
+      + '<td style="padding:8px 10px;color:#64748b;text-align:center;white-space:nowrap;">'+fmtTar(u.kayitTarihi)+'</td>'
+      + '<td style="padding:8px 10px;color:#64748b;text-align:center;white-space:nowrap;">'+fmtSon(u.sonGiris)+'</td>'
+      + '<td style="padding:8px 10px;text-align:center;"><span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.75rem;padding:2px 8px;border-radius:10px;">'+u.girisAdedi+'</span></td>'
+      + '<td style="padding:8px 10px;text-align:center;"><span style="background:#f0fdf4;color:#166534;font-weight:700;font-size:.75rem;padding:2px 8px;border-radius:10px;">'+(u.sorguSayisi||0)+'</span></td>'
+      + '<td style="padding:8px 10px;text-align:center;">'
+      +   '<div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">'
+      +     '<button data-id="'+eId+'" data-email="'+eEmail+'" class="_kulSifirla" style="font-size:.68rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Sıfırla</button>'
+      +     silBtn
+      +   '</div>'
+      + '</td>'
+      + '</tr>';
+  }).join('');
+
+  el.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.81rem;">'
+    + th + '<tbody>' + rows + '</tbody></table></div>'
+    + (logOnly ? '<p style="font-size:.72rem;color:#94a3b8;margin-top:8px;padding:0 4px;">ℹ Silme işlemi için Supabase Service Role Key gereklidir.</p>' : '');
+  // Event delegation
+  el.querySelectorAll('._kulSil').forEach(function(b){ b.addEventListener('click',function(){ kullanicisil(this.dataset.id, this.dataset.email); }); });
+  el.querySelectorAll('._kulNot').forEach(function(b){ b.addEventListener('click',function(){ kullaniciNotDuzenle(this.dataset.email); }); });
+  el.querySelectorAll('._kulSifirla').forEach(function(b){ b.addEventListener('click',function(){ parolaSifirla(this.dataset.id, this.dataset.email); }); });
+}
+
 
 async function parolaSifirla(id, email){
   const yeniPass = prompt('⚠ ' + email + ' için yeni geçici parola belirleyin (boş bırakırsanız otomatik oluşturulur):');
@@ -1552,6 +1703,46 @@ function metinleriKaydet(){
   toast('✅ Metinler kaydedildi');
 }
 
+function duyuruKaydet(){
+  const duyuruEl = document.getElementById('m-duyuru');
+  const tipEl = document.getElementById('m-duyuruTip');
+  if(!duyuruEl) return;
+  const metin = duyuruEl.value.trim();
+  if(!metin){ toast('⚠ Duyuru metni boş olamaz'); return; }
+  const cfg = depoyuYukle() || {};
+  if(!cfg.duyuru) cfg.duyuru = {};
+  cfg.duyuru.metin = metin;
+  cfg.duyuru.tip = tipEl ? tipEl.value : 'bilgi';
+  cfg.duyuru.aktif = true;
+  depoyaKaydet(cfg);
+  toast('📢 Duyuru yayınlandı');
+}
+
+function duyuruKaldir(){
+  const cfg = depoyuYukle() || {};
+  if(!cfg.duyuru) cfg.duyuru = {};
+  cfg.duyuru.aktif = false;
+  cfg.duyuru.metin = '';
+  depoyaKaydet(cfg);
+  const el = document.getElementById('m-duyuru');
+  if(el) el.value = '';
+  toast('✕ Duyuru kaldırıldı');
+}
+
+function bakimKaydet(){
+  const mesajEl = document.getElementById('m-bakimMesaj');
+  const modEl = document.getElementById('m-bakimMod');
+  if(!mesajEl || !modEl) return;
+  const cfg = depoyuYukle() || {};
+  if(!cfg.bakim) cfg.bakim = {};
+  cfg.bakim.aktif = modEl.checked;
+  cfg.bakim.mesaj = mesajEl.value.trim() || 'Sistem şu anda bakımdadır.';
+  depoyaKaydet(cfg);
+  const badge = document.getElementById('bakimDurumBadge');
+  if(badge){ badge.style.display = modEl.checked ? 'inline-flex' : 'none'; }
+  toast(modEl.checked ? '🔧 Bakım modu AKTİF' : '✅ Bakım modu kapatıldı');
+}
+
 function degisimIsaretle(){
   degisimVar = true;
   document.getElementById('degisimBar').classList.add('goster');
@@ -1654,6 +1845,7 @@ async function basvurulariYukle(){
       el.innerHTML = '<p style="text-align:center;color:#6b7a99;padding:30px;">Henüz başvuru yok.</p>';
       return;
     }
+    window._basvuruTumu = d; // Excel indirme için global sakla
     const talepMap = {'satin-alma':'🛒 Satın Alma','demo':'🎥 Demo','fiyat':'💰 Fiyat Bilgisi','kurumsal':'🏢 Kurumsal','diger':'📝 Diğer',''  :'—'};
     const talepBadge = function(talep){
       if(talep==='demo') return '<span style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🎥 Demo</span>';
@@ -1718,6 +1910,7 @@ async function girisLogYukle(){
       el.innerHTML='<p style="text-align:center;color:#6b7a99;padding:20px;">Kayıt yok. Siteden çıkış yapıp tekrar giriş yapın.</p>';return;
     }
     _girisLogTum = d;
+    window._girisLogTumu = d; // Excel indirme için global
     const aramaEl = document.getElementById('girisLogArama');
     if(aramaEl) aramaEl.value = '';
     girisLogRender(d, el);
@@ -1770,6 +1963,27 @@ async function dashboardYukle(){
     }
     const top3 = Object.entries(aktifMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
 
+    // Süresi yaklaşan/biten lisans kullanıcıları (30 gün içinde)
+    const simdi = new Date();
+    const simdi30 = new Date(Date.now() + 30*24*60*60*1000);
+    const lisansUyarilar = [];
+    if(Array.isArray((usersData.users||[]))){
+      (usersData.users||[]).forEach(u=>{
+        const meta = u.user_metadata || {};
+        if(meta.tip === 'lisans' && meta.lisans_bitis){
+          const bitis = new Date(meta.lisans_bitis);
+          const kalanGun = Math.ceil((bitis - simdi) / (24*60*60*1000));
+          if(kalanGun <= 30){
+            lisansUyarilar.push({email: u.email, kalanGun, bitis: bitis.toLocaleDateString('tr-TR')});
+          }
+        }
+      });
+    }
+    lisansUyarilar.sort((a,b)=>a.kalanGun-b.kalanGun);
+
+    const lisansBitiyorListesi = lisansUyarilar.length > 0
+      ? '<div style="margin-top:16px;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:14px 18px;">'        + '<div style="font-size:.75rem;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">⏰ Süresi Yaklaşan/Biten Lisanslar ('+lisansUyarilar.length+')</div>'        + lisansUyarilar.slice(0,5).map(u=>            '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:'+(u.kalanGun<=0?'#fee2e2':'#fff')+';border-radius:7px;margin-bottom:4px;border:1px solid '+(u.kalanGun<=0?'#fca5a5':'#e2e8f0')+';"><span style="font-size:.82rem;color:#1e293b;">'+u.email+'</span>'            + '<span style="font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:10px;background:'+(u.kalanGun<=0?'#fee2e2':'#fffbeb')+';color:'+(u.kalanGun<=0?'#991b1b':'#92400e')+';">'+(u.kalanGun<=0?'Süresi doldu ('+u.bitis+')':''+u.kalanGun+' gün kaldı ('+u.bitis+')')+'</span>'            + '</div>'          ).join('')        + '</div>'      : '';
+
     const kart = (emoji, baslik, deger, renk, alt) =>
       '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px 22px;min-width:140px;flex:1;">'
       +'<div style="font-size:1.6rem;margin-bottom:6px;">'+emoji+'</div>'
@@ -1796,6 +2010,7 @@ async function dashboardYukle(){
       + kart('📬', 'Başvuru', basvSayi||'0', '#b45309', '')
       + '</div>'
       + aktifListesi
+      + lisansBitiyorListesi
       + (key ? '' : '<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:9px;padding:14px 18px;font-size:.83rem;color:#92400e;margin-top:12px;">⚠ Tam istatistik için Supabase Service Role Key gereklidir.</div>');
   }catch(e){
     el.innerHTML = '<div style="color:#b91c1c;font-size:.84rem;padding:12px;">Hata: '+e.message+'</div>';
@@ -1842,6 +2057,28 @@ function girisLogRender(data, el){
     }).join('')+'</tbody></table>';
 }
 
+function girisLogExcelIndir(){
+  if(!window.XLSX){ alert('Excel kütüphanesi yüklenemedi.'); return; }
+  var data = window._girisLogTumu || _girisLogTum;
+  if(!data || !data.length){ toast('⚠ Önce giriş geçmişini yükleyin'); return; }
+  var rows = [['E-posta','Giriş Tarihi','Gün','Saat']];
+  data.forEach(function(r){
+    var d = r.giris_tarihi ? new Date(r.giris_tarihi) : null;
+    rows.push([
+      r.email||'',
+      d ? d.toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'}) : '',
+      d ? d.toLocaleDateString('tr-TR',{timeZone:'Europe/Istanbul'}) : '',
+      d ? d.toLocaleTimeString('tr-TR',{timeZone:'Europe/Istanbul',hour:'2-digit',minute:'2-digit'}) : '',
+    ]);
+  });
+  var ws = window.XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:32},{wch:22},{wch:14},{wch:10}];
+  var wb = window.XLSX.utils.book_new();
+  window.XLSX.utils.book_append_sheet(wb, ws, 'Giriş Geçmişi');
+  window.XLSX.writeFile(wb, 'ibkb-giris-log-' + new Date().toISOString().slice(0,10) + '.xlsx');
+  toast('✅ Excel dosyası indiriliyor…');
+}
+
 function girisLogCsvIndir(){
   if(!_girisLogTum.length){ toast('⚠ Önce giriş geçmişini yükleyin'); return; }
   const bom = '\uFEFF';
@@ -1885,16 +2122,23 @@ async function kullaniciNotDuzenle(email){
       <div style="font-size:.8rem;color:#64748b;margin-bottom:18px;">${email}</div>
       <div style="margin-bottom:14px;">
         <label style="font-size:.78rem;font-weight:700;color:#374162;display:block;margin-bottom:5px;">Kullanıcı Tipi</label>
-        <select id="_notTip" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-family:inherit;">
+        <select id="_notTip" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-family:inherit;" onchange="document.getElementById('_lisansBilgiRow').style.display=this.value==='lisans'?'block':'none'">
           <option value="">— Seçiniz —</option>
-          <option value="lisans" ${mevcut.tip==='lisans'?'selected':''}>✅ Lisans</option>
-          <option value="demo" ${mevcut.tip==='demo'?'selected':''}>🎥 Demo</option>
-          <option value="test" ${mevcut.tip==='test'?'selected':''}>🧪 Test</option>
+          <option value="lisans" \${mevcut.tip==='lisans'?'selected':''}>✅ Lisans</option>
+          <option value="demo" \${mevcut.tip==='demo'?'selected':''}>🎥 Demo</option>
+          <option value="durduruldu" \${mevcut.tip==='durduruldu'?'selected':''}>🚫 Durduruldu</option>
         </select>
+      </div>
+      <div id="_lisansBilgiRow" style="margin-bottom:14px;background:#f0f9f0;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;display:\${mevcut.tip==='lisans'?'block':'none'}">
+        <div style="font-size:.75rem;font-weight:700;color:#166534;margin-bottom:4px;">📅 Lisans Süresi</div>
+        <div style="font-size:.78rem;color:#374162;">
+          \${mevcut.lisans_baslangic ? '<span>Başlangıç: <strong>' + new Date(mevcut.lisans_baslangic).toLocaleDateString("tr-TR") + '</strong></span><br>' : ''}
+          \${mevcut.lisans_bitis ? '<span>Bitiş: <strong>' + new Date(mevcut.lisans_bitis).toLocaleDateString("tr-TR") + '</strong></span>' : '<span style="color:#92400e;">⚠ Henüz lisans tarihi atanmamış — Kaydet ile atanır.</span>'}
+        </div>
       </div>
       <div style="margin-bottom:20px;">
         <label style="font-size:.78rem;font-weight:700;color:#374162;display:block;margin-bottom:5px;">Not (firma, plan vb.)</label>
-        <input type="text" id="_notAciklama" value="${mevcut.aciklama||''}" placeholder="Örn: ABC İhracat Ltd., Yıllık Lisans" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+        <input type="text" id="_notAciklama" value="\${mevcut.aciklama||''}" placeholder="Örn: ABC İhracat Ltd., Yıllık Lisans" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
       </div>
       <div style="display:flex;gap:8px;">
         <button id="_notKaydet" style="flex:1;padding:10px;background:#1a56a0;color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;">💾 Kaydet</button>
@@ -1907,7 +2151,14 @@ async function kullaniciNotDuzenle(email){
     const tip = box.querySelector('#_notTip').value;
     const ac  = box.querySelector('#_notAciklama').value.trim();
     const notlar2 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
-    notlar2[email] = {tip, aciklama: ac};
+    const notMevcut = notlar2[email] || {};
+    const lisansBaslangic = (tip === 'lisans')
+      ? (notMevcut.lisans_baslangic || new Date().toISOString())
+      : null;
+    const lisansBitis = (tip === 'lisans')
+      ? (notMevcut.lisans_bitis || new Date(Date.now() + 365*24*60*60*1000).toISOString())
+      : null;
+    notlar2[email] = {tip, aciklama: ac, lisans_baslangic: lisansBaslangic, lisans_bitis: lisansBitis};
     localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar2));
     // Supabase user_metadata'ya da yaz
     try{
@@ -1924,7 +2175,20 @@ async function kullaniciNotDuzenle(email){
             await fetch(sb2.url+'/auth/v1/admin/users/'+hedef.id,{
               method:'PUT',
               headers:{'Content-Type':'application/json','apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey},
-              body:JSON.stringify({user_metadata:{tip:tip, not:ac, ilk_giris: hedef.user_metadata&&hedef.user_metadata.ilk_giris}})
+              body:JSON.stringify({user_metadata:(()=>{
+              const mevMeta = hedef.user_metadata || {};
+              const meta = {tip:tip, not:ac, ilk_giris: mevMeta.ilk_giris};
+              if(tip === 'lisans'){
+                // Eğer zaten lisans tarihi varsa koru, yoksa şimdi ata
+                meta.lisans_baslangic = mevMeta.lisans_baslangic || new Date().toISOString();
+                meta.lisans_bitis = mevMeta.lisans_bitis || new Date(Date.now() + 365*24*60*60*1000).toISOString();
+              } else {
+                // Lisans dışı tipte tarihleri temizle
+                meta.lisans_baslangic = null;
+                meta.lisans_bitis = null;
+              }
+              return meta;
+            })()})
             });
           }
         }
@@ -1934,18 +2198,173 @@ async function kullaniciNotDuzenle(email){
     toast('✓ Not kaydedildi');
     kullanicilariYukle();
   });
-  box.querySelector('#_notSil').addEventListener('click', ()=>{
+  box.querySelector('#_notSil').addEventListener('click', async ()=>{
     const notlar3 = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
     delete notlar3[email];
     localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar3));
+    // Supabase user_metadata'yı da temizle
+    const sb2 = sbCfg();
+    const userId = (window._kullaniciTumu||[]).find(u=>u.email===email)?.id;
+    if(sb2 && userId){
+      try{
+        await fetch(sb2.url+'/auth/v1/admin/users/'+userId,{
+          method:'PUT',
+          headers:{'Content-Type':'application/json','apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey},
+          body: JSON.stringify({user_metadata:{tip:'',not:'',lisans_baslangic:null,lisans_bitis:null,ilk_giris:false}})
+        });
+      }catch(e){ console.warn('Metadata temizlenemedi:', e); }
+    }
     box.remove();
-    toast('✓ Not silindi');
+    toast('✓ Etiket ve not silindi');
     kullanicilariYukle();
   });
   box.querySelector('#_notIptal').addEventListener('click', ()=> box.remove());
 }
 
 // ─── SORGU İSTATİSTİĞİ ────────────────────────────────────────────────────────
+function istatistikExcelIndir(){
+  if(!window.XLSX){ alert('Excel kütüphanesi yüklenemedi. Sayfayı yenileyip tekrar deneyin.'); return; }
+  const d = window._istData;
+  if(!d){ alert('Önce istatistikleri yükleyin (🔄 Yenile).'); return; }
+
+  const wb = window.XLSX.utils.book_new();
+  const now = new Date().toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // ── Sayfa 1: Özet ─────────────────────────────────────────────────────────
+  const ozet = [
+    ['GÖVDAĞ İBKB Sorgulama — İstatistik Raporu'],
+    ['Oluşturulma Tarihi:', now],
+    [],
+    ['Özet Bilgiler',''],
+    ['Toplam Sorgu', d.rows.length],
+    ['Farklı Ülke Sayısı', Object.keys(d.ulkeMap).length],
+    ['Aktif Kullanıcı Sayısı', Object.keys(d.kulMap).length],
+  ];
+  const wsOzet = window.XLSX.utils.aoa_to_sheet(ozet);
+  wsOzet['!cols'] = [{wch:30},{wch:20}];
+  wsOzet['A1'].s = {font:{bold:true,sz:14}};
+  window.XLSX.utils.book_append_sheet(wb, wsOzet, 'Özet');
+
+  // ── Sayfa 2: Ülke Bazlı ───────────────────────────────────────────────────
+  const ulkeRows = [['Ülke', 'Sorgu Sayısı', 'Oran (%)']];
+  d.topUlke.forEach(function([ulke,sayi]){
+    ulkeRows.push([ulke, sayi, +(sayi/d.rows.length*100).toFixed(1)]);
+  });
+  // Tüm ülkeleri de ekle (ilk 15 dışındakiler)
+  const ulkeTum = [['',''],['--- Tüm Ülkeler ---',''],['Ülke','Sorgu Sayısı']];
+  Object.entries(d.ulkeMap).sort((a,b)=>b[1]-a[1]).forEach(function([ulke,sayi]){
+    ulkeTum.push([ulke, sayi]);
+  });
+  const wsUlke = window.XLSX.utils.aoa_to_sheet(ulkeRows.concat(ulkeTum));
+  wsUlke['!cols'] = [{wch:30},{wch:15},{wch:12}];
+  window.XLSX.utils.book_append_sheet(wb, wsUlke, 'Ülke Bazlı');
+
+  // ── Sayfa 3: Aylık Dağılım ────────────────────────────────────────────────
+  const ayAd = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  const ayRows = [['Yıl-Ay', 'Ay Adı', 'Sorgu Sayısı']];
+  Object.entries(d.ayMap).sort((a,b)=>a[0].localeCompare(b[0])).forEach(function([ay,sayi]){
+    var parts = ay.split('-');
+    var ayStr = parts[1] ? ayAd[parseInt(parts[1])-1] + ' ' + parts[0] : ay;
+    ayRows.push([ay, ayStr, sayi]);
+  });
+  const wsAy = window.XLSX.utils.aoa_to_sheet(ayRows);
+  wsAy['!cols'] = [{wch:12},{wch:18},{wch:15}];
+  window.XLSX.utils.book_append_sheet(wb, wsAy, 'Aylık Dağılım');
+
+  // ── Sayfa 4: Kullanıcı Bazlı ──────────────────────────────────────────────
+  const kulRows = [['E-posta', 'Sorgu Sayısı']];
+  Object.entries(d.kulMap).sort((a,b)=>b[1]-a[1]).forEach(function([email,sayi]){
+    kulRows.push([email, sayi]);
+  });
+  const wsKul = window.XLSX.utils.aoa_to_sheet(kulRows);
+  wsKul['!cols'] = [{wch:35},{wch:15}];
+  window.XLSX.utils.book_append_sheet(wb, wsKul, 'Kullanıcı Bazlı');
+
+  // ── Sayfa 5: Ham Veri ─────────────────────────────────────────────────────
+  const hamRows = [['E-posta','Tarih','Ülke','Beyanname','Bedel','Para','İBKB Matrahı','TCMB Satış','Son Tarih','Muaf']];
+  d.rows.forEach(function(row){
+    var v = row.veri || {};
+    hamRows.push([
+      row.email || '',
+      row.tarih ? new Date(row.tarih).toLocaleString('tr-TR') : '',
+      v.ulke || v.ulkeAdi || '',
+      v.beyanname || '',
+      v.bedelHam || '',
+      v.para || '',
+      v.ibkb || '',
+      v.tcmb || '',
+      v.sonTarih || '',
+      v.muaf ? 'Evet' : 'Hayır',
+    ]);
+  });
+  const wsHam = window.XLSX.utils.aoa_to_sheet(hamRows);
+  wsHam['!cols'] = [{wch:30},{wch:20},{wch:20},{wch:18},{wch:15},{wch:8},{wch:15},{wch:15},{wch:15},{wch:8}];
+  window.XLSX.utils.book_append_sheet(wb, wsHam, 'Ham Veri');
+
+  // İndir
+  var tarihDosya = new Date().toISOString().slice(0,10);
+  window.XLSX.writeFile(wb, 'ibkb-istatistik-' + tarihDosya + '.xlsx');
+  toast('✅ Excel dosyası indiriliyor…');
+}
+
+function kullaniciExcelIndir(){
+  if(!window.XLSX){ alert('Excel kütüphanesi yüklenemedi.'); return; }
+  var users = window._kullaniciTumu;
+  if(!users || users.length===0){ alert('Önce kullanıcı listesini yükleyin (↻ Yenile).'); return; }
+  var tipAd = {lisans:'Lisans',demo:'Demo',durduruldu:'Durduruldu','':'—'};
+  var talepAd = {'demo':'Demo Talep','satin-alma':'Satın Alma','diger':'Diğer'};
+  var rows = [['E-posta','Ad Soyad','Firma','Telefon','Talep','Tip','Not','Lisans Başlangıç','Lisans Bitiş','Kayıt Tarihi','Son Giriş','Giriş Sayısı','Sorgu Sayısı']];
+  users.forEach(function(u){
+    rows.push([
+      u.email||'',
+      u.ad_soyad||'',
+      u.firma||'',
+      u.telefon||'',
+      u.talep ? (talepAd[u.talep]||u.talep) : '',
+      tipAd[u.tip]||'',
+      u.not||'',
+      u.lisans_baslangic ? new Date(u.lisans_baslangic).toLocaleDateString('tr-TR') : '',
+      u.lisans_bitis ? new Date(u.lisans_bitis).toLocaleDateString('tr-TR') : '',
+      u.kayitTarihi ? new Date(u.kayitTarihi).toLocaleDateString('tr-TR') : '',
+      u.sonGiris ? new Date(u.sonGiris).toLocaleString('tr-TR') : '',
+      u.girisAdedi||0,
+      u.sorguSayisi||0,
+    ]);
+  });
+  var ws = window.XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:30},{wch:20},{wch:20},{wch:15},{wch:14},{wch:12},{wch:20},{wch:16},{wch:16},{wch:12},{wch:18},{wch:10},{wch:12}];
+  var wb = window.XLSX.utils.book_new();
+  window.XLSX.utils.book_append_sheet(wb, ws, 'Kullanıcılar');
+  window.XLSX.writeFile(wb, 'ibkb-kullanicilar-' + new Date().toISOString().slice(0,10) + '.xlsx');
+  toast('✅ Excel dosyası indiriliyor…');
+}
+
+function basvuruExcelIndir(){
+  if(!window.XLSX){ alert('Excel kütüphanesi yüklenemedi.'); return; }
+  var data = window._basvuruTumu;
+  if(!data || data.length===0){ alert('Önce başvuruları yükleyin (🔄 Yenile).'); return; }
+  var talepAd = {'demo':'Demo Talep','satin-alma':'Satın Alma','diger':'Diğer'};
+  var rows = [['Tarih','Ad Soyad','Firma','E-posta','Telefon','Talep','Mesaj','Okundu']];
+  data.forEach(function(r){
+    rows.push([
+      r.tarih ? new Date(r.tarih).toLocaleString('tr-TR') : '',
+      r.ad_soyad||'',
+      r.firma||'',
+      r.email||'',
+      r.telefon||'',
+      r.talep ? (talepAd[r.talep]||r.talep) : '',
+      r.mesaj||'',
+      r.okundu ? 'Evet' : 'Hayır',
+    ]);
+  });
+  var ws = window.XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:18},{wch:20},{wch:20},{wch:28},{wch:15},{wch:14},{wch:40},{wch:8}];
+  var wb = window.XLSX.utils.book_new();
+  window.XLSX.utils.book_append_sheet(wb, ws, 'Başvurular');
+  window.XLSX.writeFile(wb, 'ibkb-basvurular-' + new Date().toISOString().slice(0,10) + '.xlsx');
+  toast('✅ Excel dosyası indiriliyor…');
+}
+
 async function istatistikYukle(){
   const el = document.getElementById('istatistikIcerik');
   const sb = sbCfg();
@@ -1979,6 +2398,8 @@ async function istatistikYukle(){
     const topUlke = Object.entries(ulkeMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
     const topKul  = Object.entries(kulMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const aylar   = Object.entries(ayMap).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
+    // Global sakla - Excel indirme için
+    window._istData = { rows, topUlke, topKul, aylar, ulkeMap, kulMap, ayMap };
     const maxUlke = topUlke[0]?topUlke[0][1]:1;
     const maxAy   = aylar.reduce((m,a)=>Math.max(m,a[1]),1);
 
@@ -2045,6 +2466,28 @@ async function istatistikYukle(){
   }
 }
 
+
+// ─── SAYFA YÜKLENİNDE BAKIM + DUYURU DURUMUNU OKU ────────────────────────────
+(function(){
+  const cfg = depoyuYukle();
+  if(!cfg) return;
+  // Bakım modu
+  if(cfg.bakim && cfg.bakim.aktif){
+    const modEl = document.getElementById('m-bakimMod');
+    if(modEl) modEl.checked = true;
+    const badge = document.getElementById('bakimDurumBadge');
+    if(badge) badge.style.display = 'inline-flex';
+    const mesajEl = document.getElementById('m-bakimMesaj');
+    if(mesajEl && cfg.bakim.mesaj) mesajEl.value = cfg.bakim.mesaj;
+  }
+  // Duyuru
+  if(cfg.duyuru && cfg.duyuru.aktif && cfg.duyuru.metin){
+    const duyuruEl = document.getElementById('m-duyuru');
+    if(duyuruEl) duyuruEl.value = cfg.duyuru.metin;
+    const tipEl = document.getElementById('m-duyuruTip');
+    if(tipEl && cfg.duyuru.tip) tipEl.value = cfg.duyuru.tip;
+  }
+})();
 
 </script>
 </body>
