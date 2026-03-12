@@ -984,7 +984,7 @@ function ozelKutu(){
 }
 
 // ─── HESAPLA ──────────────────────────────────────────────────────────────────
-function hesapla(){
+async function hesapla(){
   const byn=document.getElementById('beyanname').value.trim();
   const bedel=sayiDegerAl('bedel');
   const para=document.getElementById('para').value;
@@ -1024,6 +1024,51 @@ function hesapla(){
     }
   }
   mukKapat();
+
+  // Demo kullanıcı sorgu limit kontrolü
+  try{
+    const token = sessionStorage.getItem('govdag_token');
+    const email = sessionStorage.getItem('govdag_email');
+    if(token && email){
+      const userId = jwtUserId(token);
+      // user_metadata'dan tip oku
+      const uRes = await fetch(SB_URL + '/auth/v1/user', {
+        headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + token}
+      });
+      if(uRes.ok){
+        const uData = await uRes.json();
+        const uMeta = uData.user_metadata || {};
+        const localNot = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}')[email] || {};
+        const kulTip = uMeta.tip || localNot.tip || '';
+        if(kulTip === 'demo' && userId){
+          const cfg2 = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+          const DEMO_LIMIT = (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
+          const rSorgu = await fetch(SB_URL + '/rest/v1/sorgular?user_id=eq.' + userId + '&select=id', {
+            headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + token}
+          });
+          const sorguData = rSorgu.ok ? await rSorgu.json() : [];
+          if(Array.isArray(sorguData) && sorguData.length >= DEMO_LIMIT){
+            // Demo limiti doldu - sorguyu engelle, uyarı göster
+            const uyariEl = document.getElementById('uyariKutu');
+            const _demoDiv = document.createElement('div');
+            _demoDiv.innerHTML = '<div style="font-weight:700;font-size:.95rem;margin-bottom:8px">⚠️ Demo Sorgu Limitiniz Doldu</div>'
+              + '<div style="font-size:.85rem;margin-bottom:12px">Demo hesabınızda kullanabileceğiniz <strong>' + DEMO_LIMIT + ' sorgu hakkınız</strong> tükenmiştir.</div>';
+            const _demoBtn = document.createElement('a');
+            _demoBtn.href = 'javascript:void(0)';
+            _demoBtn.textContent = '🛒 Lisans Satın Al';
+            _demoBtn.style.cssText = 'display:inline-block;background:#1a56a0;color:#fff;padding:8px 18px;border-radius:7px;font-size:.82rem;font-weight:700;text-decoration:none;';
+            _demoBtn.addEventListener('click', function(){ sessionStorage.clear(); window.location.href = './login.html'; });
+            _demoDiv.appendChild(_demoBtn);
+            uyariEl.innerHTML = '';
+            uyariEl.appendChild(_demoDiv);
+            uyariEl.classList.add('goster');
+            uyariEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+            return;
+          }
+        }
+      }
+    }
+  }catch(e){ /* demo kontrol hatası sorguyu engellemez */ }
 
   hesaplaCore();
 }
