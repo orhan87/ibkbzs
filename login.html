@@ -668,30 +668,53 @@ async function davetParolaBelirle(){
   spinner.style.display = 'block';
 
   try{
-    // Önce token ile oturumu doğrula
+    var tip = sessionStorage.getItem('davet_type') || 'recovery';
+    var accessToken = token;
+
+    // TokenHash ise önce /auth/v1/verify ile gerçek access_token'a çevir
+    // JWT formatı: 3 nokta ile ayrılmış 3 parça — değilse hash'tir
+    var tokenParcalari = token.split('.');
+    if(tokenParcalari.length !== 3){
+      // TokenHash → verify endpoint ile access_token al
+      var vRes = await fetch(sbUrl + '/auth/v1/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': sbKey },
+        body: JSON.stringify({ token_hash: token, type: tip })
+      });
+      var vData = await vRes.json();
+      if(!vRes.ok || !vData.access_token){
+        var vMsg = vData.msg || vData.message || vData.error_description || 'Bağlantı süresi dolmuş.';
+        hataEl.style.display='flex';
+        hataMsgEl.textContent = '⚠ ' + vMsg + ' Lütfen tekrar şifre sıfırlama talebinde bulunun.';
+        btn.disabled = false;
+        btnText.textContent = 'Parolayı Kaydet ve Giriş Yap';
+        spinner.style.display = 'none';
+        return;
+      }
+      accessToken = vData.access_token;
+    }
+
+    // Gerçek access_token ile parolayı güncelle
     var r = await fetch(sbUrl + '/auth/v1/user', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'apikey': sbKey,
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + accessToken
       },
       body: JSON.stringify({ password: p1 })
     });
     var d = await r.json();
 
     if(r.ok && d.id){
-      // Parola güncellendi, şimdi giriş yap
       sessionStorage.removeItem('davet_token');
       sessionStorage.removeItem('davet_type');
-      // Token'ı session olarak sakla
-      sessionStorage.setItem('govdag_token', token);
+      sessionStorage.setItem('govdag_token', accessToken);
       sessionStorage.setItem('govdag_email', d.email || '');
-      // Giriş logunu kaydet
       try{
         await fetch(sbUrl+'/rest/v1/giris_log',{
           method:'POST',
-          headers:{'Content-Type':'application/json','apikey':sbKey,'Authorization':'Bearer '+token,'Prefer':'return=minimal'},
+          headers:{'Content-Type':'application/json','apikey':sbKey,'Authorization':'Bearer '+accessToken,'Prefer':'return=minimal'},
           body:JSON.stringify({email:d.email,giris_tarihi:new Date().toISOString()})
         });
       }catch(e){}
