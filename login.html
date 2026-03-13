@@ -2,9 +2,26 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a2540">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="İBKB">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjI4IiBmaWxsPSIjMWEyNTQwIi8+PHBhdGggZD0iTTkwIDIyTDIyIDU1djcwbDY4IDMzIDY4LTMzVjU1TDkwIDIyem0wIDguM0wxNDggNjJ2NTJMOTAgMTQwLjcgMzIgMTE0VjYyTDkwIDMwLjN6IiBmaWxsPSIjM2I4MmY2Ii8+PGNpcmNsZSBjeD0iOTAiIGN5PSI4NCIgcj0iMjIiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a2540">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="İBKB">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjI4IiBmaWxsPSIjMWEyNTQwIi8+PHBhdGggZD0iTTkwIDIyTDIyIDU1djcwbDY4IDMzIDY4LTMzVjU1TDkwIDIyem0wIDguM0wxNDggNjJ2NTJMOTAgMTQwLjcgMzIgMTE0VjYyTDkwIDMwLjN6IiBmaWxsPSIjM2I4MmY2Ii8+PGNpcmNsZSBjeD0iOTAiIGN5PSI4NCIgcj0iMjIiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzFhMjU0MCIvPjxwYXRoIGQ9Ik0xNiA0TDQgMTB2MTJsMTIgNiAxMi02VjEwTDE2IDR6bTAgMi4xOEwyNiAxMC45djguMkwxNiAyMy44MiA2IDE5LjFWMTAuOUwxNiA2LjE4eiIgZmlsbD0iIzNiODJmNiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTUiIHI9IjQiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="GÖVDAĞ İBKB Sorgulama Yazılımı — Giriş">
+<meta name="robots" content="noindex, nofollow">
 <title>GÖVDAĞ — Giriş</title>
 <style>
   :root{
@@ -935,6 +952,14 @@ async function girisYap(){
     document.getElementById('btnIcon').style.display = 'block';
   }
 }
+</script>
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('/service-worker.js')
+        .catch(function(e){ console.warn('SW kayıt hatası:', e); });
+    });
+  }
 </script>
 </body>
 </html>

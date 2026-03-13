@@ -2,6 +2,21 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a2540">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="İBKB">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjI4IiBmaWxsPSIjMWEyNTQwIi8+PHBhdGggZD0iTTkwIDIyTDIyIDU1djcwbDY4IDMzIDY4LTMzVjU1TDkwIDIyem0wIDguM0wxNDggNjJ2NTJMOTAgMTQwLjcgMzIgMTE0VjYyTDkwIDMwLjN6IiBmaWxsPSIjM2I4MmY2Ii8+PGNpcmNsZSBjeD0iOTAiIGN5PSI4NCIgcj0iMjIiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a2540">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="İBKB">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjI4IiBmaWxsPSIjMWEyNTQwIi8+PHBhdGggZD0iTTkwIDIyTDIyIDU1djcwbDY4IDMzIDY4LTMzVjU1TDkwIDIyem0wIDguM0wxNDggNjJ2NTJMOTAgMTQwLjcgMzIgMTE0VjYyTDkwIDMwLjN6IiBmaWxsPSIjM2I4MmY2Ii8+PGNpcmNsZSBjeD0iOTAiIGN5PSI4NCIgcj0iMjIiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzFhMjU0MCIvPjxwYXRoIGQ9Ik0xNiA0TDQgMTB2MTJsMTIgNiAxMi02VjEwTDE2IDR6bTAgMi4xOEwyNiAxMC45djguMkwxNiAyMy44MiA2IDE5LjFWMTAuOUwxNiA2LjE4eiIgZmlsbD0iIzNiODJmNiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTUiIHI9IjQiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
 
 <style>body{opacity:0;}</style>
@@ -100,6 +115,8 @@ if(!sessionStorage.getItem('govdag_token')){
 }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="İhracat Bedeli Kabul Belgesi (İBKB) düzenleme zorunluluğunu hesaplayın. EK-2, EK-3, KKTC, serbest bölge ve tüm özel senaryolar dahil otomatik hesaplama — GÖVDAĞ İBKB Sorgulama Yazılımı.">
+<meta name="robots" content="noindex, nofollow">
 <title>GÖVDAĞ | İBKB Sorgulama — İhracat Bedeli Kabul Belgesi</title>
 
 <style>
@@ -218,6 +235,8 @@ if(!sessionStorage.getItem('govdag_token')){
   .btn-calc{margin-top:14px;width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;letter-spacing:-.01em;}
   .btn-calc:hover{background:var(--blue2);box-shadow:0 4px 16px rgba(37,99,235,.22);}
   .btn-calc:active{transform:scale(.99);}
+  .btn-calc:disabled{opacity:.75;cursor:not-allowed;transform:none;box-shadow:none;}
+  @keyframes spinBtn{to{transform:rotate(360deg);}}
   .btn-rst{margin-top:8px;width:100%;padding:9px;background:transparent;color:var(--g500);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',system-ui,sans-serif;font-size:.84rem;cursor:pointer;transition:all .15s;}
   .btn-rst:hover{border-color:var(--g400);color:var(--g700);}
 
@@ -482,9 +501,12 @@ if(!sessionStorage.getItem('govdag_token')){
             <button class="muk-iptal" onclick="mukKapat()">İptal</button>
           </div>
         </div>
-        <button type="button" class="btn-calc" onclick="hesapla()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-          Hesapla
+        <button type="button" id="btnHesapla" class="btn-calc" onclick="hesapla()">
+          <svg id="btnHesaplaIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          <svg id="btnHesaplaSpinner" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none;animation:spinBtn .8s linear infinite;">
+            <path d="M12 2a10 10 0 0 1 10 10h-2a8 8 0 0 0-8-8V2z" opacity=".9"/>
+          </svg>
+          <span id="btnHesaplaText">Hesapla</span>
         </button>
         <button type="button" class="btn-rst" onclick="sifirla()">Formu Temizle</button>
       </form>
@@ -1048,6 +1070,23 @@ function ozelKutu(){
 
 // ─── HESAPLA ──────────────────────────────────────────────────────────────────
 async function hesapla(){
+  // Loading state
+  const _btn = document.getElementById('btnHesapla');
+  const _icon = document.getElementById('btnHesaplaIcon');
+  const _spin = document.getElementById('btnHesaplaSpinner');
+  const _txt  = document.getElementById('btnHesaplaText');
+  if(_btn && _btn.disabled) return; // çift tıklama engeli
+  if(_btn){ _btn.disabled = true; }
+  if(_icon){ _icon.style.display = 'none'; }
+  if(_spin){ _spin.style.display = 'inline-block'; }
+  if(_txt){ _txt.textContent = 'Hesaplanıyor…'; }
+  const _hesaplaReset = function(){
+    if(_btn){ _btn.disabled = false; }
+    if(_icon){ _icon.style.display = 'inline-block'; }
+    if(_spin){ _spin.style.display = 'none'; }
+    if(_txt){ _txt.textContent = 'Hesapla'; }
+  };
+
   const byn=document.getElementById('beyanname').value.trim();
   const bedel=sayiDegerAl('bedel');
   const para=document.getElementById('para').value;
@@ -1060,7 +1099,7 @@ async function hesapla(){
     const ki=document.getElementById('kurInput');
     if(ki){ki.focus();ki.style.border='2px solid var(--err)';}
     alert('TL para birimi seçildiğinde USD/TRY kuru girilmesi zorunludur.');
-    return;
+    _hesaplaReset(); return;
   }
   if(para!=='TRY'){const ki=document.getElementById('kurInput');if(ki)ki.style.border='';}
   // Eksik alan kontrolü
@@ -1073,7 +1112,7 @@ async function hesapla(){
     uyariEl.innerHTML = '<strong>⚠ Lütfen yukarıdaki alanları doldurunuz:</strong><ul>' + eksikler.map(e=>'<li>'+e+'</li>').join('') + '</ul>';
     uyariEl.classList.add('goster');
     uyariEl.scrollIntoView({behavior:'smooth',block:'nearest'});
-    return;
+    _hesaplaReset(); return;
   }
   uyariEl.classList.remove('goster');
 
@@ -1126,13 +1165,14 @@ async function hesapla(){
             uyariEl.appendChild(_demoDiv);
             uyariEl.classList.add('goster');
             uyariEl.scrollIntoView({behavior:'smooth', block:'nearest'});
-            return;
+            _hesaplaReset(); return;
           }
         }
       }
     }
   }catch(e){ /* demo kontrol hatası sorguyu engellemez */ }
 
+  _hesaplaReset();
   hesaplaCore();
 }
 
@@ -1937,7 +1977,15 @@ ${resultHtml}
   <strong style="font-size:6.5pt;text-transform:uppercase;letter-spacing:.05em;">⚠ Yasal Uyarı</strong><br>
   Bu araç yalnızca <strong>bilgilendirme amaçlıdır</strong> ve hukuki, mali veya resmi danışmanlık niteliği taşımaz. Hesaplamalar, T.C. Merkez Bankası İhracat Genelgesi kapsamındaki mevzuat esas alınarak yapılmış olup <strong>mevzuat değişikliklerine tabidir.</strong> Elde edilen sonuçlar kesin ve bağlayıcı değildir; fiili yükümlülükleriniz için <strong>aracı bankanıza veya yetkili bir danışmana</strong> başvurmanız zorunludur. GÖVDAĞ, bu araçtan elde edilen bilgilerin kullanımından doğacak herhangi bir zarardan sorumlu tutulamaz.
 </div>
-</body></html>`;
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('/service-worker.js')
+        .catch(function(e){ console.warn('SW kayıt hatası:', e); });
+    });
+  }
+<\/script>
+<\/body><\/html>`;
 
   const win = window.open('', '_blank', 'width=900,height=700');
   if(!win){ alert('Lütfen popup engelleyiciyi bu site için kapatın.'); return; }
