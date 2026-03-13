@@ -523,6 +523,12 @@ if(!sessionStorage.getItem('govdag_token')){
         <span>Oturum Sorgu Geçmişi</span>
         <span class="gecmis-sayac" id="gecmisSayac">0 sorgu</span>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <input type="text" id="gecmisArama" placeholder="🔍 Beyanname, ülke, tarih…" 
+          oninput="gecmisFiltrele(this.value)"
+          style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;width:200px;background:#f8fafc;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
+      </div>
       <div class="gh-right">
         <button class="btn-pdf" id="btnPdf" onclick="pdfIndir()" disabled>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 17h8v1.5H8V17zm0-3h8v1.5H8V14zm0-3h3v1.5H8V11z"/></svg>
@@ -1633,6 +1639,32 @@ async function supabaseSorguTemizle(){
   }catch(e){ console.warn('Supabase temizleme hatası:', e); }
 }
 
+function gecmisFiltrele(aramaMetni){
+  const el = document.getElementById('gecmisArama');
+  const metin = aramaMetni.trim().toLowerCase();
+  // Tüm tablo satırlarını filtrele
+  const liste = document.getElementById('gecmisListe');
+  if(!liste) return;
+  const satirlar = liste.querySelectorAll('tbody tr');
+  let gozukenSayi = 0;
+  satirlar.forEach(tr=>{
+    const icerik = tr.textContent.toLowerCase();
+    if(!metin || icerik.includes(metin)){
+      tr.style.display = '';
+      gozukenSayi++;
+    } else {
+      tr.style.display = 'none';
+    }
+  });
+  // Sayacı güncelle
+  const sayac = document.getElementById('gecmisSayac');
+  if(sayac){
+    sayac.textContent = metin
+      ? gozukenSayi + '/' + sorguGecmisi.length + ' sorgu'
+      : sorguGecmisi.length + ' sorgu';
+  }
+}
+
 function gecmisPanelGuncelle(){
   const panel = document.getElementById('gecmisPanel');
   const liste = document.getElementById('gecmisListe');
@@ -1643,6 +1675,9 @@ function gecmisPanelGuncelle(){
     panel.style.display = 'none';
     return;
   }
+  // Arama kutusunu sıfırla
+  const aramaEl = document.getElementById('gecmisArama');
+  if(aramaEl && aramaEl.value) aramaEl.value = '';
   panel.style.display = 'block';
   sayac.textContent = sorguGecmisi.length + ' sorgu';
   btnPdf.disabled = false;
@@ -1684,7 +1719,8 @@ function gecmisPanelGuncelle(){
         const muafDilim = adimDeger(q, '15.000');
         const brutMatrah = adimDeger(q, 'Brüt matrah');
         const onceki = q.oncekiIbkb || (adimDeger(q, 'önce düzenlenen') !== '—' ? adimDeger(q, 'önce düzenlenen') : '');
-        return '<tr class="' + (muaf?'muaf-satir':'') + '" onclick="gecmisGoster(' + i + ')" title="Sonucu görmek için tıklayın">'
+        const realIdx = sorguGecmisi.indexOf(q);
+        return '<tr class="' + (muaf?'muaf-satir':'') + '" onclick="gecmisGoster(' + realIdx + ')" data-realidx="' + realIdx + '" title="Sonucu görmek için tıklayın">'
           + '<td class="td-no">' + (sorguGecmisi.length - i) + '</td>'
           + '<td class="td-saat">' + (q.saat||'') + '</td>'
           + '<td>' + (q.beyanname||'<span class="td-yok">—</span>') + '</td>'
@@ -1711,7 +1747,7 @@ function gecmisPanelGuncelle(){
           + '<td class="td-gold">' + (muaf ? '<span class="td-muaf">Yok</span>' : (q.ibkb||'—')) + '</td>'
           + '<td class="td-org">' + (muaf ? '<span class="td-muaf">Yok</span>' : (q.tcmb||'—')) + '</td>'
           + '<td style="white-space:nowrap;">'
-          + '<button style="padding:4px 8px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:inherit;" onclick="event.stopPropagation();gecmisSatirSil(' + i + ')">✕ Sil</button>'
+          + '<button style="padding:4px 8px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;font-size:.75rem;cursor:pointer;font-family:inherit;" onclick="event.stopPropagation();gecmisSatirSil(' + realIdx + ')">✕ Sil</button>'
           + '</td>'
           + '</tr>';
       }).join('')
@@ -1769,6 +1805,9 @@ function gecmisTemizle(){
   supabaseSorguTemizle();
   sorguGecmisi = [];
   gecmisPanelGuncelle();
+  // Arama kutusunu sıfırla
+  const aramaEl = document.getElementById('gecmisArama');
+  if(aramaEl) aramaEl.value = '';
   const r = document.getElementById('result');
   r.style.display = 'none'; r.innerHTML = '';
 }
