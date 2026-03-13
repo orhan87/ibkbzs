@@ -1057,19 +1057,33 @@ function girisYap(){
     } else {
       const bf2 = bfDurumAl();
       bf2.sayi = (bf2.sayi || 0) + 1;
-      const kalan = BF_MAX - bf2.sayi;
       if(bf2.sayi >= BF_MAX){
         bf2.kilit = Date.now() + BF_SURE;
         bfKaydet(bf2);
+        errEl.style.cssText = 'display:block;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:.82rem;margin-top:8px;';
         errEl.textContent = '🔒 5 hatalı deneme. 10 dakika erişim engellendi.';
-        errEl.style.color = '#b91c1c';
         inp.disabled = true; btn.disabled = true;
+        // Geri sayım başlat
+        clearInterval(window._bfTimer);
+        window._bfTimer = setInterval(function(){
+          const b3 = bfDurumAl();
+          const now = Date.now();
+          if(now >= b3.kilit){
+            bfSifirla();
+            errEl.style.display='none';
+            inp.disabled=false; btn.disabled=false; inp.focus();
+            clearInterval(window._bfTimer);
+          } else {
+            const k = Math.ceil((b3.kilit - now)/60000);
+            errEl.textContent = '🔒 ' + k + ' dakika sonra tekrar deneyin.';
+          }
+        }, 5000);
       } else {
         bfKaydet(bf2);
+        const kalan = Math.max(0, BF_MAX - bf2.sayi);
+        errEl.style.cssText = 'display:block;color:#b91c1c;font-size:.82rem;margin-top:8px;';
         errEl.textContent = '⚠ Parola hatalı. ' + kalan + ' deneme hakkınız kaldı.';
-        errEl.style.color = '#b91c1c';
       }
-      errEl.style.display='block';
       inp.value=''; inp.focus();
     }
   }catch(e){
@@ -1635,6 +1649,7 @@ function kullaniciTablosuRender(users, logOnly){
       + '<td style="padding:8px 10px;text-align:center;">'
       +   '<div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">'
       +     '<button data-id="'+eId+'" data-email="'+eEmail+'" class="_kulSifirla" style="font-size:.68rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Sıfırla</button>'
+      +     (u.tip==='lisans' ? '<button data-id="'+eId+'" data-email="'+eEmail+'" data-bitis="'+encodeURIComponent(u.lisans_bitis||'')+'" class="_lisansUzat" style="font-size:.68rem;color:#166534;background:#f0fdf4;border:1px solid #86efac;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">+1 Yıl</button>' : '')
       +     silBtn
       +   '</div>'
       + '</td>'
@@ -1648,6 +1663,7 @@ function kullaniciTablosuRender(users, logOnly){
   el.querySelectorAll('._kulSil').forEach(function(b){ b.addEventListener('click',function(){ kullanicisil(this.dataset.id, this.dataset.email); }); });
   el.querySelectorAll('._kulNot').forEach(function(b){ b.addEventListener('click',function(){ kullaniciNotDuzenle(this.dataset.email); }); });
   el.querySelectorAll('._kulSifirla').forEach(function(b){ b.addEventListener('click',function(){ parolaSifirla(this.dataset.id, this.dataset.email); }); });
+  el.querySelectorAll('._lisansUzat').forEach(function(b){ b.addEventListener('click',function(){ lisansUzat(this.dataset.id, this.dataset.email, decodeURIComponent(this.dataset.bitis||'')); }); });
 }
 
 
@@ -2165,6 +2181,58 @@ async function girisLogTemizle(){
   }catch(e){ toast('✗ Hata: '+e.message); }
 }
 
+
+// ─── LİSANS +1 YIL UZAT ──────────────────────────────────────────────────────
+async function lisansUzat(id, email, mevcutBitis){
+  const sb = sbCfg(); if(!sb) return;
+  // Mevcut bitiş tarihinden +1 yıl, ya da bugünden +1 yıl
+  let baslangic;
+  if(mevcutBitis){
+    const b = new Date(mevcutBitis);
+    baslangic = b > new Date() ? b : new Date(); // süresi geçmişse bugünden başlat
+  } else {
+    baslangic = new Date();
+  }
+  const yeniBitis = new Date(baslangic);
+  yeniBitis.setFullYear(yeniBitis.getFullYear() + 1);
+  const yeniBitisISO = yeniBitis.toISOString();
+  const yeniBitisStr = yeniBitis.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  if(!confirm(email + ' - Lisans 1 yıl uzatılacak.\nYeni bitiş: ' + yeniBitisStr + '\n\nDevam edilsin mi?')) return;
+
+  try{
+    toast('⏳ Güncelleniyor…');
+    // Supabase user_metadata güncelle
+    const res = await fetch(sb.url + '/auth/v1/admin/users/' + id, {
+      method: 'PUT',
+      headers: {
+        'apikey': sb.serviceKey,
+        'Authorization': 'Bearer ' + sb.serviceKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user_metadata: {
+          tip: 'lisans',
+          lisans_bitis: yeniBitisISO
+        }
+      })
+    });
+    if(!res.ok){
+      const err = await res.text(); throw new Error(err);
+    }
+    // localStorage notlarını da güncelle
+    const notlar = JSON.parse(localStorage.getItem('ibkb_kullanici_notlari')||'{}');
+    if(notlar[email]){
+      notlar[email].lisans_bitis = yeniBitisISO;
+      localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar));
+    }
+    toast('✅ Lisans ' + yeniBitisStr + ' tarihine uzatıldı');
+    // Tabloyu yenile
+    setTimeout(kullanicilariYukle, 600);
+  }catch(e){
+    toast('✗ Hata: ' + e.message);
+  }
+}
 
 // ─── KULLANICI NOT/ETİKET DÜZENLE ─────────────────────────────────────────────
 async function kullaniciNotDuzenle(email){

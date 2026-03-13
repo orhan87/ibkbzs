@@ -432,21 +432,54 @@ window.onload = function(){
   document.getElementById('eposta').addEventListener('keydown', function(e){
     if(e.key === 'Enter') girisYap();
   });
-  // ─── DAVET LİNKİ KONTROLÜ ──────────────────────────────────────────────────
-  // Supabase davet linki: URL hash'de type=invite veya access_token var mı?
+  // ─── DAVET / RECOVERY LİNKİ KONTROLÜ ───────────────────────────────────────
+  // Supabase iki farklı format gönderebilir:
+  // 1) Eski: #access_token=...&type=recovery  (implicit flow)
+  // 2) Yeni: ?code=...  (PKCE flow) → code'u token'a çevirmek gerekir
   (function(){
+    // --- Yöntem 1: Hash parametresi ---
     var hash = window.location.hash;
-    if(!hash) return;
-    var params = {};
-    hash.replace(/^#/, '').split('&').forEach(function(p){
-      var kv = p.split('=');
-      params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]||'');
-    });
-    // Davet veya recovery token geldi
-    if((params.type === 'invite' || params.type === 'recovery') && params.access_token){
-      sessionStorage.setItem('davet_token', params.access_token);
-      sessionStorage.setItem('davet_type', params.type);
-      davetEkranGoster();
+    if(hash){
+      var params = {};
+      hash.replace(/^#/, '').split('&').forEach(function(p){
+        var kv = p.split('=');
+        params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]||'');
+      });
+      if((params.type === 'invite' || params.type === 'recovery') && params.access_token){
+        sessionStorage.setItem('davet_token', params.access_token);
+        sessionStorage.setItem('davet_type', params.type);
+        window.history.replaceState(null,'',window.location.pathname);
+        davetEkranGoster();
+        return;
+      }
+    }
+    // --- Yöntem 2: Query parametresi (PKCE) ---
+    var qp = new URLSearchParams(window.location.search);
+    var code = qp.get('code');
+    var qtype = qp.get('type') || 'recovery';
+    if(code){
+      // code'u access_token'a çevir
+      fetch(sbUrl + '/auth/v1/token?grant_type=pkce', {
+        method: 'POST',
+        headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auth_code: code })
+      }).then(function(r){ return r.json(); }).then(function(d){
+        if(d.access_token){
+          sessionStorage.setItem('davet_token', d.access_token);
+          sessionStorage.setItem('davet_type', qtype);
+          window.history.replaceState(null,'',window.location.pathname);
+          davetEkranGoster();
+        } else {
+          // Token alınamadı — kullanıcıya bilgi ver
+          var sfrEl = document.getElementById('sfrMesaj');
+          if(sfrEl){
+            sfrEl.style.background='#fef2f2'; sfrEl.style.color='#b91c1c';
+            sfrEl.style.border='1px solid #fca5a5';
+            sfrEl.textContent='⚠ Bağlantı süresi dolmuş. Lütfen tekrar şifre sıfırlama talebinde bulunun.';
+            sfrEl.style.display='block';
+          }
+        }
+      }).catch(function(){});
     }
   })();
 

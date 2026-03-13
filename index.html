@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzFhMjU0MCIvPjxwYXRoIGQ9Ik0xNiA0TDQgMTB2MTJsMTIgNiAxMi02VjEwTDE2IDR6bTAgMi4xOEwyNiAxMC45djguMkwxNiAyMy44MiA2IDE5LjFWMTAuOUwxNiA2LjE4eiIgZmlsbD0iIzNiODJmNiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTUiIHI9IjQiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
+
 <style>body{opacity:0;}</style>
 <script>
 // Supabase recovery/invite token gelirse login.html'e yönlendir
@@ -1453,7 +1455,52 @@ listele();
 document.addEventListener('DOMContentLoaded', function(){
   // Fonksiyonlar hazır, geçmişi yükle
   setTimeout(supabaseSorguYukle, 100);
+  // Demo kalan hak bannerı
+  setTimeout(demoBilgiGoster, 600);
 });
+
+async function demoBilgiGoster(){
+  try{
+    const token = sessionStorage.getItem('govdag_token');
+    const email = sessionStorage.getItem('govdag_email');
+    if(!token || !email) return;
+    const uRes = await fetch(SB_URL + '/auth/v1/user', {
+      headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + token}
+    });
+    if(!uRes.ok) return;
+    const uData = await uRes.json();
+    const uMeta = uData.user_metadata || {};
+    const kulTip = uMeta.tip || '';
+    if(kulTip !== 'demo') return;
+    const userId = jwtUserId(token);
+    if(!userId) return;
+    const cfg2 = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    const DEMO_LIMIT = (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
+    const rSorgu = await fetch(SB_URL + '/rest/v1/sorgular?user_id=eq.' + userId + '&select=id', {
+      headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + token}
+    });
+    const sorguData = rSorgu.ok ? await rSorgu.json() : [];
+    const kullanilanSorgu = Array.isArray(sorguData) ? sorguData.length : 0;
+    const kalanSorgu = Math.max(0, DEMO_LIMIT - kullanilanSorgu);
+    // Mevcut banner varsa kaldır
+    const eskiBanner = document.getElementById('demoBilgiBanner');
+    if(eskiBanner) eskiBanner.remove();
+    // Banner rengi: 0 kaldıysa kırmızı, 1-2 kaldıysa sarı, daha fazlaysa yeşil
+    const renk = kalanSorgu === 0 ? {bg:'#fef2f2',border:'#fca5a5',color:'#991b1b',ico:'🔴'}
+               : kalanSorgu <= 2  ? {bg:'#fffbeb',border:'#fcd34d',color:'#92400e',ico:'⚠️'}
+               :                    {bg:'#f0fdf4',border:'#86efac',color:'#166534',ico:'🎥'};
+    const banner = document.createElement('div');
+    banner.id = 'demoBilgiBanner';
+    banner.style.cssText = 'background:'+renk.bg+';border:1.5px solid '+renk.border+';border-radius:9px;padding:10px 16px;margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:.82rem;color:'+renk.color+';font-weight:500;';
+    banner.innerHTML = '<span style="font-size:1rem;">'+renk.ico+'</span>'
+      + '<span><strong>Demo Hesabı</strong> — '+kullanilanSorgu+'/'+DEMO_LIMIT+' sorgu kullanıldı. '
+      + (kalanSorgu > 0 ? '<strong>'+kalanSorgu+' sorgu hakkınız</strong> kaldı.' : '<strong>Limitiniz doldu.</strong> Lisans için bizimle iletişime geçin.')
+      + '</span>';
+    // Formun üstüne ekle
+    const kart = document.querySelector('.card');
+    if(kart) kart.parentNode.insertBefore(banner, kart);
+  }catch(e){ /* demo banner hatası kritik değil */ }
+}
 
 function gecmiseKaydet(kayit){
   sorguGecmisi.unshift(kayit); // en yenisi başa
