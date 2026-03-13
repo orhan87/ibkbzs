@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzFhMjU0MCIvPjxwYXRoIGQ9Ik0xNiA0TDQgMTB2MTJsMTIgNiAxMi02VjEwTDE2IDR6bTAgMi4xOEwyNiAxMC45djguMkwxNiAyMy44MiA2IDE5LjFWMTAuOUwxNiA2LjE4eiIgZmlsbD0iIzNiODJmNiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTUiIHI9IjQiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İBKB Yönetim Paneli</title>
 <style>
@@ -1001,19 +1003,74 @@ const VARSAYILAN_METINLER = {
 };
 
 // ─── GİRİŞ ───────────────────────────────────────────────────────────────────
+// ─── BRUTE FORCE KORUMA ──────────────────────────────────────────────────────
+const BF_MAX = 5;          // max yanlış deneme
+const BF_SURE = 10 * 60 * 1000; // 10 dakika kilit (ms)
+const BF_KEY = 'ibkb_bf';
+
+function bfDurumAl(){
+  try{ return JSON.parse(localStorage.getItem(BF_KEY)||'{"sayi":0,"kilit":0}'); }
+  catch(e){ return {sayi:0, kilit:0}; }
+}
+function bfKaydet(d){ localStorage.setItem(BF_KEY, JSON.stringify(d)); }
+function bfSifirla(){ localStorage.removeItem(BF_KEY); }
+
 function girisYap(){
   try{
-    const p = document.getElementById('parolaInput').value;
+    const errEl = document.getElementById('loginErr');
+    const btn   = document.querySelector('#loginScreen button');
+    const inp   = document.getElementById('parolaInput');
+
+    // Kilit kontrolü
+    const bf = bfDurumAl();
+    const simdi = Date.now();
+    if(bf.kilit && simdi < bf.kilit){
+      const kalanDak = Math.ceil((bf.kilit - simdi) / 60000);
+      errEl.textContent = '🔒 Çok fazla hatalı deneme. ' + kalanDak + ' dakika sonra tekrar deneyin.';
+      errEl.style.display = 'block';
+      inp.disabled = true;
+      btn.disabled = true;
+      // Geri sayım
+      clearInterval(window._bfTimer);
+      window._bfTimer = setInterval(function(){
+        const b2 = bfDurumAl();
+        const now = Date.now();
+        if(now >= b2.kilit){
+          bfSifirla();
+          errEl.style.display='none';
+          inp.disabled=false; btn.disabled=false; inp.focus();
+          clearInterval(window._bfTimer);
+        } else {
+          const k = Math.ceil((b2.kilit - now)/60000);
+          errEl.textContent = '🔒 Çok fazla hatalı deneme. ' + k + ' dakika sonra tekrar deneyin.';
+        }
+      }, 10000);
+      return;
+    }
+
+    const p = inp.value;
     if(p === mevcutParolaAl()){
+      bfSifirla();
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('adminPanel').style.display='block';
       baslat();
     } else {
-      const errEl = document.getElementById('loginErr');
-      errEl.textContent = '⚠ Parola hatalı. Tekrar deneyin.';
+      const bf2 = bfDurumAl();
+      bf2.sayi = (bf2.sayi || 0) + 1;
+      const kalan = BF_MAX - bf2.sayi;
+      if(bf2.sayi >= BF_MAX){
+        bf2.kilit = Date.now() + BF_SURE;
+        bfKaydet(bf2);
+        errEl.textContent = '🔒 5 hatalı deneme. 10 dakika erişim engellendi.';
+        errEl.style.color = '#b91c1c';
+        inp.disabled = true; btn.disabled = true;
+      } else {
+        bfKaydet(bf2);
+        errEl.textContent = '⚠ Parola hatalı. ' + kalan + ' deneme hakkınız kaldı.';
+        errEl.style.color = '#b91c1c';
+      }
       errEl.style.display='block';
-      document.getElementById('parolaInput').value='';
-      document.getElementById('parolaInput').focus();
+      inp.value=''; inp.focus();
     }
   }catch(e){
     alert('Giriş hatası: ' + e.message);
@@ -2469,6 +2526,38 @@ async function istatistikYukle(){
 
 // ─── SAYFA YÜKLENİNDE BAKIM + DUYURU DURUMUNU OKU ────────────────────────────
 (function(){
+  // Brute force kilit kontrolü - sayfa açılışında
+  try{
+    const bf = JSON.parse(localStorage.getItem('ibkb_bf')||'{"sayi":0,"kilit":0}');
+    const simdi = Date.now();
+    if(bf.kilit && simdi < bf.kilit){
+      const inp = document.getElementById('parolaInput');
+      const btn = document.querySelector('#loginScreen button');
+      const errEl = document.getElementById('loginErr');
+      const kalanDak = Math.ceil((bf.kilit - simdi) / 60000);
+      if(inp) inp.disabled = true;
+      if(btn) btn.disabled = true;
+      if(errEl){
+        errEl.textContent = '🔒 Çok fazla hatalı deneme. ' + kalanDak + ' dakika sonra tekrar deneyin.';
+        errEl.style.display = 'block';
+      }
+      window._bfTimer = setInterval(function(){
+        const b2 = JSON.parse(localStorage.getItem('ibkb_bf')||'{"sayi":0,"kilit":0}');
+        const now = Date.now();
+        if(now >= b2.kilit){
+          localStorage.removeItem('ibkb_bf');
+          if(errEl) errEl.style.display='none';
+          if(inp){ inp.disabled=false; inp.focus(); }
+          if(btn) btn.disabled=false;
+          clearInterval(window._bfTimer);
+        } else {
+          const k = Math.ceil((b2.kilit - now)/60000);
+          if(errEl) errEl.textContent = '🔒 Çok fazla hatalı deneme. ' + k + ' dakika sonra tekrar deneyin.';
+        }
+      }, 10000);
+    }
+  }catch(e){}
+
   const cfg = depoyuYukle();
   if(!cfg) return;
   // Bakım modu

@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzFhMjU0MCIvPjxwYXRoIGQ9Ik0xNiA0TDQgMTB2MTJsMTIgNiAxMi02VjEwTDE2IDR6bTAgMi4xOEwyNiAxMC45djguMkwxNiAyMy44MiA2IDE5LjFWMTAuOUwxNiA2LjE4eiIgZmlsbD0iIzNiODJmNiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTUiIHI9IjQiIGZpbGw9IiM2MGE1ZmEiLz48L3N2Zz4=">
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GÖVDAĞ — Giriş</title>
 <style>
@@ -197,6 +199,10 @@
       <div class="spin" id="spinner"></div>
       <svg id="btnIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
     </button>
+    <div style="text-align:center;margin-top:10px;">
+      <a href="#" onclick="sifremiUnuttum(event)" style="font-size:.78rem;color:#6b7a99;text-decoration:none;border-bottom:1px dashed #cbd5e1;padding-bottom:1px;">Şifremi unuttum</a>
+    </div>
+    <div id="sfrMesaj" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.78rem;text-align:center;"></div>
   </div>
 </div><!-- /kart -->
 
@@ -652,6 +658,56 @@ async function davetParolaBelirle(){
     btn.disabled = false;
     btnText.textContent = 'Parolayı Kaydet ve Giriş Yap';
     spinner.style.display = 'none';
+  }
+}
+
+async function sifremiUnuttum(e){
+  e.preventDefault();
+  const eposta = (document.getElementById('eposta').value || '').trim();
+  const mesajEl = document.getElementById('sfrMesaj');
+  if(!mesajEl) return;
+
+  if(!eposta || !eposta.includes('@')){
+    mesajEl.style.background = '#fef2f2';
+    mesajEl.style.color = '#b91c1c';
+    mesajEl.style.border = '1px solid #fca5a5';
+    mesajEl.textContent = '⚠ Lütfen önce e-posta adresinizi girin.';
+    mesajEl.style.display = 'block';
+    document.getElementById('eposta').focus();
+    return;
+  }
+
+  mesajEl.style.background = '#f0f9ff';
+  mesajEl.style.color = '#0369a1';
+  mesajEl.style.border = '1px solid #bae6fd';
+  mesajEl.textContent = '⏳ Gönderiliyor…';
+  mesajEl.style.display = 'block';
+
+  try{
+    const res = await fetch(sbUrl + '/auth/v1/recover', {
+      method: 'POST',
+      headers: {
+        'apikey': sbKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: eposta })
+    });
+    if(res.ok || res.status === 200){
+      mesajEl.style.background = '#f0fdf4';
+      mesajEl.style.color = '#166534';
+      mesajEl.style.border = '1px solid #86efac';
+      mesajEl.textContent = '✅ Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.';
+    } else {
+      mesajEl.style.background = '#fef2f2';
+      mesajEl.style.color = '#b91c1c';
+      mesajEl.style.border = '1px solid #fca5a5';
+      mesajEl.textContent = '⚠ Gönderilemedi. E-posta adresinizi kontrol edin.';
+    }
+  }catch(err){
+    mesajEl.style.background = '#fef2f2';
+    mesajEl.style.color = '#b91c1c';
+    mesajEl.style.border = '1px solid #fca5a5';
+    mesajEl.textContent = '⚠ Bir hata oluştu. Lütfen tekrar deneyin.';
   }
 }
 
