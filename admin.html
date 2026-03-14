@@ -1638,21 +1638,33 @@ const _SC_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 // Supabase'e yaz (service role ile — RLS bypass)
 async function scKaydet(id, value) {
   try {
-    const res = await fetch(_SC_URL, {
-      method: 'POST',
+    // value her zaman string olarak sakla
+    const valueStr = (typeof value === 'string') ? value : JSON.stringify(value);
+    // Önce var mı bak
+    const chk = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id) + '&select=id', {
+      headers: { 'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC }
+    });
+    const exists = chk.ok && (await chk.json()).length > 0;
+    const method = exists ? 'PATCH' : 'POST';
+    const url    = exists ? _SC_URL + '?id=eq.' + encodeURIComponent(id) : _SC_URL;
+    const res = await fetch(url, {
+      method,
       headers: {
         'apikey': _SC_SVC,
         'Authorization': 'Bearer ' + _SC_SVC,
         'Content-Type': 'application/json',
-        'Prefer': 'resolution=merge-duplicates'
+        'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ id, value: JSON.stringify(value), updated_at: new Date().toISOString() })
+      body: JSON.stringify(exists
+        ? { value: valueStr, updated_at: new Date().toISOString() }
+        : { id, value: valueStr, updated_at: new Date().toISOString() }
+      )
     });
     if(!res.ok) {
       const errText = await res.text().catch(()=>'');
-      console.error('[scKaydet]', id, 'HTTP', res.status, errText.slice(0,200));
+      console.error('[scKaydet]', id, 'HTTP', res.status, errText.slice(0,300));
     }
-    return res.ok || res.status === 201;
+    return res.ok || res.status === 204 || res.status === 201;
   } catch(e) {
     console.error('[scKaydet hata]', id, e.message);
     return false;

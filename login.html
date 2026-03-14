@@ -1020,7 +1020,7 @@ async function girisYap(){
         if(!Array.isArray(_lrows) || !_lrows.length) return;
         const _lcfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
         _lrows.forEach(function(row){
-          try{ _lcfg[row.id] = JSON.parse(row.value); }catch(e){ _lcfg[row.id] = row.value; }
+          var _v=row.value; try{ _v=JSON.parse(row.value); }catch(e){} _lcfg[row.id]=_v;
         });
         localStorage.setItem('ibkb_config', JSON.stringify(_lcfg));
         // Logo uygula

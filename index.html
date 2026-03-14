@@ -61,7 +61,7 @@ if(!sessionStorage.getItem('govdag_token')){
           if(!Array.isArray(_rows) || !_rows.length) return;
           const _cfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
           _rows.forEach(function(row){
-            try{ _cfg[row.id] = JSON.parse(row.value); }catch(e){ _cfg[row.id] = row.value; }
+            var _v=row.value; try{ _v=JSON.parse(row.value); }catch(e){} _cfg[row.id]=_v;
           });
           localStorage.setItem('ibkb_config', JSON.stringify(_cfg));
           // Logo uygula
