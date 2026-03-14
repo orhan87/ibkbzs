@@ -2,12 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#1a2540">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="İBKB">
+
 
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#1a2540">
@@ -2107,6 +2102,7 @@ function bakimKaydet(){
   const badge = document.getElementById('bakimDurumBadge');
   if(badge){ badge.style.display = modEl.checked ? 'inline-flex' : 'none'; }
   auditKaydet(modEl.checked ? 'Bakım Açıldı' : 'Bakım Kapatıldı', '');
+  auditKaydet(modEl.checked ? 'Bakım Açıldı' : 'Bakım Kapatıldı', modEl.checked ? cfg.bakim.mesaj.slice(0,60) : '');
   toast(modEl.checked ? '🔧 Bakım modu AKTİF' : '✅ Bakım modu kapatıldı');
 }
 
