@@ -45,6 +45,11 @@ if(!sessionStorage.getItem('govdag_token')){
         var logoEls = document.querySelectorAll('img[alt="gövdag"]');
         logoEls.forEach(function(img){ img.src = _logoSrc; });
       }
+      // Favicon
+      if(cfg.favicon){
+        var favLink = document.querySelector('link[rel="icon"]');
+        if(favLink) favLink.href = cfg.favicon;
+      }
       var hb = document.getElementById('heroBaslik');
       if(hb && met.heroBaslik) hb.textContent = met.heroBaslik;
       var ha = document.getElementById('heroAlt');
@@ -419,7 +424,7 @@ window.addEventListener('unhandledrejection', function(e){
       <span>İhracat Bilgilerini Girin</span>
     </div>
     <div class="cb">
-      <form id="frm">
+      <form id="frm" onsubmit="event.preventDefault();hesapla();">
         <div class="fg">
 
           <div class="fgg">
@@ -513,7 +518,7 @@ window.addEventListener('unhandledrejection', function(e){
             <button class="muk-iptal" onclick="mukKapat()">İptal</button>
           </div>
         </div>
-        <button type="button" id="btnHesapla" class="btn-calc" onclick="hesapla()">
+        <button type="submit" id="btnHesapla" class="btn-calc">
           <svg id="btnHesaplaIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
           <svg id="btnHesaplaSpinner" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none;animation:spinBtn .8s linear infinite;">
             <path d="M12 2a10 10 0 0 1 10 10h-2a8 8 0 0 0-8-8V2z" opacity=".9"/>

@@ -1000,10 +1000,14 @@ async function girisYap(){
   (function(){
     var lImg = document.getElementById('_logoImgLogin');
     if(lImg) lImg.src = (typeof _LOGO_URI !== 'undefined') ? _LOGO_URI : '';
-    // Admin'den özel logo varsa onu kullan
+    // Admin'den özel logo ve favicon varsa uygula
     try{
       var cfgL = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
       if(cfgL.logo && lImg) lImg.src = cfgL.logo;
+      if(cfgL.favicon){
+        var favL = document.querySelector('link[rel="icon"]');
+        if(favL) favL.href = cfgL.favicon;
+      }
     }catch(e){}
   })();
 </script>

@@ -584,6 +584,32 @@
         </div>
       </div>
 
+      <!-- FAVİCON YÖNETİMİ -->
+      <div class="panel-card" style="margin-top:16px;">
+        <div class="pc-head"><div><h3>🔖 Favicon Yönetimi</h3><p>Tarayıcı sekmesinde görünen simge</p></div></div>
+        <div class="pc-body">
+          <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:18px;">
+            <div>
+              <p style="font-size:.78rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Mevcut Favicon</p>
+              <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:16px;display:inline-flex;align-items:center;justify-content:center;min-width:80px;min-height:60px;">
+                <img id="faviconOnizleme" src="" alt="Favicon" style="width:32px;height:32px;object-fit:contain;display:none;" onerror="this.style.display='none'">
+                <span id="faviconYok" style="color:#64748b;font-size:.78rem;">Favicon yüklü değil</span>
+              </div>
+            </div>
+          </div>
+          <div class="metin-item">
+            <label>Favicon Dosyası Yükle (PNG, ICO — max 100KB)</label>
+            <input type="file" id="faviconInput" accept="image/png,image/x-icon,image/svg+xml" style="padding:8px;border:1px dashed var(--border);border-radius:7px;width:100%;cursor:pointer;" onchange="faviconOnizle(this)">
+            <p class="acik">32×32 veya 64×64 piksel PNG önerilir. Şeffaf arka plan desteklenir.</p>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="faviconKaydet()">💾 Faviconu Kaydet</button>
+            <button class="btn" onclick="faviconSifirla()" style="color:#991b1b;">🗑 Faviconu Kaldır</button>
+          </div>
+          <div id="faviconMsg" style="margin-top:8px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
+        </div>
+      </div>
+
       <!-- LOGIN SAYFA METİNLERİ -->
       <div class="panel-card">
         <div class="pc-head"><div><h3>🔐 Giriş Sayfası Metinleri</h3><p>Login ekranında görünen yazılar</p></div></div>
@@ -1234,6 +1260,18 @@ function logoTabYukle(){
     onizleme.style.display = 'none';
     if(logoYok) logoYok.style.display = 'block';
   }
+  // Favicon önizleme
+  const faviconData = cfg.favicon || null;
+  const favOnizleme = document.getElementById('faviconOnizleme');
+  const favYok = document.getElementById('faviconYok');
+  if(faviconData && favOnizleme){
+    favOnizleme.src = faviconData;
+    favOnizleme.style.display = 'block';
+    if(favYok) favYok.style.display = 'none';
+  } else if(favOnizleme){
+    favOnizleme.style.display = 'none';
+    if(favYok) favYok.style.display = 'block';
+  }
   // Login metinleri
   const met = Object.assign({}, VARSAYILAN_METINLER, cfg.metinler || {});
   ['loginBaslik','loginAlt','tanitimMetin','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter'].forEach(k=>{
@@ -1306,6 +1344,65 @@ function logoSifirla(){
   const msgEl = document.getElementById('logoMsg');
   msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
   msgEl.textContent='✅ Logo kaldırıldı.';
+}
+
+function faviconOnizle(input){
+  if(!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const el = document.getElementById('faviconOnizleme');
+    const yok = document.getElementById('faviconYok');
+    if(el){ el.src = e.target.result; el.style.display='block'; }
+    if(yok) yok.style.display='none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function faviconKaydet(){
+  const input = document.getElementById('faviconInput');
+  const msgEl = document.getElementById('faviconMsg');
+  if(!input.files || !input.files[0]){
+    msgEl.style.display='block'; msgEl.style.background='#fef2f2'; msgEl.style.color='#991b1b';
+    msgEl.textContent='Lütfen bir dosya seçin.'; return;
+  }
+  const file = input.files[0];
+  if(file.size > 100*1024){
+    msgEl.style.display='block'; msgEl.style.background='#fef2f2'; msgEl.style.color='#991b1b';
+    msgEl.textContent='Dosya 100KB sınırını aşıyor. Daha küçük bir favicon seçin.'; return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const base64 = e.target.result;
+    const cfg = depoyuYukle() || {};
+    cfg.favicon = base64;
+    depoyaKaydet(cfg);
+    // Sayfadaki favicon link'ini de güncelle
+    var linkEl = document.querySelector('link[rel="icon"]');
+    if(linkEl) linkEl.href = base64;
+    const favOnizleme = document.getElementById('faviconOnizleme');
+    const favYok = document.getElementById('faviconYok');
+    if(favOnizleme){ favOnizleme.src = base64; favOnizleme.style.display='block'; }
+    if(favYok) favYok.style.display='none';
+    msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
+    msgEl.textContent='✅ Favicon kaydedildi. Sayfayı yenileyin.';
+    auditKaydet('Favicon Güncellendi', file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function faviconSifirla(){
+  if(!confirm('Favicon kaldırılacak. Emin misiniz?')) return;
+  const cfg = depoyuYukle() || {};
+  delete cfg.favicon;
+  depoyaKaydet(cfg);
+  const favOnizleme = document.getElementById('faviconOnizleme');
+  const favYok = document.getElementById('faviconYok');
+  if(favOnizleme){ favOnizleme.src=''; favOnizleme.style.display='none'; }
+  if(favYok) favYok.style.display='block';
+  const msgEl = document.getElementById('faviconMsg');
+  msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
+  msgEl.textContent='✅ Favicon kaldırıldı.';
+  auditKaydet('Favicon Kaldırıldı', '');
 }
 
 function loginMetinleriKaydet(){
