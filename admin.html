@@ -2890,7 +2890,8 @@ async function istatistikYukle(){
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){
       navigator.serviceWorker.register('/service-worker.js')
-        .catch(function(e){ console.warn('SW kayıt hatası:', e); });
+        .then(function(){ /* PWA kayıt başarılı */ })
+        .catch(function(){ /* SW dosyası yok veya erişilemiyor - sessizce geç */ });
     });
   }
 </script>
