@@ -840,8 +840,7 @@ function sonucKopyala(){
   satirlar.push('Sorgulama       : ' + (q.saat || new Date().toLocaleString('tr-TR')));
   satirlar.push('ibkbsorgulama.com');
 
-  const metin = satirlar.join('
-');
+  const metin = satirlar.join('\n');
 
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(metin).then(function(){
@@ -883,7 +882,7 @@ function _kopyalaGeriBildirim(){
   toast('✅ Sonuç panoya kopyalandı');
 }
 
-async async function oturumUzat(){
+async function oturumUzat(){
   const refresh = sessionStorage.getItem('govdag_refresh');
   if(!refresh){ cikisYap(true); return; }
   try{
@@ -2406,50 +2405,7 @@ function pdfIndir(){
   const gecmisHtml = '<!DOCTYPE html><html lang="tr"><head>'
     + '<meta charset="UTF-8">'
     + '<title>İBKB Raporu — ' + simdi + '</title>'
-    + '<style>' + css + '
-  /* Oturum uyarı banner */
-  #oturumUyari {
-    display: none;
-    position: fixed;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1e293b;
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: .84rem;
-    font-weight: 600;
-    box-shadow: 0 4px 20px rgba(0,0,0,.35);
-    z-index: 9999;
-    align-items: center;
-    gap: 12px;
-    white-space: nowrap;
-    border: 1px solid #f59e0b;
-  }
-  #oturumUyari.goster { display: flex !important; }
-  #oturumUyariBtn {
-    background: #f59e0b;
-    color: #1e293b;
-    border: none;
-    border-radius: 6px;
-    padding: 5px 12px;
-    font-size: .8rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  #oturumUyariBtn:hover { background: #d97706; }
-  #oturumKapat {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0 2px;
-    line-height: 1;
-  }
-</style>'
+    + '<style>' + css + '</style>'
     + '</head><body>'
     + icerik
     + '</body></html>';
