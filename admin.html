@@ -1383,9 +1383,9 @@ function logoKaydet(){
     msgEl.textContent='Lütfen bir dosya seçin.'; return;
   }
   const file = input.files[0];
-  if(file.size > 200*1024){
+  if(file.size > 150*1024){
     msgEl.style.display='block'; msgEl.style.background='#fef2f2'; msgEl.style.color='#991b1b';
-    msgEl.textContent='Dosya 200KB sınırını aşıyor. Daha küçük bir logo seçin.'; return;
+    msgEl.textContent='Dosya 150KB sınırını aşıyor. Daha küçük bir logo seçin (önerilen: <50KB).'; return;
   }
   const reader = new FileReader();
   reader.onload = async function(e){
@@ -1394,9 +1394,6 @@ function logoKaydet(){
     const cfg = depoyuYukle() || {};
     cfg.logo = base64;
     depoyaKaydet(cfg);
-  // Supabase sync
-  scKaydet('logo', cfg.logo);
-
     // Önizlemeyi güncelle
     const onizleme = document.getElementById('logoOnizleme');
     const logoYok = document.getElementById('logoYok');
@@ -1463,9 +1460,6 @@ function faviconKaydet(){
     const cfg = depoyuYukle() || {};
     cfg.favicon = base64;
     depoyaKaydet(cfg);
-  // Supabase sync
-  scKaydet('favicon', cfg.favicon);
-
     // Sayfadaki favicon link'ini de güncelle
     var linkEl = document.querySelector('link[rel="icon"]');
     if(linkEl) linkEl.href = base64;
@@ -1654,8 +1648,15 @@ async function scKaydet(id, value) {
       },
       body: JSON.stringify({ id, value: JSON.stringify(value), updated_at: new Date().toISOString() })
     });
+    if(!res.ok) {
+      const errText = await res.text().catch(()=>'');
+      console.error('[scKaydet]', id, 'HTTP', res.status, errText.slice(0,200));
+    }
     return res.ok || res.status === 201;
-  } catch(e) { return false; }
+  } catch(e) {
+    console.error('[scKaydet hata]', id, e.message);
+    return false;
+  }
 }
 
 // Supabase'den tüm config'i çek (anon key ile — RLS SELECT açık)
