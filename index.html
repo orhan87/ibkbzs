@@ -380,7 +380,7 @@ if(!sessionStorage.getItem('govdag_token')){
 
 <header>
   <div class="hi">
-    <div class="logo"><img id="_logoImg" src="" alt="gövdag" loading="lazy" style="height:30px;width:auto;"></div>
+    <div class="logo"><img id="hdrLogo" alt="gövdag" style="height:30px;width:auto;"><script>(function(){var e=document.getElementById("hdrLogo");if(e&&typeof _LOGO_URI!=="undefined")e.src=_LOGO_URI;})();</script></div>
     <div style="display:flex;align-items:center;gap:10px;">
       <span id="kullanicEmail" style="font-size:.75rem;color:rgba(255,255,255,.85);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
       <button onclick="cikisYap()" style="font-size:.75rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;">Çıkış Yap</button>
@@ -2005,7 +2005,7 @@ td.sureok { font-weight: 700; color: #047857; background: #ecfdf5; }
 </style>
 </head><body>
 <div class="pdf-header">
-  <div style="display:flex;align-items:center;gap:12px;"><img id="_logoImg" src="" alt="gövdag" loading="lazy" style="height:22px;width:auto;"><h1>İBKB — İhracat Bedeli Kabul Belgesi Hesaplaması</h1></div>
+  <div style="display:flex;align-items:center;gap:12px;"><img src="${_LOGO_URI}" alt="gövdag" style="height:22px;width:auto;"><h1>İBKB — İhracat Bedeli Kabul Belgesi Hesaplaması</h1></div>
   <span>${simdi}</span>
 </div>
 <div class="pdf-bilgi">
@@ -2109,7 +2109,7 @@ function pdfIndir(){
     '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
   ].join('\n');
 
-  const baslik = '<div class="rpt-header"><div style="display:flex;align-items:center;gap:10px;"><img id="_logoImg" src="" alt="gövdag" loading="lazy" style="height:20px;width:auto;"><h1>İBKB SORGULAMA RAPORU</h1></div>'
+  const baslik = '<div class="rpt-header"><div style="display:flex;align-items:center;gap:10px;"><img src="'+_LOGO_URI+'" alt="gövdag" style="height:20px;width:auto;"><h1>İBKB SORGULAMA RAPORU</h1></div>'
     + '<span>Olu\u015fturulma: ' + simdi + ' &nbsp;|&nbsp; Toplam: ' + sorgular.length + ' sorgu</span></div>';
 
   const thead = '<thead><tr>'

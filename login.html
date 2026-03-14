@@ -189,7 +189,7 @@
 
 <div class="kart" id="girisKart">
   <div class="marka">
-    <img id="_logoImgLogin" src="" loading="lazy" alt="gövdag" style="height:46px;width:auto;margin-bottom:10px;">
+    <img id="_logoImgLogin" src="" alt="gövdag" style="height:46px;width:auto;margin-bottom:10px;">
     <p>İBKB Zorunluluğu Sorgulama Yazılımı</p>
   </div>
 
@@ -986,7 +986,7 @@ async function girisYap(){
     });
   }
 </script>
-
+<script>
   // Logo yükle
   (function(){
     var lImg = document.getElementById('_logoImgLogin');
@@ -997,5 +997,6 @@ async function girisYap(){
       if(cfgL.logo && lImg) lImg.src = cfgL.logo;
     }catch(e){}
   })();
+</script>
 </body>
 </html>
