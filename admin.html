@@ -220,6 +220,7 @@
       <button class="tab-btn"    onclick="tab('istatistik',this)" id="tabIstatistik">📈 İstatistik</button>
       <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
       <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular</button>
+      <button class="tab-btn"    onclick="tab('audit',this)" id="tabAudit">📋 İşlem Günlüğü</button>
     </div>
 
     <!-- DASHBOARD -->
@@ -849,6 +850,24 @@
       </div>
     </div>
 
+    <!-- AUDİT LOG -->
+    <div id="tab-audit" class="tab-content">
+      <div class="panel-card">
+        <div class="pc-head">
+          <div><h3>📋 İşlem Günlüğü</h3><p>Admin panelinde yapılan tüm işlemlerin kaydı</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="auditYukle()">🔄 Yenile</button>
+            <button class="btn btn-secondary" onclick="auditTemizle()" style="background:#fee2e2;color:#991b1b;">🗑 Günlüğü Temizle</button>
+          </div>
+        </div>
+        <div class="pc-body">
+          <div id="auditIcerik">
+            <div style="color:#8c97a8;font-size:.85rem;padding:20px 0;">Yükleniyor…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- İSTATİSTİK -->
     <div id="tab-istatistik" class="tab-content">
       <div class="panel-card">
@@ -1304,6 +1323,7 @@ function loginMetinleriKaydet(){
   const tgEl = document.getElementById('m-tanitimGoster');
   if(tgEl) cfg.metinler.tanitimGoster = tgEl.value;
   depoyaKaydet(cfg);
+  auditKaydet('Logo Güncellendi', 'Login sayfası ayarları kaydedildi');
   toast('✅ Login sayfası ayarları kaydedildi');
 }
 
@@ -1315,6 +1335,7 @@ function tab(id, btn){
   if(id==='girislog') girisLogYukle();
   if(id==='basvurular') basvurulariYukle();
   if(id==='istatistik') istatistikYukle();
+  if(id==='audit') auditYukle();
   if(id==='logologin') logoTabYukle();
   document.getElementById('tab-'+id).classList.add('ak');
   btn.classList.add('ak');
@@ -1788,6 +1809,7 @@ async function kullanicisil(id, email){
       headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
     });
     if(r.ok||r.status===204){
+      auditKaydet('Kullanıcı Silindi', email);
       toast('✅ Kullanıcı silindi: '+email);
       kullanicilariYukle();
     } else {
@@ -1828,6 +1850,7 @@ function sabitleriKaydet(){
   // destek ayrı nesne olarak da kaydet (ibkb-sorgulama uyumluluğu)
   cfg.destek = {oran: cfg.sabitler.destek, son: cfg.sabitler.destekSon};
   depoyaKaydet(cfg);
+  auditKaydet('Sabit Güncellendi', 'Sayısal değerler güncellendi');
   toast('✅ Sayısal değerler kaydedildi');
 }
 
@@ -1849,6 +1872,7 @@ function metinleriKaydet(){
     if(el) cfg.metinler[k] = el.value;
   });
   depoyaKaydet(cfg);
+  auditKaydet('Metin Güncellendi', 'Sayfa metinleri güncellendi');
   toast('✅ Metinler kaydedildi');
 }
 
@@ -1877,6 +1901,7 @@ function mevzuatBildirimYayinla(){
     badge.style.display = 'block';
     badge.textContent = '✅ Bildirim yayınlandı — kullanıcılar hesaplama sayfasında görecek';
   }
+  auditKaydet('Mevzuat Bildirimi', metin.trim().slice(0,80));
   toast('📢 Mevzuat bildirimi yayınlandı');
 }
 
@@ -1972,11 +1997,74 @@ async function topluMailGonder(){
 
     const sonucMsg = '✅ ' + basarili + ' mail gönderildi' + (hata > 0 ? ', ' + hata + ' hata' : '');
     if(durumEl) durumEl.textContent = sonucMsg;
+    auditKaydet('Mail Gönderildi', sonucMsg + ' — Alıcı: ' + alici);
     toast(sonucMsg);
   }catch(e){
     if(durumEl) durumEl.textContent = '✗ Hata: ' + e.message;
     toast('✗ Hata: ' + e.message);
   }
+}
+
+// ─── AUDİT LOG ─────────────────────────────────────────────────────────────
+const AUDIT_KEY = 'ibkb_audit_log';
+const AUDIT_MAX = 500;
+
+function auditKaydet(eylem, detay){
+  try{
+    var log = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
+    log.unshift({
+      zaman: new Date().toLocaleString('tr-TR'),
+      eylem: eylem,
+      detay: detay || '',
+      ts: Date.now()
+    });
+    if(log.length > AUDIT_MAX) log = log.slice(0, AUDIT_MAX);
+    localStorage.setItem(AUDIT_KEY, JSON.stringify(log));
+  }catch(e){}
+}
+
+function auditYukle(){
+  const el = document.getElementById('auditIcerik');
+  if(!el) return;
+  try{
+    const log = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
+    if(log.length === 0){
+      el.innerHTML = '<div style="color:#8c97a8;padding:20px;font-size:.85rem;">Henüz işlem kaydı yok.</div>';
+      return;
+    }
+    const renk = {
+      'Kullanıcı Silindi':'#fee2e2', 'Lisans Uzatıldı':'#f0fdf4',
+      'Bakım Açıldı':'#fef9c3', 'Bakım Kapatıldı':'#f0fdf4',
+      'Duyuru Yayınlandı':'#eff6ff', 'Duyuru Kaldırıldı':'#f8fafc',
+      'Mevzuat Bildirimi':'#fef3c7', 'Mail Gönderildi':'#eff6ff',
+      'Parola Değiştirildi':'#faf5ff', 'Logo Güncellendi':'#f0fdf4',
+      'Sabit Güncellendi':'#eff6ff', 'Metin Güncellendi':'#eff6ff',
+    };
+    el.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.82rem;">'
+      + '<thead><tr style="background:#f8fafc;">'
+      + '<th style="padding:8px 12px;text-align:left;border-bottom:1.5px solid #e2e8f0;color:#4a5568;font-size:.72rem;">Zaman</th>'
+      + '<th style="padding:8px 12px;text-align:left;border-bottom:1.5px solid #e2e8f0;color:#4a5568;font-size:.72rem;">İşlem</th>'
+      + '<th style="padding:8px 12px;text-align:left;border-bottom:1.5px solid #e2e8f0;color:#4a5568;font-size:.72rem;">Detay</th>'
+      + '</tr></thead><tbody>'
+      + log.map(function(r,i){
+          const bg = renk[r.eylem] || (i%2===0?'#fff':'#f8fafc');
+          return '<tr style="border-bottom:1px solid #edf2f7;background:'+bg+';">'
+            + '<td style="padding:8px 12px;white-space:nowrap;color:#64748b;">'+r.zaman+'</td>'
+            + '<td style="padding:8px 12px;font-weight:600;color:#1e293b;">'+r.eylem+'</td>'
+            + '<td style="padding:8px 12px;color:#374162;">'+r.detay+'</td>'
+            + '</tr>';
+        }).join('')
+      + '</tbody></table></div>';
+  }catch(e){
+    el.innerHTML = '<div style="color:#b91c1c;padding:12px;">Hata: '+e.message+'</div>';
+  }
+}
+
+function auditTemizle(){
+  if(!confirm('Tüm işlem günlüğü silinecek. Emin misiniz?')) return;
+  localStorage.removeItem(AUDIT_KEY);
+  auditYukle();
+  toast('🗑 İşlem günlüğü temizlendi');
 }
 
 function duyuruKaydet(){
@@ -1991,6 +2079,7 @@ function duyuruKaydet(){
   cfg.duyuru.tip = tipEl ? tipEl.value : 'bilgi';
   cfg.duyuru.aktif = true;
   depoyaKaydet(cfg);
+  auditKaydet('Duyuru Yayınlandı', metin.trim().slice(0,80));
   toast('📢 Duyuru yayınlandı');
 }
 
@@ -2002,6 +2091,7 @@ function duyuruKaldir(){
   depoyaKaydet(cfg);
   const el = document.getElementById('m-duyuru');
   if(el) el.value = '';
+  auditKaydet('Duyuru Kaldırıldı', '');
   toast('✕ Duyuru kaldırıldı');
 }
 
@@ -2016,6 +2106,7 @@ function bakimKaydet(){
   depoyaKaydet(cfg);
   const badge = document.getElementById('bakimDurumBadge');
   if(badge){ badge.style.display = modEl.checked ? 'inline-flex' : 'none'; }
+  auditKaydet(modEl.checked ? 'Bakım Açıldı' : 'Bakım Kapatıldı', '');
   toast(modEl.checked ? '🔧 Bakım modu AKTİF' : '✅ Bakım modu kapatıldı');
 }
 
@@ -2059,6 +2150,7 @@ function parolaGuncelle(){
   document.getElementById('mevcutParola').value='';
   document.getElementById('yeniParola').value='';
   document.getElementById('yeniParolaTekrar').value='';
+  auditKaydet('Parola Değiştirildi', 'Admin paneli parolası güncellendi');
   toast('✅ Parola güncellendi');
 }
 
@@ -2429,6 +2521,7 @@ async function lisansUzat(id, email, mevcutBitis){
       notlar[email].lisans_bitis = yeniBitisISO;
       localStorage.setItem('ibkb_kullanici_notlari', JSON.stringify(notlar));
     }
+    auditKaydet('Lisans Uzatıldı', email + ' → ' + yeniBitisStr);
     toast('✅ Lisans ' + yeniBitisStr + ' tarihine uzatıldı');
     // Tabloyu yenile
     setTimeout(kullanicilariYukle, 600);
