@@ -1246,6 +1246,75 @@ function baslat(){
 }
 
 // ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
+// ─── SİTE CONFIG (Supabase) ──────────────────────────────────────────────────
+// site_config tablosu: id(text PK), value(text), updated_at(timestamptz)
+// SQL: CREATE TABLE site_config (id text PRIMARY KEY, value text, updated_at timestamptz DEFAULT now());
+// RLS: SELECT herkese açık, INSERT/UPDATE service_role veya authenticated
+
+async function siteConfigKaydet(anahtar, deger){
+  const sb = sbCfg();
+  if(!sb || !sb.url || !sb.key) return false;
+  try{
+    const key = sb.serviceKey || sb.key;
+    const res = await fetch(sb.url + '/rest/v1/site_config', {
+      method: 'POST',
+      headers: {
+        'apikey': key,
+        'Authorization': 'Bearer ' + key,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        id: anahtar,
+        value: deger,
+        updated_at: new Date().toISOString()
+      })
+    });
+    return res.ok || res.status === 201 || res.status === 200;
+  }catch(e){ return false; }
+}
+
+async function siteConfigYukle(anahtar){
+  const sb = sbCfg();
+  if(!sb || !sb.url || !sb.key) return null;
+  try{
+    const res = await fetch(sb.url + '/rest/v1/site_config?id=eq.' + encodeURIComponent(anahtar) + '&select=value&limit=1', {
+      headers: {
+        'apikey': sb.key,
+        'Authorization': 'Bearer ' + sb.key,
+        'Accept': 'application/json'
+      }
+    });
+    if(!res.ok) return null;
+    const data = await res.json();
+    return (data && data[0]) ? data[0].value : null;
+  }catch(e){ return null; }
+}
+
+async function siteConfigTumunuYukle(){
+  // logo ve favicon'u Supabase'den çek, localStorage'a yaz
+  const sb = sbCfg();
+  if(!sb || !sb.url || !sb.key) return;
+  try{
+    const res = await fetch(sb.url + '/rest/v1/site_config?id=in.(logo,favicon)&select=id,value', {
+      headers: {
+        'apikey': sb.key,
+        'Authorization': 'Bearer ' + sb.key,
+        'Accept': 'application/json'
+      }
+    });
+    if(!res.ok) return;
+    const rows = await res.json();
+    if(!Array.isArray(rows) || rows.length === 0) return;
+    const cfg = depoyuYukle() || {};
+    rows.forEach(function(row){
+      if(row.id === 'logo' && row.value) cfg.logo = row.value;
+      if(row.id === 'favicon' && row.value) cfg.favicon = row.value;
+    });
+    depoyaKaydet(cfg);
+  }catch(e){}
+}
+
 function logoTabYukle(){
   const cfg = depoyuYukle() || {};
   // Logo önizleme
@@ -1300,6 +1369,9 @@ function fiyatKaydet(){
     if(el) cfg.metinler[k] = el.value;
   });
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('metinler', cfg.metinler);
+
   toast('\u2705 Fiyat bilgisi kaydedildi');
 }
 
@@ -1316,18 +1388,30 @@ function logoKaydet(){
     msgEl.textContent='Dosya 200KB sınırını aşıyor. Daha küçük bir logo seçin.'; return;
   }
   const reader = new FileReader();
-  reader.onload = function(e){
+  reader.onload = async function(e){
     const base64 = e.target.result;
+    // localStorage'a kaydet
     const cfg = depoyuYukle() || {};
     cfg.logo = base64;
     depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('logo', cfg.logo);
+
     // Önizlemeyi güncelle
     const onizleme = document.getElementById('logoOnizleme');
     const logoYok = document.getElementById('logoYok');
     if(onizleme){ onizleme.src = base64; onizleme.style.display='block'; }
     if(logoYok) logoYok.style.display='none';
-    msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
-    msgEl.textContent='✅ Logo kaydedildi. Sayfayı yenileyin.';
+    // Supabase'e kaydet
+    msgEl.style.display='block'; msgEl.style.background='#eff6ff'; msgEl.style.color='#1a56a0';
+    msgEl.textContent="⏳ Supabase'e kaydediliyor…";
+    const sbOk = await scKaydet('logo', base64);
+    msgEl.style.background = sbOk ? '#ecfdf5' : '#fefce8';
+    msgEl.style.color      = sbOk ? '#047857' : '#854d0e';
+    msgEl.textContent = sbOk
+      ? '✅ Logo kaydedildi. Tüm cihazlarda gorunur.'
+      : '⚠ Logo yerel kaydedildi (Supabase yok).';
+    auditKaydet('Logo Güncellendi', file.name);
   };
   reader.readAsDataURL(file);
 }
@@ -1337,6 +1421,9 @@ function logoSifirla(){
   const cfg = depoyuYukle() || {};
   delete cfg.logo;
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('logo', cfg.logo);
+
   const onizleme = document.getElementById('logoOnizleme');
   const logoYok = document.getElementById('logoYok');
   if(onizleme){ onizleme.src=''; onizleme.style.display='none'; }
@@ -1371,11 +1458,14 @@ function faviconKaydet(){
     msgEl.textContent='Dosya 100KB sınırını aşıyor. Daha küçük bir favicon seçin.'; return;
   }
   const reader = new FileReader();
-  reader.onload = function(e){
+  reader.onload = async function(e){
     const base64 = e.target.result;
     const cfg = depoyuYukle() || {};
     cfg.favicon = base64;
     depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('favicon', cfg.favicon);
+
     // Sayfadaki favicon link'ini de güncelle
     var linkEl = document.querySelector('link[rel="icon"]');
     if(linkEl) linkEl.href = base64;
@@ -1383,8 +1473,15 @@ function faviconKaydet(){
     const favYok = document.getElementById('faviconYok');
     if(favOnizleme){ favOnizleme.src = base64; favOnizleme.style.display='block'; }
     if(favYok) favYok.style.display='none';
-    msgEl.style.display='block'; msgEl.style.background='#ecfdf5'; msgEl.style.color='#047857';
-    msgEl.textContent='✅ Favicon kaydedildi. Sayfayı yenileyin.';
+    // Supabase'e kaydet
+    msgEl.style.display='block'; msgEl.style.background='#eff6ff'; msgEl.style.color='#1a56a0';
+    msgEl.textContent="⏳ Supabase'e kaydediliyor…";
+    const sbOk = await scKaydet('favicon', base64);
+    msgEl.style.background = sbOk ? '#ecfdf5' : '#fefce8';
+    msgEl.style.color      = sbOk ? '#047857' : '#854d0e';
+    msgEl.textContent = sbOk
+      ? '✅ Favicon kaydedildi. Tüm cihazlarda gorunur.'
+      : '⚠ Favicon yerel kaydedildi (Supabase yok).';
     auditKaydet('Favicon Güncellendi', file.name);
   };
   reader.readAsDataURL(file);
@@ -1395,6 +1492,9 @@ function faviconSifirla(){
   const cfg = depoyuYukle() || {};
   delete cfg.favicon;
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('favicon', cfg.favicon);
+
   const favOnizleme = document.getElementById('faviconOnizleme');
   const favYok = document.getElementById('faviconYok');
   if(favOnizleme){ favOnizleme.src=''; favOnizleme.style.display='none'; }
@@ -1415,6 +1515,9 @@ function loginMetinleriKaydet(){
   const tgEl = document.getElementById('m-tanitimGoster');
   if(tgEl) cfg.metinler.tanitimGoster = tgEl.value;
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('metinler', cfg.metinler);
+
   auditKaydet('Logo Güncellendi', 'Login sayfası ayarları kaydedildi');
   toast('✅ Login sayfası ayarları kaydedildi');
 }
@@ -1533,6 +1636,58 @@ function modalKaydet(){
 
 // ─── KAYDET ──────────────────────────────────────────────────────────────────
 // ─── SUPABASE ───────────────────────────────────────────────────────────────
+// ─── SİTE CONFIG — Supabase (tüm admin ayarları burada saklanır) ────────────
+const _SC_URL = 'https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config';
+const _SC_SVC = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKIhhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY';
+const _SC_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+
+// Supabase'e yaz (service role ile — RLS bypass)
+async function scKaydet(id, value) {
+  try {
+    const res = await fetch(_SC_URL, {
+      method: 'POST',
+      headers: {
+        'apikey': _SC_SVC,
+        'Authorization': 'Bearer ' + _SC_SVC,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id, value: JSON.stringify(value), updated_at: new Date().toISOString() })
+    });
+    return res.ok || res.status === 201;
+  } catch(e) { return false; }
+}
+
+// Supabase'den tüm config'i çek (anon key ile — RLS SELECT açık)
+async function scYukle() {
+  try {
+    const res = await fetch(_SC_URL + '?select=id,value', {
+      headers: { 'apikey': _SC_KEY, 'Authorization': 'Bearer ' + _SC_KEY }
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    const cfg = {};
+    rows.forEach(r => {
+      try { cfg[r.id] = JSON.parse(r.value); } catch(e) { cfg[r.id] = r.value; }
+    });
+    return cfg;
+  } catch(e) { return null; }
+}
+
+// localStorage cache'i Supabase ile senkronize et
+async function cfgSenkronize() {
+  const sbCfgData = await scYukle();
+  if (!sbCfgData) return; // Supabase yok, localStorage ile devam
+  const local = depoyuYukle() || {};
+  // Supabase'den gelen alanları localStorage'a yaz
+  const alanlar = ['sabitler','metinler','duyuru','bakim','logo','favicon','ulkeler','mevzuat'];
+  let degisti = false;
+  alanlar.forEach(k => {
+    if (sbCfgData[k] !== undefined) { local[k] = sbCfgData[k]; degisti = true; }
+  });
+  if (degisti) depoyaKaydet(local);
+}
+
 function sbCfg(){
   try{
     const raw=localStorage.getItem('ibkb_config');
@@ -1942,6 +2097,9 @@ function sabitleriKaydet(){
   // destek ayrı nesne olarak da kaydet (ibkb-sorgulama uyumluluğu)
   cfg.destek = {oran: cfg.sabitler.destek, son: cfg.sabitler.destekSon};
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('sabitler', cfg.sabitler);
+
   auditKaydet('Sabit Güncellendi', 'Sayısal değerler güncellendi');
   toast('✅ Sayısal değerler kaydedildi');
 }
@@ -1953,6 +2111,9 @@ function kurlariKaydet(){
     cfg.kurlar[k] = parseFloat(document.getElementById('k-'+k).value);
   });
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('sabitler', cfg.sabitler);
+
   toast('✅ Kurlar kaydedildi');
 }
 
@@ -1964,6 +2125,9 @@ function metinleriKaydet(){
     if(el) cfg.metinler[k] = el.value;
   });
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('metinler', cfg.metinler);
+
   auditKaydet('Metin Güncellendi', 'Sayfa metinleri güncellendi');
   toast('✅ Metinler kaydedildi');
 }
@@ -1983,6 +2147,9 @@ function mevzuatBildirimYayinla(){
   cfg.mevzuat.tcmbOran = tcmbOran;
   cfg.mevzuat.guncelleme = new Date().toLocaleDateString('tr-TR');
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('mevzuat', cfg.mevzuat);
+
   // duyuru alanını da güncelle
   const dEl = document.getElementById('m-duyuru');
   if(dEl) dEl.value = metin.trim();
@@ -2001,6 +2168,9 @@ function mevzuatBildirimKaldir(){
   const cfg = depoyuYukle() || {};
   if(cfg.duyuru) { cfg.duyuru.aktif = false; cfg.duyuru.metin = ''; }
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('mevzuat', cfg.mevzuat);
+
   const badge = document.getElementById('mvDurumBadge');
   if(badge) badge.style.display = 'none';
   const dEl = document.getElementById('m-duyuru');
@@ -2171,6 +2341,9 @@ function duyuruKaydet(){
   cfg.duyuru.tip = tipEl ? tipEl.value : 'bilgi';
   cfg.duyuru.aktif = true;
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('duyuru', cfg.duyuru);
+
   auditKaydet('Duyuru Yayınlandı', metin.trim().slice(0,80));
   toast('📢 Duyuru yayınlandı');
 }
@@ -2181,6 +2354,9 @@ function duyuruKaldir(){
   cfg.duyuru.aktif = false;
   cfg.duyuru.metin = '';
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('duyuru', cfg.duyuru);
+
   const el = document.getElementById('m-duyuru');
   if(el) el.value = '';
   auditKaydet('Duyuru Kaldırıldı', '');
@@ -2196,6 +2372,9 @@ function bakimKaydet(){
   cfg.bakim.aktif = modEl.checked;
   cfg.bakim.mesaj = mesajEl.value.trim() || 'Sistem şu anda bakımdadır.';
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('bakim', cfg.bakim);
+
   const badge = document.getElementById('bakimDurumBadge');
   if(badge){ badge.style.display = modEl.checked ? 'inline-flex' : 'none'; }
   auditKaydet(modEl.checked ? 'Bakım Açıldı' : 'Bakım Kapatıldı', '');
@@ -2212,6 +2391,9 @@ function degisiklikleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.ulkeler = ulkeler;
   depoyaKaydet(cfg);
+  // Supabase sync
+  scKaydet('ulkeler', cfg.ulkeler);
+
   degisimVar = false;
   document.getElementById('degisimBar').classList.remove('goster');
   toast('✅ Tüm değişiklikler kaydedildi');

@@ -50,6 +50,45 @@ if(!sessionStorage.getItem('govdag_token')){
         var favLink = document.querySelector('link[rel="icon"]');
         if(favLink) favLink.href = cfg.favicon;
       }
+      // Supabase'den tüm config'i çek ve uygula (arka planda)
+      (async function(){
+        try{
+          const _r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?select=id,value', {
+            headers: {'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'}
+          });
+          if(!_r.ok) return;
+          const _rows = await _r.json();
+          if(!Array.isArray(_rows) || !_rows.length) return;
+          const _cfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
+          _rows.forEach(function(row){
+            try{ _cfg[row.id] = JSON.parse(row.value); }catch(e){ _cfg[row.id] = row.value; }
+          });
+          localStorage.setItem('ibkb_config', JSON.stringify(_cfg));
+          // Logo uygula
+          var _logo = _cfg.logo;
+          if(_logo){
+            document.querySelectorAll('img[alt="g\u00f6vdag"]').forEach(function(img){ img.src=_logo; });
+            var _hdr=document.getElementById('hdrLogo'); if(_hdr) _hdr.src=_logo;
+          }
+          // Favicon uygula
+          var _fav = _cfg.favicon;
+          if(_fav){ var _fl=document.querySelector('link[rel="icon"]'); if(_fl) _fl.href=_fav; }
+          // Sabitler uygula (TCMB, son tarih)
+          if(_cfg.sabitler){
+            if(_cfg.sabitler.tcmb) window.TCMB = _cfg.sabitler.tcmb/100;
+            if(_cfg.sabitler.esik) window.ESIK = _cfg.sabitler.esik;
+          }
+          // Duyuru banner uygula
+          if(_cfg.duyuru && _cfg.duyuru.aktif && _cfg.duyuru.metin){
+            var _db=document.getElementById('sistemDuyuruBanner');
+            if(_db) { _db.textContent=_cfg.duyuru.metin; _db.style.display='block'; }
+          }
+          // Bakım modu
+          if(_cfg.bakim && _cfg.bakim.aktif){
+            document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;"><div><div style="font-size:2rem;margin-bottom:16px;">🔧</div><h2>Sistem Bakımda</h2><p style="color:#94a3b8;margin-top:8px;">'+ (_cfg.bakim.mesaj||'Kısa süre içinde geri döneceğiz.') +'</p></div></div>';
+          }
+        }catch(e){}
+      })();
       var hb = document.getElementById('heroBaslik');
       if(hb && met.heroBaslik) hb.textContent = met.heroBaslik;
       var ha = document.getElementById('heroAlt');
