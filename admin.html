@@ -1403,7 +1403,8 @@ function logoKaydet(){
   }
   const reader = new FileReader();
   reader.onload = async function(e){
-    const base64 = e.target.result;
+    // Canvas ile sıkıştır (max 400px genişlik, kalite 0.75)
+    const base64 = await _gorselSikistir(e.target.result, 400, 0.75);
     // localStorage'a kaydet
     const cfg = depoyuYukle() || {};
     cfg.logo = base64;
@@ -1470,7 +1471,8 @@ function faviconKaydet(){
   }
   const reader = new FileReader();
   reader.onload = async function(e){
-    const base64 = e.target.result;
+    // Canvas ile sıkıştır (max 64px, favicon için)
+    const base64 = await _gorselSikistir(e.target.result, 64, 0.9);
     const cfg = depoyuYukle() || {};
     cfg.favicon = base64;
     depoyaKaydet(cfg);
@@ -1650,10 +1652,35 @@ const _SC_SVC = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const _SC_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
 
 // Supabase'e yaz (service role ile — RLS bypass)
+// Görsel sıkıştırma - canvas ile boyut ve kaliteyi düşür
+function _gorselSikistir(dataUrl, maxGenislik, kalite) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width;
+      var h = img.height;
+      if(w > maxGenislik) {
+        h = Math.round(h * maxGenislik / w);
+        w = maxGenislik;
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/png', kalite));
+    };
+    img.onerror = function() { resolve(dataUrl); }; // Hata olursa orijinali kullan
+    img.src = dataUrl;
+  });
+}
+
+
 async function scKaydet(id, value) {
   try {
     const valueStr = (typeof value === 'string') ? value : JSON.stringify(value);
-    // Önce PATCH (güncelle), yoksa POST (ekle)
+    console.log('[scKaydet] basliyor:', id, 'boyut:', valueStr.length);
+    // PATCH dene
     const upd = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
       method: 'PATCH',
       headers: {
@@ -1664,11 +1691,20 @@ async function scKaydet(id, value) {
       },
       body: JSON.stringify({ value: valueStr, updated_at: new Date().toISOString() })
     });
+    console.log('[scKaydet] PATCH status:', upd.status);
     if(upd.ok) {
-      const updData = await upd.json().catch(()=>[]);
-      if(Array.isArray(updData) && updData.length > 0) return true; // guncellendi
+      const updText = await upd.text().catch(()=>'[]');
+      console.log('[scKaydet] PATCH response:', updText.slice(0,100));
+      try {
+        const updData = JSON.parse(updText);
+        if(Array.isArray(updData) && updData.length > 0) {
+          console.log('[scKaydet] PATCH basarili - guncellendi');
+          return true;
+        }
+      } catch(e) {}
     }
-    // Kayit yok - INSERT
+    // INSERT
+    console.log('[scKaydet] INSERT deneniyor...');
     const ins = await fetch(_SC_URL, {
       method: 'POST',
       headers: {
@@ -1679,10 +1715,13 @@ async function scKaydet(id, value) {
       },
       body: JSON.stringify({ id: id, value: valueStr, updated_at: new Date().toISOString() })
     });
+    const insText = await ins.text().catch(()=>'');
+    console.log('[scKaydet] INSERT status:', ins.status, insText.slice(0,200));
     if(!ins.ok) {
-      const errText = await ins.text().catch(()=>'');
-      if(ins.status === 409 || errText.includes('duplicate')) return true;
-      console.error('[scKaydet]', id, 'HTTP', ins.status, errText.slice(0,200));
+      if(ins.status === 409 || insText.includes('duplicate')) {
+        console.log('[scKaydet] duplicate - zaten var, tamam');
+        return true;
+      }
       return false;
     }
     return true;
