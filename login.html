@@ -1012,30 +1012,41 @@ async function girisYap(){
     // Supabase'den tüm config'i çek (arka planda)
     (async function(){
       try{
-        const _lr = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?select=id,value', {
+        var _lr = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?select=id,value', {
           headers: {'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'}
         });
         if(!_lr.ok) return;
-        const _lrows = await _lr.json();
+        var _lrows = await _lr.json();
         if(!Array.isArray(_lrows) || !_lrows.length) return;
-        const _lcfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
+        var _lcfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
         _lrows.forEach(function(row){
-          var _v=row.value; try{ _v=JSON.parse(row.value); }catch(e){} _lcfg[row.id]=_v;
+          var _v = row.value;
+          try{ _v = JSON.parse(row.value); }catch(e){}
+          _lcfg[row.id] = _v;
         });
         localStorage.setItem('ibkb_config', JSON.stringify(_lcfg));
-        // Logo uygula
+        // Parola sync
+        if(_lcfg.parola) localStorage.setItem('ibkb_parola', _lcfg.parola);
+        // Logo
         if(_lcfg.logo){
-          var _li=document.getElementById('_logoImgLogin'); if(_li) _li.src=_lcfg.logo;
+          var _li = document.getElementById('_logoImgLogin');
+          if(_li) _li.src = _lcfg.logo;
         }
-        // Favicon uygula
+        // Favicon
         if(_lcfg.favicon){
-          var _lf=document.querySelector('link[rel="icon"]'); if(_lf) _lf.href=_lcfg.favicon;
+          var _lf = document.querySelector('link[rel="icon"]');
+          if(_lf) _lf.href = _lcfg.favicon;
         }
-        // Bakım modu
+        // Bakim modu
         if(_lcfg.bakim && _lcfg.bakim.aktif){
-          document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;"><div><div style="font-size:2rem;margin-bottom:16px;">🔧</div><h2>Sistem Bakımda</h2><p style="color:#94a3b8;margin-top:8px;">'+ (_lcfg.bakim.mesaj||'Kısa süre içinde geri döneceğiz.') +'</p></div></div>';
+          var _bm = _lcfg.bakim.mesaj || 'Sistem bakimda. K\u0131sa s\u00fcre i\u00e7inde geri d\u00f6nece\u011fiz.';
+          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;'
+            + 'height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;">'
+            + '<div><div style="font-size:2.5rem;margin-bottom:16px;">\uD83D\uDD27</div>'
+            + '<h2 style="margin-bottom:8px;">Sistem Bak\u0131mda</h2>'
+            + '<p style="color:#94a3b8;">' + _bm + '</p></div></div>';
         }
-      }catch(e){}
+      }catch(e){ console.warn('[login cfg sync]', e.message); }
     })();
   })();
 </script>

@@ -53,41 +53,52 @@ if(!sessionStorage.getItem('govdag_token')){
       // Supabase'den tüm config'i çek ve uygula (arka planda)
       (async function(){
         try{
-          const _r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?select=id,value', {
+          var _r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?select=id,value', {
             headers: {'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'}
           });
           if(!_r.ok) return;
-          const _rows = await _r.json();
+          var _rows = await _r.json();
           if(!Array.isArray(_rows) || !_rows.length) return;
-          const _cfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
+          var _cfg = JSON.parse(localStorage.getItem('ibkb_config') || '{}');
           _rows.forEach(function(row){
-            var _v=row.value; try{ _v=JSON.parse(row.value); }catch(e){} _cfg[row.id]=_v;
+            var _v = row.value;
+            try{ _v = JSON.parse(row.value); }catch(e){}
+            _cfg[row.id] = _v;
           });
           localStorage.setItem('ibkb_config', JSON.stringify(_cfg));
-          // Logo uygula
-          var _logo = _cfg.logo;
-          if(_logo){
-            document.querySelectorAll('img[alt="g\u00f6vdag"]').forEach(function(img){ img.src=_logo; });
-            var _hdr=document.getElementById('hdrLogo'); if(_hdr) _hdr.src=_logo;
+          // Parola sync
+          if(_cfg.parola) localStorage.setItem('ibkb_parola', _cfg.parola);
+          // Logo
+          if(_cfg.logo){
+            document.querySelectorAll('img[alt="g\u00f6vdag"]').forEach(function(img){ img.src = _cfg.logo; });
+            var _hdr = document.getElementById('hdrLogo');
+            if(_hdr) _hdr.src = _cfg.logo;
           }
-          // Favicon uygula
-          var _fav = _cfg.favicon;
-          if(_fav){ var _fl=document.querySelector('link[rel="icon"]'); if(_fl) _fl.href=_fav; }
-          // Sabitler uygula (TCMB, son tarih)
+          // Favicon
+          if(_cfg.favicon){
+            var _fl = document.querySelector('link[rel="icon"]');
+            if(_fl) _fl.href = _cfg.favicon;
+          }
+          // Sabitler
           if(_cfg.sabitler){
-            if(_cfg.sabitler.tcmb) window.TCMB = _cfg.sabitler.tcmb/100;
-            if(_cfg.sabitler.esik) window.ESIK = _cfg.sabitler.esik;
+            if(typeof _cfg.sabitler.tcmb !== 'undefined') window.TCMB = _cfg.sabitler.tcmb / 100;
+            if(typeof _cfg.sabitler.esik !== 'undefined') window.ESIK = _cfg.sabitler.esik;
           }
-          // Duyuru banner uygula
+          // Duyuru
           if(_cfg.duyuru && _cfg.duyuru.aktif && _cfg.duyuru.metin){
-            var _db=document.getElementById('sistemDuyuruBanner');
-            if(_db) { _db.textContent=_cfg.duyuru.metin; _db.style.display='block'; }
+            var _db = document.getElementById('sistemDuyuruBanner');
+            if(_db){ _db.textContent = _cfg.duyuru.metin; _db.style.display = 'block'; }
           }
-          // Bakım modu
+          // Bakim modu
           if(_cfg.bakim && _cfg.bakim.aktif){
-            document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;"><div><div style="font-size:2rem;margin-bottom:16px;">🔧</div><h2>Sistem Bakımda</h2><p style="color:#94a3b8;margin-top:8px;">'+ (_cfg.bakim.mesaj||'Kısa süre içinde geri döneceğiz.') +'</p></div></div>';
+            var _bm = _cfg.bakim.mesaj || 'Sistem bakimda. K\u0131sa s\u00fcre i\u00e7inde geri d\u00f6nece\u011fiz.';
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;'
+              + 'height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;">'
+              + '<div><div style="font-size:2.5rem;margin-bottom:16px;">\uD83D\uDD27</div>'
+              + '<h2 style="margin-bottom:8px;">Sistem Bak\u0131mda</h2>'
+              + '<p style="color:#94a3b8;">' + _bm + '</p></div></div>';
           }
-        }catch(e){}
+        }catch(e){ console.warn('[cfg sync]', e.message); }
       })();
       var hb = document.getElementById('heroBaslik');
       if(hb && met.heroBaslik) hb.textContent = met.heroBaslik;
