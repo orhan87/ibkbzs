@@ -1037,9 +1037,22 @@ async function girisYap(){
           var _lf = document.querySelector('link[rel="icon"]');
           if(_lf) _lf.href = _lcfg.favicon;
         }
-        // Bakim modu
+        // Login metinleri
+        if(_lcfg.metinler){
+          var _lm = _lcfg.metinler;
+          if(_lm.loginBaslik) document.title = _lm.loginBaslik;
+          var _lalt = document.getElementById('loginAltMetin');
+          if(_lalt && _lm.loginAlt) _lalt.textContent = _lm.loginAlt;
+          var _lbtn = document.getElementById('loginBtn');
+          if(_lbtn && _lm.loginBtnYazi) _lbtn.textContent = _lm.loginBtnYazi;
+          var _lep = document.getElementById('loginEposta');
+          if(_lep && _lm.loginEpostaPlaceholder) _lep.placeholder = _lm.loginEpostaPlaceholder;
+          var _lft = document.getElementById('loginFooterMetin');
+          if(_lft && _lm.loginFooter) _lft.textContent = _lm.loginFooter;
+        }
+        // Bakım modu
         if(_lcfg.bakim && _lcfg.bakim.aktif){
-          var _bm = _lcfg.bakim.mesaj || 'Sistem bakimda. K\u0131sa s\u00fcre i\u00e7inde geri d\u00f6nece\u011fiz.';
+          var _bm = (_lcfg.bakim && _lcfg.bakim.mesaj) || 'Sistem bakimda.';
           document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;'
             + 'height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;">'
             + '<div><div style="font-size:2.5rem;margin-bottom:16px;">\uD83D\uDD27</div>'

@@ -79,20 +79,47 @@ if(!sessionStorage.getItem('govdag_token')){
             var _fl = document.querySelector('link[rel="icon"]');
             if(_fl) _fl.href = _cfg.favicon;
           }
-          // Sabitler - let değişkenlerini güncelle
+          // Sabitler
           if(_cfg.sabitler){
             if(typeof _cfg.sabitler.tcmb !== 'undefined') TCMB = _cfg.sabitler.tcmb / 100;
             if(typeof _cfg.sabitler.esik !== 'undefined') ESIK = _cfg.sabitler.esik;
             if(typeof _cfg.sabitler.gun  !== 'undefined') GUN  = _cfg.sabitler.gun;
+            if(_cfg.sabitler.ek3oran !== undefined) DESTEK = _cfg.sabitler.ek3oran / 100;
+            if(_cfg.sabitler['destek-son']) DESTEK_SON = _cfg.sabitler['destek-son'];
+          }
+          // Kurlar
+          if(_cfg.kurlar){
+            ['EUR','GBP','JPY','CHF','TRY','OTHER'].forEach(function(k){
+              if(_cfg.kurlar[k]) KUR[k] = _cfg.kurlar[k];
+            });
+          }
+          // Metinler
+          if(_cfg.metinler){
+            var _m = _cfg.metinler;
+            if(_m.siteBaslik) document.title = _m.siteBaslik;
+            var _hb = document.getElementById('heroBaslik');
+            if(_hb && _m.heroBaslik) _hb.textContent = _m.heroBaslik;
+            var _ha = document.getElementById('heroAlt');
+            if(_ha && _m.heroAlt){ _ha.textContent = _m.heroAlt; _ha.style.display = 'block'; }
+            var _fy = document.getElementById('footerYaziEl');
+            if(_fy && _m.footerYazi) _fy.textContent = _m.footerYazi;
           }
           // Duyuru
           if(_cfg.duyuru && _cfg.duyuru.aktif && _cfg.duyuru.metin){
             var _db = document.getElementById('sistemDuyuruBanner');
             if(_db){ _db.textContent = _cfg.duyuru.metin; _db.style.display = 'block'; }
+          } else {
+            var _db2 = document.getElementById('sistemDuyuruBanner');
+            if(_db2) _db2.style.display = 'none';
+          }
+          // Mevzuat bildirimi
+          if(_cfg.mevzuat && _cfg.mevzuat.aktif && _cfg.mevzuat.metin){
+            var _mv = document.getElementById('sistemDuyuruBanner');
+            if(_mv && !_cfg.duyuru?.aktif){ _mv.textContent = _cfg.mevzuat.metin; _mv.style.display = 'block'; }
           }
           // Bakim modu
           if(_cfg.bakim && _cfg.bakim.aktif){
-            var _bm = _cfg.bakim.mesaj || 'Sistem bakimda. K\u0131sa s\u00fcre i\u00e7inde geri d\u00f6nece\u011fiz.';
+            var _bm = (_cfg.bakim && _cfg.bakim.mesaj) || 'Sistem bakimda.';
             document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;'
               + 'height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;">'
               + '<div><div style="font-size:2.5rem;margin-bottom:16px;">\uD83D\uDD27</div>'
@@ -978,7 +1005,7 @@ let GUN    = _sab.gun    || 180;
 // Döviz dönüşüm desteği
 let DESTEK     = (_dest.oran  !== undefined ? _dest.oran  : 3) / 100;
 let DESTEK_SON = _dest.son || '30 Nisan 2026';
-const KUR={USD:1,EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
+let KUR={USD:1,EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
 const KATLBL={std:'Standart',ek2:'EK-2 Muaf',ek3:'EK-3 %50',sb_ihracat:'Serbest Bölgeye İhracat',sb_yerlesik:'Serbest Bölgeden İhracat',ozel:'Özel Md.4/4',kktc:'KKTC'};
 
 // ─── ÜLKE VERİTABANI — tüm BM üyesi ülkeler Türkçe ─────────────────────────
