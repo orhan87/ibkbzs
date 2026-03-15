@@ -175,6 +175,18 @@
     <input type="password" id="parolaInput" placeholder="Parola" onkeydown="if(event.key==='Enter')girisYap()">
     <button onclick="girisYap()">Giriş Yap</button>
     <p class="login-err" id="loginErr">⚠ Parola hatalı. Tekrar deneyin.</p>
+    <p style="margin-top:12px;text-align:center;">
+      <a href="javascript:void(0)" onclick="parolaSifirlaBaslat()" style="font-size:.8rem;color:#64748b;text-decoration:none;border-bottom:1px dashed #94a3b8;">🔑 Parolamı Unuttum</a>
+    </p>
+    <div id="sifirlamaKutu" style="display:none;margin-top:14px;padding:14px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;">
+      <p style="font-size:.8rem;color:#0369a1;margin-bottom:10px;">📧 <strong>orhankelahmet@gmail.com</strong> adresine doğrulama kodu gönderildi.</p>
+      <input type="text" id="sifirlamaKod" placeholder="6 haneli kod" maxlength="6"
+        style="width:100%;padding:9px 12px;border:1.5px solid #bae6fd;border-radius:7px;font-size:.9rem;margin-bottom:8px;box-sizing:border-box;letter-spacing:.2em;text-align:center;">
+      <input type="password" id="sifirlamaYeniParola" placeholder="Yeni parola (en az 6 karakter)"
+        style="width:100%;padding:9px 12px;border:1.5px solid #bae6fd;border-radius:7px;font-size:.9rem;margin-bottom:8px;box-sizing:border-box;">
+      <button onclick="parolaSifirlaDogrula()" style="width:100%;padding:9px;background:#0369a1;color:#fff;border:none;border-radius:7px;font-size:.85rem;cursor:pointer;font-family:inherit;">✅ Kodu Doğrula ve Parolayı Güncelle</button>
+      <p id="sifirlamaMsg" style="font-size:.78rem;margin-top:8px;color:#64748b;"></p>
+    </div>
   </div>
 </div>
 
@@ -1130,6 +1142,90 @@ function bfDurumAl(){
 }
 function bfKaydet(d){ localStorage.setItem(BF_KEY, JSON.stringify(d)); }
 function bfSifirla(){ localStorage.removeItem(BF_KEY); }
+
+// ─── PAROLA SIFIRLAMA ──────────────────────────────────────────────────────────
+var _sifirlamaKodu = null;
+
+async function parolaSifirlaBaslat(){
+  const kutu = document.getElementById('sifirlamaKutu');
+  const msg  = document.getElementById('sifirlamaMsg');
+  if(!kutu) return;
+
+  // 6 haneli rastgele kod üret
+  _sifirlamaKodu = Math.floor(100000 + Math.random() * 900000).toString();
+
+  msg.textContent = '⏳ Kod gönderiliyor...';
+  msg.style.color = '#64748b';
+  kutu.style.display = 'block';
+
+  try{
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer re_7nWzHa4U_Ab3qut7vhayNoDNxKMP6c8z5',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'gövdağ Admin <onboarding@resend.dev>',
+        to: ['orhankelahmet@gmail.com'],
+        subject: 'Admin Parola Sıfırlama Kodu',
+        html: '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;">'
+          + '<h2 style="color:#1a2540;margin-bottom:8px;">🔑 Parola Sıfırlama</h2>'
+          + '<p style="color:#4a5568;margin-bottom:24px;">ibkbsorgulama.com admin paneli için sıfırlama kodu:</p>'
+          + '<div style="background:#f0f9ff;border:2px solid #0369a1;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">'
+          + '<span style="font-size:2.5rem;font-weight:800;letter-spacing:.3em;color:#0369a1;">' + _sifirlamaKodu + '</span>'
+          + '</div>'
+          + '<p style="color:#64748b;font-size:.85rem;">Bu kod 10 dakika geçerlidir. Siz talep etmediyseniz dikkate almayın.</p>'
+          + '</div>'
+      })
+    });
+    if(res.ok){
+      msg.textContent = '✅ Kod gönderildi. E-postanızı kontrol edin.';
+      msg.style.color = '#047857';
+      // 10 dakika sonra kodu geçersiz kıl
+      setTimeout(function(){ _sifirlamaKodu = null; }, 10 * 60 * 1000);
+    } else {
+      const err = await res.json().catch(()=>({}));
+      msg.textContent = '✗ Mail gönderilemedi: ' + (err.message || res.status);
+      msg.style.color = '#b91c1c';
+    }
+  }catch(e){
+    msg.textContent = '✗ Hata: ' + e.message;
+    msg.style.color = '#b91c1c';
+  }
+}
+
+async function parolaSifirlaDogrula(){
+  const kodEl   = document.getElementById('sifirlamaKod');
+  const parEl   = document.getElementById('sifirlamaYeniParola');
+  const msg     = document.getElementById('sifirlamaMsg');
+
+  if(!_sifirlamaKodu){
+    msg.textContent = '⚠ Önce kod gönderin.'; msg.style.color='#b91c1c'; return;
+  }
+  if(!kodEl || kodEl.value.trim() !== _sifirlamaKodu){
+    msg.textContent = '✗ Kod hatalı. Tekrar deneyin.'; msg.style.color='#b91c1c'; return;
+  }
+  if(!parEl || parEl.value.length < 6){
+    msg.textContent = '⚠ Parola en az 6 karakter olmalı.'; msg.style.color='#b91c1c'; return;
+  }
+
+  const yeniParola = parEl.value;
+  localStorage.setItem('ibkb_parola', yeniParola);
+  await scKaydet('parola', yeniParola);
+  _sifirlamaKodu = null;
+
+  msg.textContent = '✅ Parola güncellendi! Şimdi giriş yapabilirsiniz.';
+  msg.style.color = '#047857';
+
+  // 1.5 sn sonra sıfırlama kutusunu kapat
+  setTimeout(function(){
+    document.getElementById('sifirlamaKutu').style.display = 'none';
+    kodEl.value = '';
+    parEl.value = '';
+  }, 1500);
+}
+
 
 async function girisYap(){
   try{
