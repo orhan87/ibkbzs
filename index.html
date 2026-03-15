@@ -2228,6 +2228,7 @@ function madde10Goster(e){
 
 function sayfaPdfIndir(){
   const simdi = new Date().toLocaleString('tr-TR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const _aktifLogo = (function(){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); return _lc.logo||_LOGO_URI; }catch(e){ return _LOGO_URI; } })();
 
   // Form bilgilerini topla
   const beyanname = document.getElementById('beyanname').value || '—';
@@ -2330,7 +2331,7 @@ td.sureok { font-weight: 700; color: #047857; background: #ecfdf5; }
 </style>
 </head><body>
 <div class="pdf-header">
-  <div style="display:flex;align-items:center;gap:12px;"><img src="${_LOGO_URI}" alt="gövdag" style="height:22px;width:auto;"><h1>İBKB — İhracat Bedeli Kabul Belgesi Hesaplaması</h1></div>
+  <div style="display:flex;align-items:center;gap:12px;"><img src="${_aktifLogo}" alt="gövdag" style="height:22px;width:auto;"><h1>İBKB — İhracat Bedeli Kabul Belgesi Hesaplaması</h1></div>
   <span>${simdi}</span>
 </div>
 <div class="pdf-bilgi">
@@ -2368,6 +2369,7 @@ ${resultHtml}
 function pdfIndir(){
   if(sorguGecmisi.length === 0) return;
   const simdi = new Date().toLocaleString('tr-TR');
+  const _aktifLogo2 = (function(){ try{ var _lc2=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); return _lc2.logo||_LOGO_URI; }catch(e){ return _LOGO_URI; } })();
   const sorgular = sorguGecmisi.filter(q=>q&&q.ulke).slice().reverse();
 
   const adimDeger = (q, anahtar) => {
@@ -2434,7 +2436,7 @@ function pdfIndir(){
     '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
   ].join('\n');
 
-  const baslik = '<div class="rpt-header"><div style="display:flex;align-items:center;gap:10px;"><img src="'+_LOGO_URI+'" alt="gövdag" style="height:20px;width:auto;"><h1>İBKB SORGULAMA RAPORU</h1></div>'
+  const baslik = '<div class="rpt-header"><div style="display:flex;align-items:center;gap:10px;"><img src="'+_aktifLogo2+'" alt="gövdag" style="height:20px;width:auto;"><h1>İBKB SORGULAMA RAPORU</h1></div>'
     + '<span>Olu\u015fturulma: ' + simdi + ' &nbsp;|&nbsp; Toplam: ' + sorgular.length + ' sorgu</span></div>';
 
   const thead = '<thead><tr>'
