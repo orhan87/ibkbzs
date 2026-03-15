@@ -1228,7 +1228,28 @@ function cikisYap(){
 }
 
 // ─── BAŞLAT ──────────────────────────────────────────────────────────────────
-function baslat(){
+async function baslat(){
+  // Önce Supabase'den güncel config çek, localStorage'a yaz
+  try{
+    const _br = await fetch(_SC_URL + '?select=id,value', {
+      headers: {'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC}
+    });
+    if(_br.ok){
+      const _brows = await _br.json();
+      if(Array.isArray(_brows) && _brows.length > 0){
+        const _bcfg = depoyuYukle() || {};
+        _brows.forEach(function(row){
+          var _v = row.value;
+          try{ _v = JSON.parse(row.value); }catch(e){}
+          _bcfg[row.id] = _v;
+        });
+        depoyaKaydet(_bcfg);
+        // Parola sync
+        if(_bcfg.parola) localStorage.setItem('ibkb_parola', _bcfg.parola);
+      }
+    }
+  }catch(e){ console.warn('[baslat sync]', e.message); }
+
   const cfg = depoyuYukle();
   ulkeler = JSON.parse(JSON.stringify((cfg && cfg.ulkeler && cfg.ulkeler.length>0) ? cfg.ulkeler : VARSAYILAN_ULKELER));
   ulkeler.sort((a,b)=>a.a.localeCompare(b.a,'tr'));
