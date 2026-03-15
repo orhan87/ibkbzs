@@ -1131,7 +1131,7 @@ function bfDurumAl(){
 function bfKaydet(d){ localStorage.setItem(BF_KEY, JSON.stringify(d)); }
 function bfSifirla(){ localStorage.removeItem(BF_KEY); }
 
-function girisYap(){
+async function girisYap(){
   try{
     const errEl = document.getElementById('loginErr');
     const btn   = document.querySelector('#loginScreen button');
@@ -1163,6 +1163,20 @@ function girisYap(){
       }, 10000);
       return;
     }
+
+    // Supabase'den güncel parolayı çek (yoksa localStorage'daki kullan)
+    btn.disabled = true;
+    try {
+      const _pr = await fetch(_SC_URL + '?id=eq.parola&select=value&limit=1', {
+        headers: { 'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC }
+      });
+      if(_pr.ok) {
+        const _pd = await _pr.json();
+        if(_pd && _pd[0] && _pd[0].value) {
+          localStorage.setItem('ibkb_parola', _pd[0].value);
+        }
+      }
+    } catch(e) {} finally { btn.disabled = false; }
 
     const p = inp.value;
     if(p === mevcutParolaAl()){
