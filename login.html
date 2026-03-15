@@ -1049,6 +1049,27 @@ async function girisYap(){
           if(_lep && _lm.loginEpostaPlaceholder) _lep.placeholder = _lm.loginEpostaPlaceholder;
           var _lft = document.getElementById('loginFooterMetin');
           if(_lft && _lm.loginFooter) _lft.textContent = _lm.loginFooter;
+          // Fiyat kartını güncelle
+          var _fw = document.getElementById('fiyatKartWrap');
+          if(_fw){
+            var _fGoster = _lm.fiyatGoster !== 'hayir';
+            if(!_fGoster){ _fw.innerHTML = ''; }
+            else{
+              var _fTutar  = _lm.fiyatTutar  || '1.000 TL';
+              var _fSure   = _lm.fiyatSure   || '1 Yıllık Lisans';
+              var _fKdv    = _lm.fiyatKdvDahil !== 'hayir';
+              var _fBadge  = _lm.fiyatBadge  || '';
+              _fw.innerHTML =
+                '<div class="fiyat-kart">'
+                + '<div class="fiyat-kart-ust">'
+                + '<span class="fiyat-label">Lisans Bedeli</span>'
+                + (_fBadge ? '<span class="fiyat-badge">'+_fBadge+'</span>' : '')
+                + '</div>'
+                + '<div class="fiyat-tutar">'+_fTutar+'</div>'
+                + '<div class="fiyat-alt">'+_fSure+(_fKdv ? ' &nbsp;·&nbsp; KDV Dahil' : '')+'</div>'
+                + '</div>';
+            }
+          }
         }
         // Bakım modu
         if(_lcfg.bakim && _lcfg.bakim.aktif){
