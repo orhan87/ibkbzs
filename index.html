@@ -79,13 +79,18 @@ if(!sessionStorage.getItem('govdag_token')){
             var _fl = document.querySelector('link[rel="icon"]');
             if(_fl) _fl.href = _cfg.favicon;
           }
-          // Sabitler
+          // Sabitler - tüm alanları güncelle
           if(_cfg.sabitler){
-            if(typeof _cfg.sabitler.tcmb !== 'undefined') TCMB = _cfg.sabitler.tcmb / 100;
-            if(typeof _cfg.sabitler.esik !== 'undefined') ESIK = _cfg.sabitler.esik;
-            if(typeof _cfg.sabitler.gun  !== 'undefined') GUN  = _cfg.sabitler.gun;
-            if(_cfg.sabitler.ek3oran !== undefined) DESTEK = _cfg.sabitler.ek3oran / 100;
-            if(_cfg.sabitler['destek-son']) DESTEK_SON = _cfg.sabitler['destek-son'];
+            if(typeof _cfg.sabitler.tcmb      !== 'undefined') TCMB       = _cfg.sabitler.tcmb / 100;
+            if(typeof _cfg.sabitler.esik      !== 'undefined') ESIK       = _cfg.sabitler.esik;
+            if(typeof _cfg.sabitler.gun       !== 'undefined') GUN        = _cfg.sabitler.gun;
+            if(typeof _cfg.sabitler.ek3oran   !== 'undefined') DESTEK     = _cfg.sabitler.ek3oran / 100;
+            if(_cfg.sabitler.destekSon)                        DESTEK_SON = _cfg.sabitler.destekSon;
+            if(typeof _cfg.sabitler.demoLimit !== 'undefined') window._DEMO_LIMIT = _cfg.sabitler.demoLimit;
+          }
+          // Ulkeler
+          if(_cfg.ulkeler && Array.isArray(_cfg.ulkeler) && _cfg.ulkeler.length > 0){
+            U = _cfg.ulkeler;
           }
           // Kurlar
           if(_cfg.kurlar){
@@ -1009,7 +1014,7 @@ let KUR={USD:1,EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
 const KATLBL={std:'Standart',ek2:'EK-2 Muaf',ek3:'EK-3 %50',sb_ihracat:'Serbest Bölgeye İhracat',sb_yerlesik:'Serbest Bölgeden İhracat',ozel:'Özel Md.4/4',kktc:'KKTC'};
 
 // ─── ÜLKE VERİTABANI — tüm BM üyesi ülkeler Türkçe ─────────────────────────
-const U=[
+let U=[
   // EK-2 (33)
   {a:"Afganistan",k:"ek2"},{a:"Angola",k:"ek2"},{a:"Belarus",k:"ek2"},
   {a:"Benin",k:"ek2"},{a:"Cibuti",k:"ek2"},{a:"Demokratik Kongo Cumhuriyeti",k:"ek2"},
@@ -1437,7 +1442,7 @@ async function hesapla(){
         const kulTip = uMeta.tip || localNot.tip || '';
         if(kulTip === 'demo' && userId){
           const cfg2 = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-          const DEMO_LIMIT = (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
+          const DEMO_LIMIT = window._DEMO_LIMIT || (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
           const rSorgu = await fetch(SB_URL + '/rest/v1/sorgular?user_id=eq.' + userId + '&select=id', {
             headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + token}
           });
@@ -1829,7 +1834,7 @@ async function demoBilgiGoster(){
     const userId = jwtUserId(token);
     if(!userId) return;
     const cfg2 = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-    const DEMO_LIMIT = (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
+    const DEMO_LIMIT = window._DEMO_LIMIT || (cfg2.sabitler && cfg2.sabitler.demoLimit) || 5;
     const rSorgu = await fetch(SB_URL + '/rest/v1/sorgular?user_id=eq.' + userId + '&select=id', {
       headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + token}
     });
