@@ -98,7 +98,7 @@ if(!sessionStorage.getItem('govdag_token')){
               if(_cfg.kurlar[k]) KUR[k] = _cfg.kurlar[k];
             });
           }
-          // Metinler
+          // Metinler - tüm alanları güncelle
           if(_cfg.metinler){
             var _m = _cfg.metinler;
             if(_m.siteBaslik) document.title = _m.siteBaslik;
@@ -108,6 +108,21 @@ if(!sessionStorage.getItem('govdag_token')){
             if(_ha && _m.heroAlt){ _ha.textContent = _m.heroAlt; _ha.style.display = 'block'; }
             var _fy = document.getElementById('footerYaziEl');
             if(_fy && _m.footerYazi) _fy.textContent = _m.footerYazi;
+            var _tn = document.getElementById('tarihNotEl');
+            if(_tn && _m.tarihNot) _tn.innerHTML = _m.tarihNot;
+            var _bn = document.getElementById('bedelNotEl');
+            if(_bn && _m.bedelNot) _bn.innerHTML = _m.bedelNot;
+            var _un = document.getElementById('ulkeNotEl');
+            if(_un && _m.ulkeNot) _un.innerHTML = _m.ulkeNot;
+            // İletişim linkleri
+            var _il = document.getElementById('iletisimLinks');
+            if(_il && (_m.iletisimEmail || _m.iletisimTel)){
+              var _ep = _m.iletisimEmail || 'destek@ibkbsorgulama.com';
+              var _tel = _m.iletisimTel || '+90 533 198 70 33';
+              var _telR = _tel.replace(/[^+0-9]/g,'');
+              _il.innerHTML = '<a href="mailto:'+_ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;">📧 '+_ep+'</a>'
+                + '<a href="tel:'+_telR+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;">📞 '+_tel+'</a>';
+            }
           }
           // Duyuru
           if(_cfg.duyuru && _cfg.duyuru.aktif && _cfg.duyuru.metin){

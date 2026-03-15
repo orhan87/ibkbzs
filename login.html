@@ -1049,6 +1049,21 @@ async function girisYap(){
           if(_lep && _lm.loginEpostaPlaceholder) _lep.placeholder = _lm.loginEpostaPlaceholder;
           var _lft = document.getElementById('loginFooterMetin');
           if(_lft && _lm.loginFooter) _lft.textContent = _lm.loginFooter;
+          // Ek login alanları
+          var _llbl = document.getElementById('loginEpostaLabel');
+          if(_llbl && _lm.loginEpostaLabel) _llbl.textContent = _lm.loginEpostaLabel;
+          var _lplbl = document.getElementById('loginParolaLabel');
+          if(_lplbl && _lm.loginParolaLabel) _lplbl.textContent = _lm.loginParolaLabel;
+          // Tanıtım kutusu
+          var _ltan = document.getElementById('tanitimKutu');
+          if(_ltan){
+            if(_lm.tanitimGoster === 'hayir'){ _ltan.style.display='none'; }
+            else{ _ltan.style.display=''; }
+            if(_lm.tanitimMetin){
+              var _ltanP = _ltan.querySelector('p,div');
+              if(_ltanP) _ltanP.textContent = _lm.tanitimMetin;
+            }
+          }
           // Fiyat kartını güncelle
           var _fw = document.getElementById('fiyatKartWrap');
           if(_fw){
