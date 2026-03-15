@@ -179,7 +179,7 @@
       <a href="javascript:void(0)" onclick="parolaSifirlaBaslat()" style="font-size:.8rem;color:#64748b;text-decoration:none;border-bottom:1px dashed #94a3b8;">🔑 Parolamı Unuttum</a>
     </p>
     <div id="sifirlamaKutu" style="display:none;margin-top:14px;padding:14px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;">
-      <p style="font-size:.8rem;color:#0369a1;margin-bottom:10px;">📧 <strong>orhankelahmet@gmail.com</strong> adresine doğrulama kodu gönderildi.</p>
+      <p style="font-size:.8rem;color:#0369a1;margin-bottom:10px;">📧 <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af5e8f2fbf4f1fff6fbf2f7ffeedafdf7fbf3f6b4f9f5f7">[email&#160;protected]</a></strong> adresine doğrulama kodu gönderildi.</p>
       <input type="text" id="sifirlamaKod" placeholder="6 haneli kod" maxlength="6"
         style="width:100%;padding:9px 12px;border:1.5px solid #bae6fd;border-radius:7px;font-size:.9rem;margin-bottom:8px;box-sizing:border-box;letter-spacing:.2em;text-align:center;">
       <input type="password" id="sifirlamaYeniParola" placeholder="Yeni parola (en az 6 karakter)"
@@ -974,7 +974,7 @@
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ─── VARSAYILAN PAROLA ──────────────────────────────────────────────────────
 const VARSAYILAN_PAROLA = 'ibkb2025';
 
@@ -1159,25 +1159,13 @@ async function parolaSifirlaBaslat(){
   kutu.style.display = 'block';
 
   try{
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-reset-code', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer re_7nWzHa4U_Ab3qut7vhayNoDNxKMP6c8z5',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'
       },
-      body: JSON.stringify({
-        from: 'gövdağ Admin <onboarding@resend.dev>',
-        to: ['orhankelahmet@gmail.com'],
-        subject: 'Admin Parola Sıfırlama Kodu',
-        html: '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;">'
-          + '<h2 style="color:#1a2540;margin-bottom:8px;">🔑 Parola Sıfırlama</h2>'
-          + '<p style="color:#4a5568;margin-bottom:24px;">ibkbsorgulama.com admin paneli için sıfırlama kodu:</p>'
-          + '<div style="background:#f0f9ff;border:2px solid #0369a1;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">'
-          + '<span style="font-size:2.5rem;font-weight:800;letter-spacing:.3em;color:#0369a1;">' + _sifirlamaKodu + '</span>'
-          + '</div>'
-          + '<p style="color:#64748b;font-size:.85rem;">Bu kod 10 dakika geçerlidir. Siz talep etmediyseniz dikkate almayın.</p>'
-          + '</div>'
-      })
+      body: JSON.stringify({ code: _sifirlamaKodu })
     });
     if(res.ok){
       msg.textContent = '✅ Kod gönderildi. E-postanızı kontrol edin.';
@@ -3453,11 +3441,4 @@ async function istatistikYukle(){
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(function(){ /* PWA kayıt başarılı */ })
-        .catch(function(){ /* SW dosyası yok veya erişilemiyor - sessizce geç */ });
-    });
-  }
-</script>
-</body>
-</html>
+      navig
