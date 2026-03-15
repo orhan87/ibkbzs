@@ -1245,7 +1245,13 @@ async function baslat(){
         });
         depoyaKaydet(_bcfg);
         // Parola sync
-        if(_bcfg.parola) localStorage.setItem('ibkb_parola', _bcfg.parola);
+        if(_bcfg.parola) {
+          localStorage.setItem('ibkb_parola', _bcfg.parola);
+        } else {
+          // Supabase'de parola yok - mevcut parolayı kaydet
+          var _mevcutP = localStorage.getItem('ibkb_parola') || 'ibkb2025';
+          scKaydet('parola', _mevcutP);
+        }
       }
     }
   }catch(e){ console.warn('[baslat sync]', e.message); }
