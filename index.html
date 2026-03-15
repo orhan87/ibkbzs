@@ -79,10 +79,11 @@ if(!sessionStorage.getItem('govdag_token')){
             var _fl = document.querySelector('link[rel="icon"]');
             if(_fl) _fl.href = _cfg.favicon;
           }
-          // Sabitler
+          // Sabitler - let değişkenlerini güncelle
           if(_cfg.sabitler){
-            if(typeof _cfg.sabitler.tcmb !== 'undefined') window.TCMB = _cfg.sabitler.tcmb / 100;
-            if(typeof _cfg.sabitler.esik !== 'undefined') window.ESIK = _cfg.sabitler.esik;
+            if(typeof _cfg.sabitler.tcmb !== 'undefined') TCMB = _cfg.sabitler.tcmb / 100;
+            if(typeof _cfg.sabitler.esik !== 'undefined') ESIK = _cfg.sabitler.esik;
+            if(typeof _cfg.sabitler.gun  !== 'undefined') GUN  = _cfg.sabitler.gun;
           }
           // Duyuru
           if(_cfg.duyuru && _cfg.duyuru.aktif && _cfg.duyuru.metin){
@@ -971,12 +972,12 @@ function cfgYukle(){
 const _cfg   = cfgYukle();
 const _sab   = (_cfg && _cfg.sabitler) || {};
 const _dest  = (_cfg && _cfg.destek)   || {};
-const TCMB   = (_sab.tcmb   || 35) / 100;
-const ESIK   = _sab.esik   || 15000;
-const GUN    = _sab.gun    || 180;
+let TCMB   = (_sab.tcmb   || 35) / 100;
+let ESIK   = _sab.esik   || 15000;
+let GUN    = _sab.gun    || 180;
 // Döviz dönüşüm desteği
-const DESTEK     = (_dest.oran  !== undefined ? _dest.oran  : 3) / 100;
-const DESTEK_SON = _dest.son || '30 Nisan 2026';
+let DESTEK     = (_dest.oran  !== undefined ? _dest.oran  : 3) / 100;
+let DESTEK_SON = _dest.son || '30 Nisan 2026';
 const KUR={USD:1,EUR:1.09,GBP:1.27,JPY:0.0067,CHF:1.11,TRY:0.031,OTHER:1};
 const KATLBL={std:'Standart',ek2:'EK-2 Muaf',ek3:'EK-3 %50',sb_ihracat:'Serbest Bölgeye İhracat',sb_yerlesik:'Serbest Bölgeden İhracat',ozel:'Özel Md.4/4',kktc:'KKTC'};
 
