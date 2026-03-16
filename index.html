@@ -29,6 +29,47 @@ if(!sessionStorage.getItem('govdag_token')){
   document.addEventListener('DOMContentLoaded',function(){
     document.body.style.opacity='1';
     oturumSayacBaslat(); // Oturum sayacını başlat
+    // URL parametrelerinden hesaplama formu doldur (İhracat Takip'ten gelen)
+    try{
+      const _up = new URLSearchParams(window.location.search);
+      if(_up.has('beyanname') || _up.has('tarih') || _up.has('bedel')){
+        if(_up.get('beyanname')){
+          var _bEl = document.getElementById('beyanname');
+          if(_bEl) _bEl.value = _up.get('beyanname');
+        }
+        if(_up.get('tarih')){
+          var _tEl = document.getElementById('tarih');
+          if(_tEl) _tEl.value = _up.get('tarih');
+        }
+        if(_up.get('bedel')){
+          var _bdEl = document.getElementById('bedel');
+          if(_bdEl){ _bdEl.value = _up.get('bedel'); if(typeof sayiFormatla==='function') sayiFormatla(_bdEl); }
+        }
+        if(_up.get('para')){
+          var _paEl = document.getElementById('para');
+          if(_paEl){ _paEl.value = _up.get('para'); if(typeof paraSec==='function') paraSec(_up.get('para')); }
+        }
+        if(_up.get('ulke')){
+          // Ülkeyi listeden seç
+          setTimeout(function(){
+            if(typeof U !== 'undefined'){
+              var _ulkeBul = U.find(function(u){ return u.a === _up.get('ulke'); });
+              if(_ulkeBul && typeof ulkeSec === 'function'){
+                ulkeSec(_ulkeBul.a, _ulkeBul.k);
+                // Ülke adını göster
+                var _uAdEl = document.getElementById('ulkeAd');
+                if(_uAdEl) _uAdEl.textContent = _ulkeBul.a;
+                var _uKatEl = document.getElementById('ulkeKat');
+                if(_uKatEl) _uKatEl.textContent = _ulkeBul.k;
+              }
+            }
+          }, 300);
+        }
+        // URL'i temizle (geri tuşu sorunu olmasın)
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }catch(e){}
+
     // Email göster
     var email = sessionStorage.getItem('govdag_email') || '';
     var em = document.getElementById('kullanicEmail');

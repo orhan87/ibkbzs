@@ -272,7 +272,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <div class="form-grid">
           <div class="fg">
             <label>Beyanname No</label>
-            <input type="text" id="f-beyanname" placeholder="23000000EX123456">
+            <input type="text" id="f-beyanname" placeholder="23000000EX123456" required>
           </div>
           <div class="fg">
             <label>İhracat Tarihi *</label>
@@ -280,7 +280,206 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           </div>
           <div class="fg">
             <label>İhracat Ülkesi *</label>
-            <input type="text" id="f-ulke" placeholder="Almanya" required>
+            <select id="f-ulke" required>
+              <option value="">— Ülke seçin —</option>
+<option value="Afganistan" data-k="ek2">Afganistan</option>
+<option value="Almanya" data-k="std">Almanya</option>
+<option value="Amerika Birleşik Devletleri" data-k="std">Amerika Birleşik Devletleri</option>
+<option value="Andorra" data-k="std">Andorra</option>
+<option value="Angola" data-k="ek2">Angola</option>
+<option value="Antigua ve Barbuda" data-k="std">Antigua ve Barbuda</option>
+<option value="Arjantin" data-k="std">Arjantin</option>
+<option value="Arnavutluk" data-k="std">Arnavutluk</option>
+<option value="Avustralya" data-k="std">Avustralya</option>
+<option value="Avusturya" data-k="std">Avusturya</option>
+<option value="Azerbaycan" data-k="ek3">Azerbaycan</option>
+<option value="Bahamalar" data-k="std">Bahamalar</option>
+<option value="Bahreyn" data-k="std">Bahreyn</option>
+<option value="Bangladeş" data-k="std">Bangladeş</option>
+<option value="Barbados" data-k="std">Barbados</option>
+<option value="Belarus" data-k="ek2">Belarus</option>
+<option value="Belize" data-k="std">Belize</option>
+<option value="Belçika" data-k="std">Belçika</option>
+<option value="Benin" data-k="ek2">Benin</option>
+<option value="Bhutan" data-k="std">Bhutan</option>
+<option value="Birleşik Arap Emirlikleri" data-k="std">Birleşik Arap Emirlikleri</option>
+<option value="Bolivya" data-k="std">Bolivya</option>
+<option value="Bosna Hersek" data-k="std">Bosna Hersek</option>
+<option value="Botsvana" data-k="std">Botsvana</option>
+<option value="Brezilya" data-k="std">Brezilya</option>
+<option value="Brunei" data-k="std">Brunei</option>
+<option value="Bulgaristan" data-k="std">Bulgaristan</option>
+<option value="Burkina Faso" data-k="std">Burkina Faso</option>
+<option value="Burundi" data-k="std">Burundi</option>
+<option value="Cabo Verde" data-k="std">Cabo Verde</option>
+<option value="Cezayir" data-k="ek3">Cezayir</option>
+<option value="Cibuti" data-k="ek2">Cibuti</option>
+<option value="Danimarka" data-k="std">Danimarka</option>
+<option value="Demokratik Kongo Cumhuriyeti" data-k="ek2">Demokratik Kongo Cumhuriyeti</option>
+<option value="Diğer Ülke" data-k="std">Diğer Ülke</option>
+<option value="Dominik Cumhuriyeti" data-k="std">Dominik Cumhuriyeti</option>
+<option value="Dominika" data-k="std">Dominika</option>
+<option value="Doğu Timor" data-k="std">Doğu Timor</option>
+<option value="Ekvador" data-k="std">Ekvador</option>
+<option value="Ekvator Ginesi" data-k="std">Ekvator Ginesi</option>
+<option value="El Salvador" data-k="std">El Salvador</option>
+<option value="Endonezya" data-k="std">Endonezya</option>
+<option value="Eritre" data-k="std">Eritre</option>
+<option value="Ermenistan" data-k="std">Ermenistan</option>
+<option value="Estonya" data-k="std">Estonya</option>
+<option value="Esvatini" data-k="std">Esvatini</option>
+<option value="Etiyopya" data-k="ek2">Etiyopya</option>
+<option value="Fas" data-k="ek3">Fas</option>
+<option value="Fiji" data-k="std">Fiji</option>
+<option value="Fildişi Sahili" data-k="ek2">Fildişi Sahili</option>
+<option value="Filipinler" data-k="std">Filipinler</option>
+<option value="Filistin" data-k="ek2">Filistin</option>
+<option value="Finlandiya" data-k="std">Finlandiya</option>
+<option value="Fransa" data-k="std">Fransa</option>
+<option value="Gabon" data-k="ek2">Gabon</option>
+<option value="Gambiya" data-k="std">Gambiya</option>
+<option value="Gana" data-k="ek2">Gana</option>
+<option value="Gine" data-k="ek2">Gine</option>
+<option value="Gine Bissau" data-k="std">Gine Bissau</option>
+<option value="Grenada" data-k="std">Grenada</option>
+<option value="Guatemala" data-k="std">Guatemala</option>
+<option value="Guyana" data-k="std">Guyana</option>
+<option value="Güney Afrika" data-k="std">Güney Afrika</option>
+<option value="Güney Sudan" data-k="ek2">Güney Sudan</option>
+<option value="Gürcistan" data-k="std">Gürcistan</option>
+<option value="Haiti" data-k="std">Haiti</option>
+<option value="Hindistan" data-k="std">Hindistan</option>
+<option value="Hollanda" data-k="std">Hollanda</option>
+<option value="Honduras" data-k="std">Honduras</option>
+<option value="Hong Kong" data-k="std">Hong Kong</option>
+<option value="Hırvatistan" data-k="std">Hırvatistan</option>
+<option value="Irak" data-k="ozel">Irak</option>
+<option value="Jamaika" data-k="std">Jamaika</option>
+<option value="Japonya" data-k="std">Japonya</option>
+<option value="KKTC" data-k="kktc">KKTC</option>
+<option value="Kamboçya" data-k="std">Kamboçya</option>
+<option value="Kamerun" data-k="ek2">Kamerun</option>
+<option value="Kanada" data-k="std">Kanada</option>
+<option value="Karadağ" data-k="std">Karadağ</option>
+<option value="Katar" data-k="std">Katar</option>
+<option value="Kazakistan" data-k="ek3">Kazakistan</option>
+<option value="Kenya" data-k="ek2">Kenya</option>
+<option value="Kiribati" data-k="std">Kiribati</option>
+<option value="Kolombiya" data-k="std">Kolombiya</option>
+<option value="Komorlar" data-k="std">Komorlar</option>
+<option value="Kongo Cumhuriyeti" data-k="ek2">Kongo Cumhuriyeti</option>
+<option value="Kosova" data-k="std">Kosova</option>
+<option value="Kosta Rika" data-k="std">Kosta Rika</option>
+<option value="Kuveyt" data-k="std">Kuveyt</option>
+<option value="Kuzey Kore" data-k="ek2">Kuzey Kore</option>
+<option value="Kuzey Makedonya" data-k="std">Kuzey Makedonya</option>
+<option value="Küba" data-k="ek2">Küba</option>
+<option value="Kıbrıs" data-k="std">Kıbrıs</option>
+<option value="Kırgızistan" data-k="ek2">Kırgızistan</option>
+<option value="Laos" data-k="std">Laos</option>
+<option value="Lesoto" data-k="std">Lesoto</option>
+<option value="Letonya" data-k="std">Letonya</option>
+<option value="Liberya" data-k="ek2">Liberya</option>
+<option value="Libya" data-k="ozel">Libya</option>
+<option value="Liechtenstein" data-k="std">Liechtenstein</option>
+<option value="Litvanya" data-k="std">Litvanya</option>
+<option value="Lübnan" data-k="ek2">Lübnan</option>
+<option value="Lüksemburg" data-k="std">Lüksemburg</option>
+<option value="Macaristan" data-k="std">Macaristan</option>
+<option value="Madagaskar" data-k="std">Madagaskar</option>
+<option value="Malavi" data-k="std">Malavi</option>
+<option value="Maldivler" data-k="std">Maldivler</option>
+<option value="Malezya" data-k="std">Malezya</option>
+<option value="Mali" data-k="ek2">Mali</option>
+<option value="Malta" data-k="std">Malta</option>
+<option value="Marshall Adaları" data-k="std">Marshall Adaları</option>
+<option value="Meksika" data-k="std">Meksika</option>
+<option value="Mikronezya" data-k="std">Mikronezya</option>
+<option value="Moldova" data-k="ek2">Moldova</option>
+<option value="Moritanya" data-k="ozel">Moritanya</option>
+<option value="Mozambik" data-k="std">Mozambik</option>
+<option value="Moğolistan" data-k="std">Moğolistan</option>
+<option value="Myanmar" data-k="std">Myanmar</option>
+<option value="Mısır" data-k="std">Mısır</option>
+<option value="Namibya" data-k="std">Namibya</option>
+<option value="Nauru" data-k="std">Nauru</option>
+<option value="Nepal" data-k="std">Nepal</option>
+<option value="Nijer" data-k="std">Nijer</option>
+<option value="Nijerya" data-k="ek2">Nijerya</option>
+<option value="Nikaragua" data-k="std">Nikaragua</option>
+<option value="Norveç" data-k="std">Norveç</option>
+<option value="Orta Afrika Cumhuriyeti" data-k="std">Orta Afrika Cumhuriyeti</option>
+<option value="Pakistan" data-k="std">Pakistan</option>
+<option value="Palau" data-k="std">Palau</option>
+<option value="Panama" data-k="std">Panama</option>
+<option value="Papua Yeni Gine" data-k="std">Papua Yeni Gine</option>
+<option value="Paraguay" data-k="std">Paraguay</option>
+<option value="Peru" data-k="std">Peru</option>
+<option value="Polonya" data-k="std">Polonya</option>
+<option value="Portekiz" data-k="std">Portekiz</option>
+<option value="Romanya" data-k="std">Romanya</option>
+<option value="Ruanda" data-k="std">Ruanda</option>
+<option value="Rusya" data-k="std">Rusya</option>
+<option value="Saint Kitts ve Nevis" data-k="std">Saint Kitts ve Nevis</option>
+<option value="Saint Lucia" data-k="std">Saint Lucia</option>
+<option value="Saint Vincent ve Grenadinler" data-k="std">Saint Vincent ve Grenadinler</option>
+<option value="Samoa" data-k="std">Samoa</option>
+<option value="San Marino" data-k="std">San Marino</option>
+<option value="Sao Tome ve Principe" data-k="std">Sao Tome ve Principe</option>
+<option value="Senegal" data-k="ek2">Senegal</option>
+<option value="Serbest Bölgeden İhracat" data-k="sb_yerlesik">Serbest Bölgeden İhracat</option>
+<option value="Serbest Bölgeye İhracat" data-k="sb_ihracat">Serbest Bölgeye İhracat</option>
+<option value="Sierra Leone" data-k="std">Sierra Leone</option>
+<option value="Singapur" data-k="std">Singapur</option>
+<option value="Slovakya" data-k="std">Slovakya</option>
+<option value="Slovenya" data-k="std">Slovenya</option>
+<option value="Solomon Adaları" data-k="std">Solomon Adaları</option>
+<option value="Somali" data-k="ek2">Somali</option>
+<option value="Sri Lanka" data-k="std">Sri Lanka</option>
+<option value="Sudan" data-k="ek2">Sudan</option>
+<option value="Surinam" data-k="std">Surinam</option>
+<option value="Suriye" data-k="ek2">Suriye</option>
+<option value="Suudi Arabistan" data-k="std">Suudi Arabistan</option>
+<option value="Sırbistan" data-k="std">Sırbistan</option>
+<option value="Tacikistan" data-k="ek2">Tacikistan</option>
+<option value="Tanzanya" data-k="ek2">Tanzanya</option>
+<option value="Tayland" data-k="std">Tayland</option>
+<option value="Tayvan" data-k="std">Tayvan</option>
+<option value="Togo" data-k="std">Togo</option>
+<option value="Tonga" data-k="std">Tonga</option>
+<option value="Trinidad ve Tobago" data-k="std">Trinidad ve Tobago</option>
+<option value="Tunus" data-k="ek3">Tunus</option>
+<option value="Tuvalu" data-k="std">Tuvalu</option>
+<option value="Türkiye" data-k="std">Türkiye</option>
+<option value="Türkmenistan" data-k="ek3">Türkmenistan</option>
+<option value="Uganda" data-k="std">Uganda</option>
+<option value="Ukrayna" data-k="ek3">Ukrayna</option>
+<option value="Umman" data-k="std">Umman</option>
+<option value="Uruguay" data-k="std">Uruguay</option>
+<option value="Vanuatu" data-k="std">Vanuatu</option>
+<option value="Vatican" data-k="std">Vatican</option>
+<option value="Venezuela" data-k="ek2">Venezuela</option>
+<option value="Vietnam" data-k="std">Vietnam</option>
+<option value="Yemen" data-k="std">Yemen</option>
+<option value="Yeni Zelanda" data-k="std">Yeni Zelanda</option>
+<option value="Yunanistan" data-k="std">Yunanistan</option>
+<option value="Zambiya" data-k="std">Zambiya</option>
+<option value="Zimbabwe" data-k="ek2">Zimbabwe</option>
+<option value="Çad" data-k="std">Çad</option>
+<option value="Çek Cumhuriyeti" data-k="std">Çek Cumhuriyeti</option>
+<option value="Çin" data-k="std">Çin</option>
+<option value="Özbekistan" data-k="ek3">Özbekistan</option>
+<option value="Ürdün" data-k="std">Ürdün</option>
+<option value="İngiltere" data-k="std">İngiltere</option>
+<option value="İran" data-k="ek2">İran</option>
+<option value="İrlanda" data-k="std">İrlanda</option>
+<option value="İspanya" data-k="std">İspanya</option>
+<option value="İsrail" data-k="std">İsrail</option>
+<option value="İsveç" data-k="std">İsveç</option>
+<option value="İsviçre" data-k="std">İsviçre</option>
+<option value="İtalya" data-k="std">İtalya</option>
+<option value="İzlanda" data-k="std">İzlanda</option>
+            </select>
           </div>
           <div class="fg">
             <label>Alıcı Firma</label>
@@ -288,11 +487,11 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           </div>
           <div class="fg">
             <label>İhracat Tutarı (USD)</label>
-            <input type="number" id="f-tutar-usd" placeholder="0.00" step="0.01" min="0">
+            <input type="text" id="f-tutar-usd" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
           </div>
           <div class="fg">
             <label>İhracat Tutarı (TL)</label>
-            <input type="number" id="f-tutar-tl" placeholder="0.00" step="0.01" min="0">
+            <input type="text" id="f-tutar-tl" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
           </div>
           <div class="fg" style="grid-column:1/-1;">
             <label>Notlar</label>
@@ -303,6 +502,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           <button type="submit" class="btn btn-primary">💾 Kaydet</button>
           <button type="button" class="btn btn-secondary" onclick="formTemizle()">✕ Temizle</button>
         </div>
+        <p id="tutarMsg" style="margin-top:6px;font-size:.8rem;color:var(--warn);display:none;"></p>
         <p id="formMsg" style="margin-top:10px;font-size:.82rem;display:none;"></p>
       </form>
     </div>
@@ -368,7 +568,206 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       </div>
       <div class="fg">
         <label>İhracat Ülkesi *</label>
-        <input type="text" id="d-ulke" required>
+        <select id="d-ulke" required>
+          <option value="">— Ülke seçin —</option>
+<option value="Afganistan" data-k="ek2">Afganistan</option>
+<option value="Almanya" data-k="std">Almanya</option>
+<option value="Amerika Birleşik Devletleri" data-k="std">Amerika Birleşik Devletleri</option>
+<option value="Andorra" data-k="std">Andorra</option>
+<option value="Angola" data-k="ek2">Angola</option>
+<option value="Antigua ve Barbuda" data-k="std">Antigua ve Barbuda</option>
+<option value="Arjantin" data-k="std">Arjantin</option>
+<option value="Arnavutluk" data-k="std">Arnavutluk</option>
+<option value="Avustralya" data-k="std">Avustralya</option>
+<option value="Avusturya" data-k="std">Avusturya</option>
+<option value="Azerbaycan" data-k="ek3">Azerbaycan</option>
+<option value="Bahamalar" data-k="std">Bahamalar</option>
+<option value="Bahreyn" data-k="std">Bahreyn</option>
+<option value="Bangladeş" data-k="std">Bangladeş</option>
+<option value="Barbados" data-k="std">Barbados</option>
+<option value="Belarus" data-k="ek2">Belarus</option>
+<option value="Belize" data-k="std">Belize</option>
+<option value="Belçika" data-k="std">Belçika</option>
+<option value="Benin" data-k="ek2">Benin</option>
+<option value="Bhutan" data-k="std">Bhutan</option>
+<option value="Birleşik Arap Emirlikleri" data-k="std">Birleşik Arap Emirlikleri</option>
+<option value="Bolivya" data-k="std">Bolivya</option>
+<option value="Bosna Hersek" data-k="std">Bosna Hersek</option>
+<option value="Botsvana" data-k="std">Botsvana</option>
+<option value="Brezilya" data-k="std">Brezilya</option>
+<option value="Brunei" data-k="std">Brunei</option>
+<option value="Bulgaristan" data-k="std">Bulgaristan</option>
+<option value="Burkina Faso" data-k="std">Burkina Faso</option>
+<option value="Burundi" data-k="std">Burundi</option>
+<option value="Cabo Verde" data-k="std">Cabo Verde</option>
+<option value="Cezayir" data-k="ek3">Cezayir</option>
+<option value="Cibuti" data-k="ek2">Cibuti</option>
+<option value="Danimarka" data-k="std">Danimarka</option>
+<option value="Demokratik Kongo Cumhuriyeti" data-k="ek2">Demokratik Kongo Cumhuriyeti</option>
+<option value="Diğer Ülke" data-k="std">Diğer Ülke</option>
+<option value="Dominik Cumhuriyeti" data-k="std">Dominik Cumhuriyeti</option>
+<option value="Dominika" data-k="std">Dominika</option>
+<option value="Doğu Timor" data-k="std">Doğu Timor</option>
+<option value="Ekvador" data-k="std">Ekvador</option>
+<option value="Ekvator Ginesi" data-k="std">Ekvator Ginesi</option>
+<option value="El Salvador" data-k="std">El Salvador</option>
+<option value="Endonezya" data-k="std">Endonezya</option>
+<option value="Eritre" data-k="std">Eritre</option>
+<option value="Ermenistan" data-k="std">Ermenistan</option>
+<option value="Estonya" data-k="std">Estonya</option>
+<option value="Esvatini" data-k="std">Esvatini</option>
+<option value="Etiyopya" data-k="ek2">Etiyopya</option>
+<option value="Fas" data-k="ek3">Fas</option>
+<option value="Fiji" data-k="std">Fiji</option>
+<option value="Fildişi Sahili" data-k="ek2">Fildişi Sahili</option>
+<option value="Filipinler" data-k="std">Filipinler</option>
+<option value="Filistin" data-k="ek2">Filistin</option>
+<option value="Finlandiya" data-k="std">Finlandiya</option>
+<option value="Fransa" data-k="std">Fransa</option>
+<option value="Gabon" data-k="ek2">Gabon</option>
+<option value="Gambiya" data-k="std">Gambiya</option>
+<option value="Gana" data-k="ek2">Gana</option>
+<option value="Gine" data-k="ek2">Gine</option>
+<option value="Gine Bissau" data-k="std">Gine Bissau</option>
+<option value="Grenada" data-k="std">Grenada</option>
+<option value="Guatemala" data-k="std">Guatemala</option>
+<option value="Guyana" data-k="std">Guyana</option>
+<option value="Güney Afrika" data-k="std">Güney Afrika</option>
+<option value="Güney Sudan" data-k="ek2">Güney Sudan</option>
+<option value="Gürcistan" data-k="std">Gürcistan</option>
+<option value="Haiti" data-k="std">Haiti</option>
+<option value="Hindistan" data-k="std">Hindistan</option>
+<option value="Hollanda" data-k="std">Hollanda</option>
+<option value="Honduras" data-k="std">Honduras</option>
+<option value="Hong Kong" data-k="std">Hong Kong</option>
+<option value="Hırvatistan" data-k="std">Hırvatistan</option>
+<option value="Irak" data-k="ozel">Irak</option>
+<option value="Jamaika" data-k="std">Jamaika</option>
+<option value="Japonya" data-k="std">Japonya</option>
+<option value="KKTC" data-k="kktc">KKTC</option>
+<option value="Kamboçya" data-k="std">Kamboçya</option>
+<option value="Kamerun" data-k="ek2">Kamerun</option>
+<option value="Kanada" data-k="std">Kanada</option>
+<option value="Karadağ" data-k="std">Karadağ</option>
+<option value="Katar" data-k="std">Katar</option>
+<option value="Kazakistan" data-k="ek3">Kazakistan</option>
+<option value="Kenya" data-k="ek2">Kenya</option>
+<option value="Kiribati" data-k="std">Kiribati</option>
+<option value="Kolombiya" data-k="std">Kolombiya</option>
+<option value="Komorlar" data-k="std">Komorlar</option>
+<option value="Kongo Cumhuriyeti" data-k="ek2">Kongo Cumhuriyeti</option>
+<option value="Kosova" data-k="std">Kosova</option>
+<option value="Kosta Rika" data-k="std">Kosta Rika</option>
+<option value="Kuveyt" data-k="std">Kuveyt</option>
+<option value="Kuzey Kore" data-k="ek2">Kuzey Kore</option>
+<option value="Kuzey Makedonya" data-k="std">Kuzey Makedonya</option>
+<option value="Küba" data-k="ek2">Küba</option>
+<option value="Kıbrıs" data-k="std">Kıbrıs</option>
+<option value="Kırgızistan" data-k="ek2">Kırgızistan</option>
+<option value="Laos" data-k="std">Laos</option>
+<option value="Lesoto" data-k="std">Lesoto</option>
+<option value="Letonya" data-k="std">Letonya</option>
+<option value="Liberya" data-k="ek2">Liberya</option>
+<option value="Libya" data-k="ozel">Libya</option>
+<option value="Liechtenstein" data-k="std">Liechtenstein</option>
+<option value="Litvanya" data-k="std">Litvanya</option>
+<option value="Lübnan" data-k="ek2">Lübnan</option>
+<option value="Lüksemburg" data-k="std">Lüksemburg</option>
+<option value="Macaristan" data-k="std">Macaristan</option>
+<option value="Madagaskar" data-k="std">Madagaskar</option>
+<option value="Malavi" data-k="std">Malavi</option>
+<option value="Maldivler" data-k="std">Maldivler</option>
+<option value="Malezya" data-k="std">Malezya</option>
+<option value="Mali" data-k="ek2">Mali</option>
+<option value="Malta" data-k="std">Malta</option>
+<option value="Marshall Adaları" data-k="std">Marshall Adaları</option>
+<option value="Meksika" data-k="std">Meksika</option>
+<option value="Mikronezya" data-k="std">Mikronezya</option>
+<option value="Moldova" data-k="ek2">Moldova</option>
+<option value="Moritanya" data-k="ozel">Moritanya</option>
+<option value="Mozambik" data-k="std">Mozambik</option>
+<option value="Moğolistan" data-k="std">Moğolistan</option>
+<option value="Myanmar" data-k="std">Myanmar</option>
+<option value="Mısır" data-k="std">Mısır</option>
+<option value="Namibya" data-k="std">Namibya</option>
+<option value="Nauru" data-k="std">Nauru</option>
+<option value="Nepal" data-k="std">Nepal</option>
+<option value="Nijer" data-k="std">Nijer</option>
+<option value="Nijerya" data-k="ek2">Nijerya</option>
+<option value="Nikaragua" data-k="std">Nikaragua</option>
+<option value="Norveç" data-k="std">Norveç</option>
+<option value="Orta Afrika Cumhuriyeti" data-k="std">Orta Afrika Cumhuriyeti</option>
+<option value="Pakistan" data-k="std">Pakistan</option>
+<option value="Palau" data-k="std">Palau</option>
+<option value="Panama" data-k="std">Panama</option>
+<option value="Papua Yeni Gine" data-k="std">Papua Yeni Gine</option>
+<option value="Paraguay" data-k="std">Paraguay</option>
+<option value="Peru" data-k="std">Peru</option>
+<option value="Polonya" data-k="std">Polonya</option>
+<option value="Portekiz" data-k="std">Portekiz</option>
+<option value="Romanya" data-k="std">Romanya</option>
+<option value="Ruanda" data-k="std">Ruanda</option>
+<option value="Rusya" data-k="std">Rusya</option>
+<option value="Saint Kitts ve Nevis" data-k="std">Saint Kitts ve Nevis</option>
+<option value="Saint Lucia" data-k="std">Saint Lucia</option>
+<option value="Saint Vincent ve Grenadinler" data-k="std">Saint Vincent ve Grenadinler</option>
+<option value="Samoa" data-k="std">Samoa</option>
+<option value="San Marino" data-k="std">San Marino</option>
+<option value="Sao Tome ve Principe" data-k="std">Sao Tome ve Principe</option>
+<option value="Senegal" data-k="ek2">Senegal</option>
+<option value="Serbest Bölgeden İhracat" data-k="sb_yerlesik">Serbest Bölgeden İhracat</option>
+<option value="Serbest Bölgeye İhracat" data-k="sb_ihracat">Serbest Bölgeye İhracat</option>
+<option value="Sierra Leone" data-k="std">Sierra Leone</option>
+<option value="Singapur" data-k="std">Singapur</option>
+<option value="Slovakya" data-k="std">Slovakya</option>
+<option value="Slovenya" data-k="std">Slovenya</option>
+<option value="Solomon Adaları" data-k="std">Solomon Adaları</option>
+<option value="Somali" data-k="ek2">Somali</option>
+<option value="Sri Lanka" data-k="std">Sri Lanka</option>
+<option value="Sudan" data-k="ek2">Sudan</option>
+<option value="Surinam" data-k="std">Surinam</option>
+<option value="Suriye" data-k="ek2">Suriye</option>
+<option value="Suudi Arabistan" data-k="std">Suudi Arabistan</option>
+<option value="Sırbistan" data-k="std">Sırbistan</option>
+<option value="Tacikistan" data-k="ek2">Tacikistan</option>
+<option value="Tanzanya" data-k="ek2">Tanzanya</option>
+<option value="Tayland" data-k="std">Tayland</option>
+<option value="Tayvan" data-k="std">Tayvan</option>
+<option value="Togo" data-k="std">Togo</option>
+<option value="Tonga" data-k="std">Tonga</option>
+<option value="Trinidad ve Tobago" data-k="std">Trinidad ve Tobago</option>
+<option value="Tunus" data-k="ek3">Tunus</option>
+<option value="Tuvalu" data-k="std">Tuvalu</option>
+<option value="Türkiye" data-k="std">Türkiye</option>
+<option value="Türkmenistan" data-k="ek3">Türkmenistan</option>
+<option value="Uganda" data-k="std">Uganda</option>
+<option value="Ukrayna" data-k="ek3">Ukrayna</option>
+<option value="Umman" data-k="std">Umman</option>
+<option value="Uruguay" data-k="std">Uruguay</option>
+<option value="Vanuatu" data-k="std">Vanuatu</option>
+<option value="Vatican" data-k="std">Vatican</option>
+<option value="Venezuela" data-k="ek2">Venezuela</option>
+<option value="Vietnam" data-k="std">Vietnam</option>
+<option value="Yemen" data-k="std">Yemen</option>
+<option value="Yeni Zelanda" data-k="std">Yeni Zelanda</option>
+<option value="Yunanistan" data-k="std">Yunanistan</option>
+<option value="Zambiya" data-k="std">Zambiya</option>
+<option value="Zimbabwe" data-k="ek2">Zimbabwe</option>
+<option value="Çad" data-k="std">Çad</option>
+<option value="Çek Cumhuriyeti" data-k="std">Çek Cumhuriyeti</option>
+<option value="Çin" data-k="std">Çin</option>
+<option value="Özbekistan" data-k="ek3">Özbekistan</option>
+<option value="Ürdün" data-k="std">Ürdün</option>
+<option value="İngiltere" data-k="std">İngiltere</option>
+<option value="İran" data-k="ek2">İran</option>
+<option value="İrlanda" data-k="std">İrlanda</option>
+<option value="İspanya" data-k="std">İspanya</option>
+<option value="İsrail" data-k="std">İsrail</option>
+<option value="İsveç" data-k="std">İsveç</option>
+<option value="İsviçre" data-k="std">İsviçre</option>
+<option value="İtalya" data-k="std">İtalya</option>
+<option value="İzlanda" data-k="std">İzlanda</option>
+        </select>
       </div>
       <div class="fg">
         <label>Alıcı Firma</label>
@@ -376,11 +775,11 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       </div>
       <div class="fg">
         <label>Tutar (USD)</label>
-        <input type="number" id="d-tutar-usd" step="0.01" min="0">
+        <input type="text" id="d-tutar-usd" placeholder="0,00" inputmode="decimal" oninput="sayiFormatla(this)">
       </div>
       <div class="fg">
         <label>Tutar (TL)</label>
-        <input type="number" id="d-tutar-tl" step="0.01" min="0">
+        <input type="text" id="d-tutar-tl" placeholder="0,00" inputmode="decimal" oninput="sayiFormatla(this)">
       </div>
       <div class="fg" style="grid-column:1/-1;">
         <label>Notlar</label>
@@ -397,6 +796,56 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
 <div id="toast"></div>
 
 <script>
+
+// ── SAYI FORMATLAMA (Türk sistemi) ─────────────────────────────────────────
+function sayiFormatla(el){
+  let v = el.value.replace(/[^0-9,]/g, '');
+  const parts = v.split(',');
+  if(parts.length > 2) v = parts[0] + ',' + parts.slice(1).join('');
+  const tam = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  el.value = parts.length === 2 ? tam + ',' + parts[1].slice(0,2) : tam;
+  tutarZorunluKontrol();
+}
+
+function sayiToFloat(str){
+  if(!str) return null;
+  const temiz = String(str).replace(/\./g,'').replace(',','.');
+  const val = parseFloat(temiz);
+  return isNaN(val) ? null : val;
+}
+
+function tutarZorunluKontrol(){
+  const usd = document.getElementById('f-tutar-usd');
+  const tl  = document.getElementById('f-tutar-tl');
+  const msg = document.getElementById('tutarMsg');
+  if(!usd || !tl || !msg) return;
+  const hasUsd = usd.value.replace(/[^0-9]/g,'').length > 0;
+  const hasTl  = tl.value.replace(/[^0-9]/g,'').length > 0;
+  if(!hasUsd && !hasTl){
+    msg.style.display='block'; msg.textContent='⚠ USD veya TL tutarından en az biri zorunludur.';
+  } else {
+    msg.style.display='none';
+  }
+}
+
+// ── HESAPLAMA SAYFASINA GÖNDER ───────────────────────────────────────────────
+function hesaplamaGonder(id){
+  const k = _kayitlar.find(x=>x.id===id);
+  if(!k) return;
+  const params = new URLSearchParams();
+  if(k.beyanname_no) params.set('beyanname', k.beyanname_no);
+  if(k.ihracat_tarihi) params.set('tarih', k.ihracat_tarihi);
+  if(k.ulke) params.set('ulke', k.ulke);
+  if(k.tutar_usd && k.tutar_usd > 0){
+    params.set('bedel', String(k.tutar_usd).replace('.',','));
+    params.set('para', 'USD');
+  } else if(k.tutar_tl && k.tutar_tl > 0){
+    params.set('bedel', String(k.tutar_tl).replace('.',','));
+    params.set('para', 'TRY');
+  }
+  window.location.href = './index.html?' + params.toString();
+}
+
 const SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
 const TOKEN  = sessionStorage.getItem('govdag_token');
@@ -593,6 +1042,7 @@ function listele(){
       '<td>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
         (!k.kapatildi ? '<button class="btn btn-ok btn-sm" onclick="kapat(\''+k.id+'\')">&#10003; Kapat</button>' : '') +
+        '<button class="btn btn-primary btn-sm" onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesaplama sayfasına gönder">🧮 Hesapla</button>' +
         '<button class="btn btn-secondary btn-sm" onclick="duzenle(\''+k.id+'\')">&#9999;</button>' +
         '<button class="btn btn-danger btn-sm" onclick="sil(\''+k.id+'\')">&#128465;</button>' +
         '</div>' +
@@ -611,6 +1061,9 @@ async function kaydetIhracat(e){
   if(!tarih){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ İhracat tarihi zorunludur.'; return; }
   const ulke  = document.getElementById('f-ulke').value.trim();
   if(!ulke){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ İhracat ülkesi zorunludur.'; return; }
+  const tutarUsd = sayiToFloat(document.getElementById('f-tutar-usd').value);
+  const tutarTl  = sayiToFloat(document.getElementById('f-tutar-tl').value);
+  if(!tutarUsd && !tutarTl){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ USD veya TL tutarından en az biri zorunludur.'; return; }
 
   msg.style.display='block';msg.style.color='var(--g500)';msg.textContent='⏳ Kaydediliyor…';
 
@@ -621,8 +1074,8 @@ async function kaydetIhracat(e){
       ihracat_tarihi: tarih,
       ulke: ulke,
       alici_firma: document.getElementById('f-firma').value.trim()||null,
-      tutar_usd: parseFloat(document.getElementById('f-tutar-usd').value)||null,
-      tutar_tl:  parseFloat(document.getElementById('f-tutar-tl').value)||null,
+      tutar_usd: tutarUsd,
+      tutar_tl:  tutarTl,
       notlar: document.getElementById('f-notlar').value.trim()||null,
     });
     msg.style.color='var(--ok)';msg.textContent='✅ Kayıt eklendi!';
@@ -680,8 +1133,8 @@ async function duzenleKaydet(){
       beyanname_no: document.getElementById('d-beyanname').value.trim()||null,
       ihracat_tarihi: tarih, ulke: ulke,
       alici_firma: document.getElementById('d-firma').value.trim()||null,
-      tutar_usd: parseFloat(document.getElementById('d-tutar-usd').value)||null,
-      tutar_tl:  parseFloat(document.getElementById('d-tutar-tl').value)||null,
+      tutar_usd: sayiToFloat(document.getElementById('d-tutar-usd').value),
+      tutar_tl:  sayiToFloat(document.getElementById('d-tutar-tl').value),
       notlar: document.getElementById('d-notlar').value.trim()||null,
     });
     modalKapat();
