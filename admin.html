@@ -2613,10 +2613,20 @@ function parolaGuncelle(){
   toast('✅ Parola güncellendi');
 }
 
-function tumunuSifirla(){
+async function tumunuSifirla(){
   if(!confirm('Tüm admin değişiklikleri silinecek ve fabrika ayarlarına dönülecek. Emin misiniz?')) return;
   localStorage.removeItem('ibkb_config');
   localStorage.removeItem('ibkb_parola');
+  // Supabase'den de temizle
+  try{
+    const alanlar = ['sabitler','metinler','duyuru','bakim','logo','favicon','ulkeler','mevzuat','parola','kurlar'];
+    for(const alan of alanlar){
+      await fetch(_SC_URL + '?id=eq.' + alan, {
+        method: 'DELETE',
+        headers: {'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC}
+      });
+    }
+  }catch(e){ console.warn('Supabase silme:', e.message); }
   toast('✅ Sıfırlandı — Yeniden giriş yapın');
   setTimeout(cikisYap, 1500);
 }
