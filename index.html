@@ -2022,7 +2022,7 @@ async function supabaseSorguYukle(){
   try{
     const token = sessionStorage.getItem('govdag_token');
     if(!token){ console.warn('SB Yükle: token yok'); return; }
-    const res = await fetch(SB_URL + '/rest/v1/sorgular?order=tarih.desc&limit=500', {
+    const res = await fetch(SB_URL + '/rest/v1/sorgular?order=tarih.desc&limit=1000', {
       headers:{
         'apikey': SB_KEY,
         'Authorization': 'Bearer ' + token,
@@ -2089,6 +2089,16 @@ function gecmisFiltrele(aramaMetni){
   }
 }
 
+let _gecmisSayfa = 1;
+const _GECMIS_BOYUTU = 50;
+
+function gecmisSayfaDegistir(yeni){
+  _gecmisSayfa = yeni;
+  gecmisPanelGuncelle();
+  var el = document.getElementById('gecmisPanel');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 function gecmisPanelGuncelle(){
   const panel = document.getElementById('gecmisPanel');
   const liste = document.getElementById('gecmisListe');
@@ -2103,7 +2113,7 @@ function gecmisPanelGuncelle(){
   const aramaEl = document.getElementById('gecmisArama');
   if(aramaEl && aramaEl.value) aramaEl.value = '';
   panel.style.display = 'block';
-  sayac.textContent = sorguGecmisi.length + ' sorgu';
+  sayac.textContent = sorguGecmisi.length + ' sorgu · Sayfa ' + _gecmisSayfa + '/' + _gToplamSayfa;
   btnPdf.disabled = false;
   // Xlsx butonu da etkinleştir
   const btnXlsxEl = document.getElementById('btnXlsx');
@@ -2111,6 +2121,13 @@ function gecmisPanelGuncelle(){
   document.getElementById('btnXlsx').disabled = false;
 
   const satirlar = sorguGecmisi.filter(q => q && q.ulke);
+
+  // Sayfalama
+  if(_gecmisSayfa > Math.ceil(satirlar.length / _GECMIS_BOYUTU)) _gecmisSayfa = 1;
+  const _gToplamSayfa = Math.max(1, Math.ceil(satirlar.length / _GECMIS_BOYUTU));
+  const _gBasla = (_gecmisSayfa - 1) * _GECMIS_BOYUTU;
+  const _gBitis = Math.min(_gBasla + _GECMIS_BOYUTU, satirlar.length);
+  const _sayfaSatirlar = satirlar.slice(_gBasla, _gBitis);
 
   // Adımlardan değer çek
   const adimDeger = (q, anahtar) => {
@@ -2138,14 +2155,14 @@ function gecmisPanelGuncelle(){
     + '<th></th>'
     + '</tr></thead>'
     + '<tbody>'
-    + satirlar.map((q, i) => {
+    + _sayfaSatirlar.map((q, i) => {
         const muaf = q.muaf;
         const muafDilim = adimDeger(q, '15.000');
         const brutMatrah = adimDeger(q, 'Brüt matrah');
         const onceki = q.oncekiIbkb || (adimDeger(q, 'önce düzenlenen') !== '—' ? adimDeger(q, 'önce düzenlenen') : '');
         const realIdx = sorguGecmisi.indexOf(q);
         return '<tr class="' + (muaf?'muaf-satir':'') + '" onclick="gecmisGoster(' + realIdx + ')" data-realidx="' + realIdx + '" title="Sonucu görmek için tıklayın">'
-          + '<td class="td-no">' + (sorguGecmisi.length - i) + '</td>'
+          + '<td class="td-no">' + (sorguGecmisi.length - sorguGecmisi.indexOf(q)) + '</td>'
           + '<td class="td-saat">' + (q.saat||'') + '</td>'
           + '<td>' + (q.beyanname||'<span class="td-yok">—</span>') + '</td>'
           + '<td>' + q.tarih + '</td>'
@@ -2176,6 +2193,41 @@ function gecmisPanelGuncelle(){
           + '</tr>';
       }).join('')
     + '</tbody></table></div>';
+
+  // Sayfalama navigasyonu
+  var _gNavEl = document.getElementById('gecmisSayfaNav');
+  if(!_gNavEl){
+    _gNavEl = document.createElement('div');
+    _gNavEl.id = 'gecmisSayfaNav';
+    panel.appendChild(_gNavEl);
+  }
+  if(_gToplamSayfa <= 1){
+    _gNavEl.innerHTML = '';
+  } else {
+    var _gNavHtml = '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 0;flex-wrap:wrap;">';
+    _gNavHtml += '<button onclick="gecmisSayfaDegistir(' + (_gecmisSayfa-1) + ')" '
+      + (_gecmisSayfa===1 ? 'disabled' : '')
+      + ' style="padding:5px 12px;border:1.5px solid var(--g300);border-radius:6px;background:#fff;font-size:.8rem;font-family:inherit;cursor:pointer;' + (_gecmisSayfa===1?'opacity:.4;':'') + '">‹ Önceki</button>';
+    for(var _gpi=1; _gpi<=_gToplamSayfa; _gpi++){
+      var _gAct = _gpi === _gecmisSayfa;
+      if(_gToplamSayfa > 7 && Math.abs(_gpi - _gecmisSayfa) > 2 && _gpi !== 1 && _gpi !== _gToplamSayfa){
+        if(_gpi === 2 || _gpi === _gToplamSayfa-1) _gNavHtml += '<span style="color:#94a3b8;padding:0 2px;">…</span>';
+        continue;
+      }
+      _gNavHtml += '<button onclick="gecmisSayfaDegistir(' + _gpi + ')"'
+        + ' style="padding:5px 10px;border:1.5px solid ' + (_gAct?'#2563eb':'var(--g300)') + ';'
+        + 'border-radius:6px;background:' + (_gAct?'#2563eb':'#fff') + ';'
+        + 'color:' + (_gAct?'#fff':'#1e293b') + ';font-size:.8rem;font-weight:' + (_gAct?'700':'400') + ';'
+        + 'font-family:inherit;cursor:pointer;">' + _gpi + '</button>';
+    }
+    _gNavHtml += '<button onclick="gecmisSayfaDegistir(' + (_gecmisSayfa+1) + ')" '
+      + (_gecmisSayfa===_gToplamSayfa ? 'disabled' : '')
+      + ' style="padding:5px 12px;border:1.5px solid var(--g300);border-radius:6px;background:#fff;font-size:.8rem;font-family:inherit;cursor:pointer;' + (_gecmisSayfa===_gToplamSayfa?'opacity:.4;':'') + '">Sonraki ›</button>';
+    _gNavHtml += '<span style="font-size:.76rem;color:#64748b;margin-left:6px;">'
+      + (_gBasla+1) + '–' + _gBitis + ' / ' + satirlar.length + ' sorgu</span>';
+    _gNavHtml += '</div>';
+    _gNavEl.innerHTML = _gNavHtml;
+  }
 }
 
 function gecmisToggle(idx){
