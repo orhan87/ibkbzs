@@ -206,8 +206,8 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
   .ozet-grid{grid-template-columns:1fr 1fr;}
   .form-grid{grid-template-columns:1fr;}
   .panel-head{flex-direction:column;align-items:flex-start;}
-  thead th:nth-child(n+6){display:none;}
-  tbody td:nth-child(n+6){display:none;}
+  thead th:nth-child(n+7){display:none;}
+  tbody td:nth-child(n+7){display:none;}
 }
 </style>
 </head>
@@ -255,6 +255,16 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       <span class="label">Kapatılan</span>
       <span class="deger" id="ozKapali">—</span>
       <span class="alt">tamamlanan</span>
+    </div>
+    <div class="ozet-kart" style="border-color:#fed7aa;background:#fff7ed;">
+      <span class="label" style="color:#c2410c;">📬 İhtarname</span>
+      <span class="deger" id="ozIhtarname" style="color:#c2410c;">—</span>
+      <span class="alt">tebliğ edilmiş</span>
+    </div>
+    <div class="ozet-kart krit" id="ozIhtarnameKritKart" style="display:none;">
+      <span class="label">📬 İhtarname Süresi Dolan</span>
+      <span class="deger" id="ozIhtarnameKrit">—</span>
+      <span class="alt">90 gün aşıldı</span>
     </div>
   </div>
 
@@ -554,11 +564,12 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
               <th onclick="siralama('tutar_usd')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-tutar">Tutar</span></th>
               <th onclick="siralama('kalan_sure')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-sure">Kalan Süre</span></th>
               <th onclick="siralama('son_tarih')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-son">Son Tarih</span></th>
+              <th onclick="siralama('ihtarname_tarihi')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-ihtar">📬 İhtarname / Ek Süre</span></th>
               <th>İşlemler</th>
             </tr>
           </thead>
           <tbody id="tblBody">
-            <tr><td colspan="7"><div class="bos-durum"><div class="ikon">⏳</div><p>Yükleniyor…</p></div></td></tr>
+            <tr><td colspan="8"><div class="bos-durum"><div class="ikon">⏳</div><p>Yükleniyor…</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -1183,22 +1194,28 @@ async function yukle(){
 // ── ÖZET ──────────────────────────────────────────────────────────────────────
 function ozetGuncelle(){
   const toplam = _kayitlar.length;
-  let aktif=0, uyari30=0, krit=0, kapali=0;
+  let aktif=0, uyari30=0, krit=0, kapali=0, ihtarname=0, ihtarnameKrit=0;
   _kayitlar.forEach(function(k){
     if(k.kapatildi){ kapali++; return; }
+    if(k.ihtarname_tarihi) ihtarname++;
     const _efektif = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi);
     const gun = _efektif.gun;
     const _mod = _efektif.mod;
     if(gun === null) return;
-    if(gun < 0) krit++;
+    if(_mod === 'ihtarname' && gun < 0) ihtarnameKrit++;
+    else if(gun < 0) krit++;
     else if(gun <= 30) uyari30++;
-    else aktif++;
+    else if(_mod !== 'ihtarname') aktif++;
   });
   document.getElementById('ozToplamAdet').textContent = toplam;
   document.getElementById('ozAktif').textContent      = aktif;
   document.getElementById('ozUyari').textContent      = uyari30;
   document.getElementById('ozKrit').textContent       = krit;
   document.getElementById('ozKapali').textContent     = kapali;
+  document.getElementById('ozIhtarname').textContent  = ihtarname;
+  document.getElementById('ozIhtarnameKrit').textContent = ihtarnameKrit;
+  var _ikk = document.getElementById('ozIhtarnameKritKart');
+  if(_ikk) _ikk.style.display = ihtarnameKrit > 0 ? '' : 'none';
   // Kart renklerini güncelle
   const kartUyari = document.querySelectorAll('.ozet-kart.uyari')[0];
   const kartKrit  = document.querySelectorAll('.ozet-kart.krit')[0];
@@ -1265,9 +1282,14 @@ function listele(){
     var _k = _siralamaKolon;
     var _d = _siralamaYon === 'asc' ? 1 : -1;
     if(_k === 'kalan_sure'){
-      var ga = a.kapatildi ? 99999 : (kalanGun(a.ihracat_tarihi) ?? 99998);
-      var gb = b.kapatildi ? 99999 : (kalanGun(b.ihracat_tarihi) ?? 99998);
+      var ga = a.kapatildi ? 99999 : (efektifKalanGun(a.ihracat_tarihi, a.ihtarname_tarihi).gun ?? 99998);
+      var gb = b.kapatildi ? 99999 : (efektifKalanGun(b.ihracat_tarihi, b.ihtarname_tarihi).gun ?? 99998);
       return (ga - gb) * _d;
+    }
+    if(_k === 'ihtarname_tarihi'){
+      var ia = a.ihtarname_tarihi || '9999';
+      var ib = b.ihtarname_tarihi || '9999';
+      return ia.localeCompare(ib) * _d;
     }
     if(_k === 'son_tarih' || _k === 'ihracat_tarihi'){
       var da = a[_k === 'son_tarih' ? 'ihracat_tarihi' : 'ihracat_tarihi'] || '';
@@ -1285,8 +1307,8 @@ function listele(){
   });
 
   // Başlık ikonlarını güncelle
-  ['byn','tarih','ulke','tutar','sure','son'].forEach(function(s){ var el=document.getElementById('th-'+s); if(el) el.innerHTML=el.textContent.split('▲')[0].split('▼')[0].split('⇅')[0].trim(); });
-  var _ikonMap = {beyanname_no:'byn',ihracat_tarihi:'tarih',ulke:'ulke',tutar_usd:'tutar',kalan_sure:'sure',son_tarih:'son'};
+  ['byn','tarih','ulke','tutar','sure','son','ihtar'].forEach(function(s){ var el=document.getElementById('th-'+s); if(el) el.innerHTML=el.textContent.split('▲')[0].split('▼')[0].split('⇅')[0].trim(); });
+  var _ikonMap = {beyanname_no:'byn',ihracat_tarihi:'tarih',ulke:'ulke',tutar_usd:'tutar',kalan_sure:'sure',son_tarih:'son',ihtarname_tarihi:'ihtar'};
   var _aktifEl = document.getElementById('th-' + (_ikonMap[_siralamaKolon]||'tarih'));
   if(_aktifEl) _aktifEl.innerHTML = _aktifEl.textContent.trim() + (_siralamaYon==='asc' ? ' <span style="color:#f59e0b;">▲</span>' : ' <span style="color:#f59e0b;">▼</span>');
 
@@ -1323,6 +1345,23 @@ function listele(){
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
       '<td>' + sureBadge(gun, k.kapatildi, _mod) + sureBar(k.kapatildi ? null : gun, _mod) + '</td>' +
       '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi ? '<span style="color:var(--ok)">Kapatıldı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
+      (function(){
+        if(!k.ihtarname_tarihi) return '<td style="font-size:.8rem;color:var(--g400);text-align:center;">—</td>';
+        var _itKalan = ihtarKalanGun(k.ihtarname_tarihi);
+        var _itSonTarih = new Date(new Date(k.ihtarname_tarihi+'T00:00:00').getTime()+90*86400000).toLocaleDateString('tr-TR');
+        var _itRenk = _itKalan < 0 ? '#7f1d1d' : _itKalan <= 15 ? '#b91c1c' : _itKalan <= 30 ? '#d97706' : '#c2410c';
+        var _itBg   = _itKalan < 0 ? '#fee2e2' : _itKalan <= 15 ? '#fef2f2' : _itKalan <= 30 ? '#fffbeb' : '#fff7ed';
+        var _itMetin = _itKalan < 0
+          ? '⚠ Süre Aşıldı! (+'+Math.abs(_itKalan)+' gün)'
+          : _itKalan === 0 ? 'Bugün Son Gün!'
+          : _itKalan + ' gün kaldı';
+        return '<td style="font-size:.78rem;">'
+          + '<div style="background:'+_itBg+';border:1px solid '+_itRenk+'30;border-radius:6px;padding:4px 8px;display:inline-block;">'
+          + '<div style="color:'+_itRenk+';font-weight:700;">📬 '+_itMetin+'</div>'
+          + '<div style="color:var(--g500);font-size:.72rem;margin-top:1px;">Son: '+_itSonTarih+'</div>'
+          + '</div>'
+          + '</td>';
+      })() +
       '<td>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
         (!k.kapatildi
