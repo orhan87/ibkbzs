@@ -576,7 +576,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
             </tr>
           </thead>
           <tbody id="tblBody">
-            <tr><td colspan="8"><div class="bos-durum"><div class="ikon">⏳</div><p>Yükleniyor…</p></div></td></tr>
+            <tr><td colspan="9"><div class="bos-durum"><div class="ikon">⏳</div><p>Yükleniyor…</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -1059,7 +1059,8 @@ function takipPdfIndir(){
     var sonTarih = k.ihracat_tarihi ? new Date(new Date(k.ihracat_tarihi+'T00:00:00').getTime()+180*86400000).toLocaleDateString('tr-TR') : '—';
     var tarihFmt = k.ihracat_tarihi ? new Date(k.ihracat_tarihi+'T00:00:00').toLocaleDateString('tr-TR') : '—';
     var durumMetin, durumRenk;
-    if(k.kapatildi){ durumMetin='Kapatıldı'; durumRenk='#059669'; }
+    if(k.durum==='ceza'){ durumMetin='⚖ Cezalı'; durumRenk='#6d28d9'; }
+    else if(k.kapatildi||k.durum==='kapali'){ durumMetin='Kapatıldı'; durumRenk='#059669'; }
     else if(gun===null){ durumMetin='—'; durumRenk='#64748b'; }
     else if(gun<0){ durumMetin='Süresi Doldu ('+Math.abs(gun)+' gün)'; durumRenk='#dc2626'; }
     else if(gun===0){ durumMetin='Bugün Son Gün!'; durumRenk='#dc2626'; }
@@ -1078,7 +1079,15 @@ function takipPdfIndir(){
       +'<td style="padding:8px 10px;font-size:.78rem;color:#475569;">'+(k.alici_firma||'—')+'</td>'
       +'<td style="padding:8px 10px;font-size:.8rem;text-align:right;">'+(tutarStr||'—')+'</td>'
       +'<td style="padding:8px 10px;font-size:.82rem;">'+sonTarih+'</td>'
-      +'<td style="padding:8px 10px;font-size:.8rem;font-weight:700;color:'+durumRenk+';">'+durumMetin+'</td>'
+      +(function(){
+        var _itKalanPdf = k.ihtarname_tarihi ? ihtarKalanGun(k.ihtarname_tarihi) : null;
+        var _itSonPdf = k.ihtarname_tarihi ? new Date(new Date(k.ihtarname_tarihi+'T00:00:00').getTime()+90*86400000).toLocaleDateString('tr-TR') : '—';
+        var _itMetinPdf = _itKalanPdf === null ? '—' : _itKalanPdf < 0 ? '⚠ Aşıldı (+'+Math.abs(_itKalanPdf)+' gün)' : _itKalanPdf+' gün · Son: '+_itSonPdf;
+        var _kalanPdf = k.durum==='ceza'||k.kapatildi||k.durum==='kapali' ? '—' : (gun !== null ? (gun < 0 ? 'Aşıldı ('+Math.abs(gun)+' gün)' : gun+' gün') : '—');
+        return '<td style="padding:8px 10px;font-size:.78rem;color:#475569;">'+_kalanPdf+'</td>'
+          +'<td style="padding:8px 10px;font-size:.78rem;color:#c2410c;">'+_itMetinPdf+'</td>';
+      })()
+      +      +'<td style="padding:8px 10px;font-size:.8rem;font-weight:700;color:'+durumRenk+';">'+durumMetin+'</td>'
       +'</tr>';
   }).join('');
 
@@ -1102,7 +1111,7 @@ function takipPdfIndir(){
     +'</div>'
     +'<table><thead><tr>'
     +'<th>#</th><th>Beyanname No</th><th>İhracat Tarihi</th><th>Ülke</th>'
-    +'<th>Alıcı Firma</th><th>Tutar</th><th>Son Tarih</th><th>Durum</th>'
+    +'<th>Alıcı Firma</th><th>Tutar</th><th>Son Tarih</th><th>Kalan Süre</th><th>📬 İhtarname Ek Süre</th><th>Durum</th>'
     +'</tr></thead><tbody>'+satirlar+'</tbody></table>'
     +'</div></body></html>';
 
@@ -1144,7 +1153,7 @@ function takipExcelIndir(){
   var esc = function(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
 
   var basliklar = ['#','Beyanname No','İhracat Tarihi','Ülke','Alıcı Firma',
-    'Tutar (USD)','Tutar (TL)','Son Tarih (180. Gün)','Kalan Gün','Durum','Notlar'];
+    'Tutar (USD)','Tutar (TL)','Son Tarih (180. Gün)','Kalan Gün','İhtarname Tebliğ Tarihi','İhtarname Kalan Gün','Durum','Notlar'];
 
   var hRow = '<Row ss:StyleID="h">'
     + basliklar.map(function(b){ return '<Cell><Data ss:Type="String">'+esc(b)+'</Data></Cell>'; }).join('')
@@ -1153,7 +1162,7 @@ function takipExcelIndir(){
   var dataRows = liste.map(function(k,i){
     var gun = kalanGun(k.ihracat_tarihi);
     var sonTarih = k.ihracat_tarihi ? new Date(new Date(k.ihracat_tarihi+'T00:00:00').getTime()+180*86400000).toLocaleDateString('tr-TR') : '';
-    var durumMetin = k.kapatildi ? 'Kapatıldı'
+    var durumMetin = k.durum==='ceza' ? '⚖ Cezalı' : (k.kapatildi||k.durum==='kapali') ? 'Kapatıldı'
       : gun===null ? '' : gun<0 ? 'Süresi Doldu' : gun<=15 ? 'Kritik' : gun<=30 ? 'Uyarı' : 'Aktif';
     return '<Row>'
       +'<Cell><Data ss:Type="Number">'+(i+1)+'</Data></Cell>'
@@ -1165,6 +1174,8 @@ function takipExcelIndir(){
       +'<Cell><Data ss:Type="Number">'+esc(k.tutar_tl||'')+'</Data></Cell>'
       +'<Cell><Data ss:Type="String">'+esc(sonTarih)+'</Data></Cell>'
       +'<Cell><Data ss:Type="'+(gun!==null?'Number':'String')+'">'+esc(gun!==null?gun:'')+'</Data></Cell>'
+      +'<Cell><Data ss:Type="String">'+esc(k.ihtarname_tarihi||'')+'</Data></Cell>'
+      +(function(){var _xig=k.ihtarname_tarihi?ihtarKalanGun(k.ihtarname_tarihi):null;return '<Cell><Data ss:Type="'+(_xig!==null?'Number':'String')+'">'+esc(_xig!==null?_xig:'')+'</Data></Cell>';})()
       +'<Cell><Data ss:Type="String">'+esc(durumMetin)+'</Data></Cell>'
       +'<Cell><Data ss:Type="String">'+esc(k.notlar)+'</Data></Cell>'
       +'</Row>';
@@ -1202,7 +1213,7 @@ async function yukle(){
     listele();
   }catch(e){
     document.getElementById('tblBody').innerHTML =
-      '<tr><td colspan="7"><div class="bos-durum"><div class="ikon">⚠️</div><h3>Bağlantı Hatası</h3><p>' + e.message + '</p></div></td></tr>';
+      '<tr><td colspan="9"><div class="bos-durum"><div class="ikon">⚠️</div><h3>Bağlantı Hatası</h3><p>' + e.message + '</p></div></td></tr>';
   }
 }
 
@@ -1339,7 +1350,7 @@ function listele(){
     filtered.length + '/' + _kayitlar.length + ' kayıt · Sayfa ' + _mevcutSayfa + '/' + _toplamSayfa;
 
   if(filtered.length === 0){
-    tbody.innerHTML = '<tr><td colspan="7"><div class="bos-durum">' +
+    tbody.innerHTML = '<tr><td colspan="9"><div class="bos-durum">' +
       '<div class="ikon">📭</div>' +
       '<h3>' + (_kayitlar.length === 0 ? 'Henüz kayıt yok' : 'Sonuç bulunamadı') + '</h3>' +
       '<p>' + (_kayitlar.length === 0 ? 'Yukarıdan yeni ihracat kaydı ekleyin.' : 'Filtreyi değiştirmeyi deneyin.') + '</p>' +
@@ -1359,7 +1370,7 @@ function listele(){
       '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<br><span style="font-size:.76rem;color:var(--g500)">'+k.alici_firma+'</span>' : '') + '</td>' +
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
       '<td>' + (k.durum==='ceza' ? '<span class="sure-badge sure-ceza">⚖ Cezalı</span>' : sureBadge(gun, k.kapatildi||k.durum==='kapali') + sureBar((k.kapatildi||k.durum==='kapali'||k.durum==='ceza') ? null : gun)) + '</td>' +
-      '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi ? '<span style="color:var(--ok)">Kapatıldı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
+      '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi||k.durum==='kapali' ? '<span style="color:var(--ok)">Kapatıldı</span>' : k.durum==='ceza' ? '<span style="color:#6d28d9;">⚖ Cezalı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
       (function(){
         if(!k.ihtarname_tarihi) return '<td style="font-size:.8rem;color:var(--g400);text-align:center;">—</td>';
         var _itKalan = ihtarKalanGun(k.ihtarname_tarihi);
