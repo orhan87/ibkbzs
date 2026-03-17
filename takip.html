@@ -542,13 +542,13 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       <div class="tbl-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Beyanname No</th>
-              <th>İhracat Tarihi</th>
-              <th>Ülke / Firma</th>
-              <th>Tutar</th>
-              <th>Kalan Süre</th>
-              <th>Son Tarih</th>
+            <tr id="thRow">
+              <th onclick="siralama('beyanname_no')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-byn">Beyanname No</span></th>
+              <th onclick="siralama('ihracat_tarihi')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-tarih">İhracat Tarihi</span></th>
+              <th onclick="siralama('ulke')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-ulke">Ülke / Firma</span></th>
+              <th onclick="siralama('tutar_usd')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-tutar">Tutar</span></th>
+              <th onclick="siralama('kalan_sure')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-sure">Kalan Süre</span></th>
+              <th onclick="siralama('son_tarih')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-son">Son Tarih</span></th>
               <th>İşlemler</th>
             </tr>
           </thead>
@@ -1174,6 +1174,26 @@ function ozetGuncelle(){
 // ── LİSTELE ────────────────────────────────────────────────────────────────────
 let _mevcutSayfa = 1;
 const _SAYFA_BOYUTU = 50;
+let _siralamaKolon = 'ihracat_tarihi';
+let _siralamaYon   = 'desc'; // asc | desc
+
+function siralama(kolon){
+  if(_siralamaKolon === kolon){
+    _siralamaYon = _siralamaYon === 'asc' ? 'desc' : 'asc';
+  } else {
+    _siralamaKolon = kolon;
+    _siralamaYon   = kolon === 'kalan_sure' ? 'asc' : 'desc';
+  }
+  _mevcutSayfa = 1;
+  listele();
+}
+
+function _siralamaIkonu(kolon){
+  if(_siralamaKolon !== kolon) return ' <span style="color:rgba(255,255,255,.3);font-size:.7rem;">⇅</span>';
+  return _siralamaYon === 'asc'
+    ? ' <span style="color:#f59e0b;font-size:.8rem;">▲</span>'
+    : ' <span style="color:#f59e0b;font-size:.8rem;">▼</span>';
+}
 
 function sayfaDegistir(yeni){
   _mevcutSayfa = yeni;
@@ -1204,6 +1224,36 @@ function listele(){
     }
     return true;
   });
+
+  // Sıralama uygula
+  filtered.sort(function(a, b){
+    var _k = _siralamaKolon;
+    var _d = _siralamaYon === 'asc' ? 1 : -1;
+    if(_k === 'kalan_sure'){
+      var ga = a.kapatildi ? 99999 : (kalanGun(a.ihracat_tarihi) ?? 99998);
+      var gb = b.kapatildi ? 99999 : (kalanGun(b.ihracat_tarihi) ?? 99998);
+      return (ga - gb) * _d;
+    }
+    if(_k === 'son_tarih' || _k === 'ihracat_tarihi'){
+      var da = a[_k === 'son_tarih' ? 'ihracat_tarihi' : 'ihracat_tarihi'] || '';
+      var db = b[_k === 'son_tarih' ? 'ihracat_tarihi' : 'ihracat_tarihi'] || '';
+      return da.localeCompare(db) * _d;
+    }
+    if(_k === 'tutar_usd'){
+      var ua = (a.tutar_usd || a.tutar_tl || 0);
+      var ub = (b.tutar_usd || b.tutar_tl || 0);
+      return (ua - ub) * _d;
+    }
+    var va = String(a[_k] || '').toLowerCase();
+    var vb = String(b[_k] || '').toLowerCase();
+    return va.localeCompare(vb, 'tr') * _d;
+  });
+
+  // Başlık ikonlarını güncelle
+  ['byn','tarih','ulke','tutar','sure','son'].forEach(function(s){ var el=document.getElementById('th-'+s); if(el) el.innerHTML=el.textContent.split('▲')[0].split('▼')[0].split('⇅')[0].trim(); });
+  var _ikonMap = {beyanname_no:'byn',ihracat_tarihi:'tarih',ulke:'ulke',tutar_usd:'tutar',kalan_sure:'sure',son_tarih:'son'};
+  var _aktifEl = document.getElementById('th-' + (_ikonMap[_siralamaKolon]||'tarih'));
+  if(_aktifEl) _aktifEl.innerHTML = _aktifEl.textContent.trim() + (_siralamaYon==='asc' ? ' <span style="color:#f59e0b;">▲</span>' : ' <span style="color:#f59e0b;">▼</span>');
 
   // Sayfa sıfırla - filtre değişince 1. sayfaya dön
   if(_mevcutSayfa > Math.ceil(filtered.length / _SAYFA_BOYUTU)) _mevcutSayfa = 1;
