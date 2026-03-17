@@ -150,6 +150,7 @@ tbody td{padding:10px 12px;vertical-align:middle;}
 .sure-krit{background:#fee2e2;color:#b91c1c;}
 .sure-gecti{background:#f1f5f9;color:#64748b;text-decoration:line-through;}
 .sure-kapali{background:#f0fdf4;color:#15803d;}
+.sure-ceza{background:#f5f3ff;color:#6d28d9;border:1px solid #c4b5fd;}
 
 /* PROGRESS BAR */
 .sure-bar{height:4px;border-radius:2px;background:var(--g200);margin-top:4px;overflow:hidden;}
@@ -260,6 +261,11 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       <span class="label" style="color:#c2410c;">📬 İhtarname</span>
       <span class="deger" id="ozIhtarname" style="color:#c2410c;">—</span>
       <span class="alt">tebliğ edilmiş</span>
+    </div>
+    <div class="ozet-kart" style="border-color:#c4b5fd;background:#f5f3ff;">
+      <span class="label" style="color:#6d28d9;">⚖ Cezalı</span>
+      <span class="deger" id="ozCeza" style="color:#6d28d9;">—</span>
+      <span class="alt">takip dışı</span>
     </div>
     <div class="ozet-kart krit" id="ozIhtarnameKritKart" style="display:none;">
       <span class="label">📬 İhtarname Süresi Dolan</span>
@@ -542,6 +548,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           <option value="krit">🔴 Kritik</option>
           <option value="gecti">Süresi Dolmuş</option>
           <option value="kapali">Kapatılan</option>
+          <option value="ceza">⚖ Cezalı</option>
         </select>
         <button class="btn btn-sm" onclick="takipPdfIndir()"
           style="background:#fef2f2;border:1.5px solid #fca5a5;color:#b91c1c;padding:5px 12px;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">
@@ -1031,8 +1038,12 @@ function takipPdfIndir(){
     }
     if(durum){
       var gun=kalanGun(k.ihracat_tarihi);
-      if(durum==='kapali' && !k.kapatildi) return false;
-      if(durum!=='kapali' && k.kapatildi) return false;
+      var _isCeza = k.durum === 'ceza';
+      var _isKapali = k.kapatildi || k.durum === 'kapali';
+      if(durum==='ceza'   && !_isCeza) return false;
+      if(durum!=='ceza'   && _isCeza) return false;
+      if(durum==='kapali' && (_isCeza || !_isKapali)) return false;
+      if(durum!=='kapali' && durum!=='ceza' && _isKapali) return false;
       if(durum==='aktif'  && (gun===null||gun<=30||gun<0)) return false;
       if(durum==='uyari'  && (gun===null||gun>30||gun<0)) return false;
       if(durum==='krit'   && (gun===null||gun>15)) return false;
@@ -1114,8 +1125,12 @@ function takipExcelIndir(){
     }
     if(durum){
       var gun=kalanGun(k.ihracat_tarihi);
-      if(durum==='kapali' && !k.kapatildi) return false;
-      if(durum!=='kapali' && k.kapatildi) return false;
+      var _isCeza = k.durum === 'ceza';
+      var _isKapali = k.kapatildi || k.durum === 'kapali';
+      if(durum==='ceza'   && !_isCeza) return false;
+      if(durum!=='ceza'   && _isCeza) return false;
+      if(durum==='kapali' && (_isCeza || !_isKapali)) return false;
+      if(durum!=='kapali' && durum!=='ceza' && _isKapali) return false;
       if(durum==='aktif'  && (gun===null||gun<=30||gun<0)) return false;
       if(durum==='uyari'  && (gun===null||gun>30||gun<0)) return false;
       if(durum==='krit'   && (gun===null||gun>15)) return false;
@@ -1194,9 +1209,10 @@ async function yukle(){
 // ── ÖZET ──────────────────────────────────────────────────────────────────────
 function ozetGuncelle(){
   const toplam = _kayitlar.length;
-  let aktif=0, uyari30=0, krit=0, kapali=0, ihtarname=0, ihtarnameKrit=0;
+  let aktif=0, uyari30=0, krit=0, kapali=0, ihtarname=0, ihtarnameKrit=0, ceza=0;
   _kayitlar.forEach(function(k){
-    if(k.kapatildi){ kapali++; return; }
+    if(k.durum === 'ceza'){ ceza++; return; }
+    if(k.kapatildi || k.durum === 'kapali'){ kapali++; return; }
     if(k.ihtarname_tarihi) ihtarname++;
     const gun = kalanGun(k.ihracat_tarihi);
     if(gun === null) return;
@@ -1211,6 +1227,7 @@ function ozetGuncelle(){
   document.getElementById('ozUyari').textContent      = uyari30;
   document.getElementById('ozKrit').textContent       = krit;
   document.getElementById('ozKapali').textContent     = kapali;
+  document.getElementById('ozCeza').textContent       = ceza;
   document.getElementById('ozIhtarname').textContent  = ihtarname;
   document.getElementById('ozIhtarnameKrit').textContent = ihtarnameKrit;
   var _ikk = document.getElementById('ozIhtarnameKritKart');
@@ -1335,12 +1352,13 @@ function listele(){
     const tarihFmt = k.ihracat_tarihi
       ? new Date(k.ihracat_tarihi+'T00:00:00').toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'})
       : '—';
-    return '<tr class="' + (k.kapatildi?'kapali':'') + '" data-id="' + k.id + '">' +
+    var _trClass = k.durum==='ceza' ? 'kapali' : (k.kapatildi||k.durum==='kapali') ? 'kapali' : '';
+    return '<tr class="' + _trClass + '" data-id="' + k.id + '" style="' + (k.durum==='ceza'?'opacity:.6;':'') + '">' +
       '<td><span style="font-family:monospace,monospace;font-size:.82rem;">' + (k.beyanname_no||'<span style="color:var(--g400)">—</span>') + '</span></td>' +
       '<td>' + tarihFmt + '</td>' +
       '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<br><span style="font-size:.76rem;color:var(--g500)">'+k.alici_firma+'</span>' : '') + '</td>' +
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
-      '<td>' + sureBadge(gun, k.kapatildi) + sureBar(k.kapatildi ? null : gun) + '</td>' +
+      '<td>' + (k.durum==='ceza' ? '<span class="sure-badge sure-ceza">⚖ Cezalı</span>' : sureBadge(gun, k.kapatildi||k.durum==='kapali') + sureBar((k.kapatildi||k.durum==='kapali'||k.durum==='ceza') ? null : gun)) + '</td>' +
       '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi ? '<span style="color:var(--ok)">Kapatıldı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
       (function(){
         if(!k.ihtarname_tarihi) return '<td style="font-size:.8rem;color:var(--g400);text-align:center;">—</td>';
@@ -1361,9 +1379,12 @@ function listele(){
       })() +
       '<td>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-        (!k.kapatildi
-          ? '<button class="btn btn-ok btn-sm" onclick="kapat(\''+k.id+'\')">&#10003; Kapat</button>'
-          : '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#eff6ff;border:1.5px solid #93c5fd;color:#1d4ed8;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aç</button>'
+        (k.durum==='ceza'
+          ? '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#f5f3ff;border:1.5px solid #c4b5fd;color:#6d28d9;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aktife Al</button>'
+          : !k.kapatildi && k.durum!=='kapali'
+            ? '<button class="btn btn-ok btn-sm" onclick="kapat(\''+k.id+'\')">&#10003; Kapat</button>'
+              + '<button class="btn btn-sm" onclick="cezaKaydet(\''+k.id+'\')" style="background:#f5f3ff;border:1.5px solid #c4b5fd;color:#6d28d9;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">⚖ Ceza</button>'
+            : '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#eff6ff;border:1.5px solid #93c5fd;color:#1d4ed8;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aç</button>'
         ) +
         '<button class="btn btn-primary btn-sm" onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesaplama sayfasına gönder">🧮 Hesapla</button>' +
         '<button class="btn btn-secondary btn-sm" onclick="duzenle(\''+k.id+'\')">&#9999;</button>' +
@@ -1455,6 +1476,16 @@ async function kaydetIhracat(e){
 
 // ── KAPAT ────────────────────────────────────────────────────────────────────
 // ── YENİDEN AÇ ───────────────────────────────────────────────────────────────
+// ── CEZA KAYDET ──────────────────────────────────────────────────────────────
+async function cezaKaydet(id){
+  if(!confirm('Bu beyanname cezalı olarak işaretlenecek ve takip dışına alınacak. Emin misiniz?')) return;
+  try{
+    await sbPatch(id, {durum: 'ceza', kapatildi: false});
+    await yukle();
+    toast('⚖ Beyanname cezalı olarak işaretlendi');
+  }catch(e){ toast('✗ Hata: '+e.message); }
+}
+
 async function yenidenAc(id){
   if(!confirm('Bu ihracat kaydı yeniden açılacak. Emin misiniz?')) return;
   try{
