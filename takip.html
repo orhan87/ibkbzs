@@ -271,7 +271,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       <form onsubmit="kaydetIhracat(event)">
         <div class="form-grid">
           <div class="fg">
-            <label>Beyanname No</label>
+            <label>Beyanname No <span style="color:var(--err);">*</span></label>
             <input type="text" id="f-beyanname" placeholder="23000000EX123456" required>
           </div>
           <div class="fg">
@@ -486,12 +486,17 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
             <input type="text" id="f-firma" placeholder="Firma adı">
           </div>
           <div class="fg">
-            <label>İhracat Tutarı (USD)</label>
+            <label>İhracat Tutarı (USD) <span style="color:var(--err);">*</span></label>
             <input type="text" id="f-tutar-usd" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
           </div>
           <div class="fg">
-            <label>İhracat Tutarı (TL)</label>
+            <label>İhracat Tutarı (TL) <span style="color:var(--err);">*</span></label>
             <input type="text" id="f-tutar-tl" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
+          </div>
+          <div class="fg">
+            <label>İhtarname Tebliğ Tarihi</label>
+            <input type="date" id="f-ihtarname" title="Vergi dairesinden ihtarname alındıysa tebliğ tarihini girin. Bu tarihten itibaren 90 gün ek süre başlar.">
+            <span style="font-size:.72rem;color:var(--g500);margin-top:2px;">📬 Girilirse 90 gün ek süre başlar</span>
           </div>
           <div class="fg" style="grid-column:1/-1;">
             <label>Notlar</label>
@@ -502,6 +507,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           <button type="submit" class="btn btn-primary">💾 Kaydet</button>
           <button type="button" class="btn btn-secondary" onclick="formTemizle()">✕ Temizle</button>
         </div>
+        <p style="font-size:.75rem;color:var(--g500);margin-top:4px;">* USD veya TL'den en az biri zorunludur.</p>
         <p id="tutarMsg" style="margin-top:6px;font-size:.8rem;color:var(--warn);display:none;"></p>
         <p id="formMsg" style="margin-top:10px;font-size:.82rem;display:none;"></p>
       </form>
@@ -527,7 +533,6 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           <option value="gecti">Süresi Dolmuş</option>
           <option value="kapali">Kapatılan</option>
         </select>
-        <button class="btn btn-secondary btn-sm" onclick="yukle()" title="Yenile">🔄</button>
         <button class="btn btn-sm" onclick="takipPdfIndir()"
           style="background:#fef2f2;border:1.5px solid #fca5a5;color:#b91c1c;padding:5px 12px;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">
           📄 PDF
@@ -791,6 +796,11 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <label>Tutar (TL)</label>
         <input type="text" id="d-tutar-tl" placeholder="0,00" inputmode="decimal" oninput="sayiFormatla(this)">
       </div>
+      <div class="fg">
+        <label>İhtarname Tebliğ Tarihi</label>
+        <input type="date" id="d-ihtarname">
+        <span style="font-size:.72rem;color:var(--g500);margin-top:2px;">📬 Girilirse 90 gün ek süre başlar</span>
+      </div>
       <div class="fg" style="grid-column:1/-1;">
         <label>Notlar</label>
         <textarea id="d-notlar"></textarea>
@@ -878,20 +888,43 @@ function kalanGun(tarihStr){
   return Math.round((sonTarih - simdi) / 86400000);
 }
 
-function sureBadge(kalan, kapali){
+// İhtarname tebliğinden itibaren kalan gün (90 gün ek süre)
+function ihtarKalanGun(ihtarnameTarihi){
+  if(!ihtarnameTarihi) return null;
+  const baslangic = new Date(ihtarnameTarihi + 'T00:00:00');
+  const sonTarih  = new Date(baslangic.getTime() + 90 * 86400000);
+  const simdi     = new Date();
+  simdi.setHours(0,0,0,0);
+  return Math.round((sonTarih - simdi) / 86400000);
+}
+
+// Efektif kalan gün - ihtarname varsa o süreyi öncelik ver
+function efektifKalanGun(ihracatTarihi, ihtarnameTarihi){
+  if(ihtarnameTarihi){
+    return { gun: ihtarKalanGun(ihtarnameTarihi), mod: 'ihtarname' };
+  }
+  return { gun: kalanGun(ihracatTarihi), mod: 'normal' };
+}
+
+function sureBadge(kalan, kapali, mod){
   if(kapali) return '<span class="sure-badge sure-kapali">✓ Kapatıldı</span>';
   if(kalan === null) return '—';
-  if(kalan < 0)  return '<span class="sure-badge sure-gecti">Süresi Doldu ('+ Math.abs(kalan) +' gün)</span>';
-  if(kalan === 0) return '<span class="sure-badge sure-krit">Bugün Son Gün!</span>';
-  if(kalan <= 15) return '<span class="sure-badge sure-krit">🔴 ' + kalan + ' gün</span>';
-  if(kalan <= 30) return '<span class="sure-badge sure-uyari">⚠ ' + kalan + ' gün</span>';
+  var prefix = mod === 'ihtarname' ? '📬 İhtarname: ' : '';
+  var suffix = mod === 'ihtarname' ? ' gün (90 gün ek süre)' : ' gün';
+  if(kalan < 0)  return '<span class="sure-badge sure-krit" style="' + (mod==='ihtarname'?'background:#7f1d1d;':'') + '">'
+    + (mod==='ihtarname'?'📬 ':'') + 'Süre Aşıldı! (+' + Math.abs(kalan) + ' gün)</span>';
+  if(kalan === 0) return '<span class="sure-badge sure-krit">' + prefix + 'Bugün Son Gün!</span>';
+  if(kalan <= 15) return '<span class="sure-badge sure-krit">🔴 ' + prefix + kalan + suffix + '</span>';
+  if(kalan <= 30) return '<span class="sure-badge sure-uyari">⚠ ' + prefix + kalan + suffix + '</span>';
+  if(mod === 'ihtarname') return '<span class="sure-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">📬 ' + kalan + suffix + '</span>';
   return '<span class="sure-badge sure-ok">✓ ' + kalan + ' gün</span>';
 }
 
-function sureBar(kalan){
+function sureBar(kalan, mod){
   if(kalan === null) return '';
-  const pct = Math.max(0, Math.min(100, (kalan / GUN_180) * 100));
-  const cls = kalan <= 15 ? 'krit' : kalan <= 30 ? 'uyari' : 'ok';
+  const maxGun = mod === 'ihtarname' ? 90 : GUN_180;
+  const pct = Math.max(0, Math.min(100, (kalan / maxGun) * 100));
+  const cls = kalan <= 15 ? 'krit' : kalan <= 30 ? 'uyari' : (mod === 'ihtarname' ? 'uyari' : 'ok');
   return '<div class="sure-bar"><div class="sure-bar-inner ' + cls + '" style="width:' + pct + '%"></div></div>';
 }
 
@@ -1153,7 +1186,9 @@ function ozetGuncelle(){
   let aktif=0, uyari30=0, krit=0, kapali=0;
   _kayitlar.forEach(function(k){
     if(k.kapatildi){ kapali++; return; }
-    const gun = kalanGun(k.ihracat_tarihi);
+    const _efektif = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi);
+    const gun = _efektif.gun;
+    const _mod = _efektif.mod;
     if(gun === null) return;
     if(gun < 0) krit++;
     else if(gun <= 30) uyari30++;
@@ -1284,7 +1319,7 @@ function listele(){
       '<td>' + tarihFmt + '</td>' +
       '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<br><span style="font-size:.76rem;color:var(--g500)">'+k.alici_firma+'</span>' : '') + '</td>' +
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
-      '<td>' + sureBadge(gun, k.kapatildi) + sureBar(k.kapatildi ? null : gun) + '</td>' +
+      '<td>' + sureBadge(gun, k.kapatildi, _mod) + sureBar(k.kapatildi ? null : gun, _mod) + '</td>' +
       '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi ? '<span style="color:var(--ok)">Kapatıldı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
       '<td>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
@@ -1368,6 +1403,7 @@ async function kaydetIhracat(e){
       tutar_usd: tutarUsd,
       tutar_tl:  tutarTl,
       notlar: document.getElementById('f-notlar').value.trim()||null,
+      ihtarname_tarihi: document.getElementById('f-ihtarname').value || null,
     });
     msg.style.color='var(--ok)';msg.textContent='✅ Kayıt eklendi!';
     formTemizle(true);
@@ -1421,6 +1457,8 @@ function duzenle(id){
   document.getElementById('d-tutar-usd').value    = k.tutar_usd||'';
   document.getElementById('d-tutar-tl').value     = k.tutar_tl||'';
   document.getElementById('d-notlar').value       = k.notlar||'';
+  document.getElementById('d-ihtarname').value   = k.ihtarname_tarihi||'';
+  document.getElementById('d-ihtarname').value   = k.ihtarname_tarihi||'';
   document.getElementById('duzenleModal').classList.add('ac');
 }
 
@@ -1437,6 +1475,7 @@ async function duzenleKaydet(){
       tutar_usd: sayiToFloat(document.getElementById('d-tutar-usd').value),
       tutar_tl:  sayiToFloat(document.getElementById('d-tutar-tl').value),
       notlar: document.getElementById('d-notlar').value.trim()||null,
+      ihtarname_tarihi: document.getElementById('d-ihtarname').value || null,
     });
     modalKapat();
     await yukle();
@@ -1460,7 +1499,7 @@ function formToggle(){
 }
 
 function formTemizle(kapat_form=false){
-  ['f-beyanname','f-tarih','f-ulke','f-firma','f-tutar-usd','f-tutar-tl','f-notlar']
+  ['f-beyanname','f-tarih','f-ulke','f-firma','f-tutar-usd','f-tutar-tl','f-ihtarname','f-notlar']
     .forEach(id=>{document.getElementById(id).value='';});
   if(kapat_form){ formAcik=false; document.getElementById('formPanel').style.display='none'; document.getElementById('formToggleIkon').textContent='▼'; }
 }
