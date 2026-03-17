@@ -1249,7 +1249,7 @@ function listele(){
       if(!hay.includes(arama)) return false;
     }
     if(durum){
-      const gun = kalanGun(k.ihracat_tarihi);
+      const gun = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi).gun;
       if(durum==='kapali' && !k.kapatildi) return false;
       if(durum!=='kapali' && k.kapatildi) return false;
       if(durum==='aktif'  && (gun===null||gun<=30||gun<0)) return false;
@@ -1310,7 +1310,9 @@ function listele(){
   }
 
   tbody.innerHTML = _sayfaKayitlar.map(function(k){
-    const gun = kalanGun(k.ihracat_tarihi);
+    const _efektif = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi);
+    const gun = _efektif.gun;
+    const _mod = _efektif.mod;
     const tarihFmt = k.ihracat_tarihi
       ? new Date(k.ihracat_tarihi+'T00:00:00').toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'})
       : '—';
