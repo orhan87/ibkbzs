@@ -1296,6 +1296,8 @@ async function kaydetIhracat(e){
   const msg = document.getElementById('formMsg');
   const userId = jwtUserId(TOKEN);
   if(!userId){ cikisYap(); return; }
+  const beyanname = document.getElementById('f-beyanname').value.trim();
+  if(!beyanname){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ Beyanname numarası zorunludur.'; return; }
   const tarih = document.getElementById('f-tarih').value;
   if(!tarih){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ İhracat tarihi zorunludur.'; return; }
   const ulke  = document.getElementById('f-ulke').value.trim();
@@ -1309,7 +1311,7 @@ async function kaydetIhracat(e){
   try{
     await sbPost({
       user_id: userId,
-      beyanname_no: document.getElementById('f-beyanname').value.trim()||null,
+      beyanname_no: beyanname,
       ihracat_tarihi: tarih,
       ulke: ulke,
       alici_firma: document.getElementById('f-firma').value.trim()||null,
