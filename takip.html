@@ -1198,14 +1198,13 @@ function ozetGuncelle(){
   _kayitlar.forEach(function(k){
     if(k.kapatildi){ kapali++; return; }
     if(k.ihtarname_tarihi) ihtarname++;
-    const _efektif = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi);
-    const gun = _efektif.gun;
-    const _mod = _efektif.mod;
+    const gun = kalanGun(k.ihracat_tarihi);
     if(gun === null) return;
-    if(_mod === 'ihtarname' && gun < 0) ihtarnameKrit++;
-    else if(gun < 0) krit++;
+    if(gun < 0) krit++;
     else if(gun <= 30) uyari30++;
-    else if(_mod !== 'ihtarname') aktif++;
+    else aktif++;
+    // İhtarname süresi geçmiş mi?
+    if(k.ihtarname_tarihi && ihtarKalanGun(k.ihtarname_tarihi) < 0) ihtarnameKrit++;
   });
   document.getElementById('ozToplamAdet').textContent = toplam;
   document.getElementById('ozAktif').textContent      = aktif;
@@ -1266,7 +1265,7 @@ function listele(){
       if(!hay.includes(arama)) return false;
     }
     if(durum){
-      const gun = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi).gun;
+      const gun = kalanGun(k.ihracat_tarihi);
       if(durum==='kapali' && !k.kapatildi) return false;
       if(durum!=='kapali' && k.kapatildi) return false;
       if(durum==='aktif'  && (gun===null||gun<=30||gun<0)) return false;
@@ -1282,8 +1281,8 @@ function listele(){
     var _k = _siralamaKolon;
     var _d = _siralamaYon === 'asc' ? 1 : -1;
     if(_k === 'kalan_sure'){
-      var ga = a.kapatildi ? 99999 : (efektifKalanGun(a.ihracat_tarihi, a.ihtarname_tarihi).gun ?? 99998);
-      var gb = b.kapatildi ? 99999 : (efektifKalanGun(b.ihracat_tarihi, b.ihtarname_tarihi).gun ?? 99998);
+      var ga = a.kapatildi ? 99999 : (kalanGun(a.ihracat_tarihi) ?? 99998);
+      var gb = b.kapatildi ? 99999 : (kalanGun(b.ihracat_tarihi) ?? 99998);
       return (ga - gb) * _d;
     }
     if(_k === 'ihtarname_tarihi'){
@@ -1332,9 +1331,7 @@ function listele(){
   }
 
   tbody.innerHTML = _sayfaKayitlar.map(function(k){
-    const _efektif = efektifKalanGun(k.ihracat_tarihi, k.ihtarname_tarihi);
-    const gun = _efektif.gun;
-    const _mod = _efektif.mod;
+    const gun = kalanGun(k.ihracat_tarihi);
     const tarihFmt = k.ihracat_tarihi
       ? new Date(k.ihracat_tarihi+'T00:00:00').toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'})
       : '—';
@@ -1343,7 +1340,7 @@ function listele(){
       '<td>' + tarihFmt + '</td>' +
       '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<br><span style="font-size:.76rem;color:var(--g500)">'+k.alici_firma+'</span>' : '') + '</td>' +
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
-      '<td>' + sureBadge(gun, k.kapatildi, _mod) + sureBar(k.kapatildi ? null : gun, _mod) + '</td>' +
+      '<td>' + sureBadge(gun, k.kapatildi) + sureBar(k.kapatildi ? null : gun) + '</td>' +
       '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi ? '<span style="color:var(--ok)">Kapatıldı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
       (function(){
         if(!k.ihtarname_tarihi) return '<td style="font-size:.8rem;color:var(--g400);text-align:center;">—</td>';
