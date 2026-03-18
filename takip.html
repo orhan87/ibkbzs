@@ -12,6 +12,14 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <script>
+window.onerror = function(msg, src, line, col, err){
+  var _msg = String(msg || '');
+  var _sessiz = ['Script error','ResizeObserver','Non-Error promise','Loading chunk'];
+  if(_sessiz.some(function(b){ return _msg.indexOf(b) > -1; })) return true;
+  return true;
+};
+window.addEventListener('unhandledrejection', function(e){ e.preventDefault(); });
+
 // Oturum kontrolü
 if(!sessionStorage.getItem('govdag_token')){
   document.location.replace('./login.html');
@@ -1974,5 +1982,16 @@ function formTemizle(kapat_form=false){
 yukle();
 </script>
 
+
+<footer style="background:#0f172a;padding:18px 32px;text-align:center;margin-top:40px;">
+  <p style="font-size:.75rem;color:rgba(255,255,255,.3);">
+    © 2026 gövdağ İBKB Sorgulama &nbsp;·&nbsp;
+    <a href="./kvkk.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">KVKK Aydınlatma Metni</a>
+    &nbsp;·&nbsp;
+    <a href="./kullanim-kosullari.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">Kullanım Koşulları</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:destek@ibkbsorgulama.com" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">destek@ibkbsorgulama.com</a>
+  </p>
+</footer>
 </body>
 </html>

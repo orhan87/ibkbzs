@@ -565,15 +565,17 @@ if(!sessionStorage.getItem('govdag_token')){
 <script>
 // Global hata yakalayıcı - beklenmedik JS hatalarında kullanıcıyı bilgilendir
 window.onerror = function(msg, src, line, col, err){
-  // Token yoksa ya da login sayfasına yönlendirme hatasıysa sessiz geç
-  if(!sessionStorage.getItem('govdag_token') && !window.location.href.includes('login')) return;
-  var bilinen = ['ResizeObserver','Script error','Non-Error promise'];
-  if(bilinen.some(function(b){ return String(msg).indexOf(b) > -1; })) return false;
-  console.warn('[gövdağ hata]', msg, 'L'+line);
-  return false; // Tarayıcı default hata gösterimini engelleme
+  var _msg = String(msg || '');
+  // Cross-origin ve bilinen gürültü hataları - tamamen sessizleştir
+  var _sessiz = ['Script error','ResizeObserver','Non-Error promise','Loading chunk'];
+  if(_sessiz.some(function(b){ return _msg.indexOf(b) > -1; })) return true;
+  // Token yoksa sessiz geç
+  if(!sessionStorage.getItem('govdag_token')) return true;
+  console.warn('[hata]', _msg, src ? 'L'+line : '');
+  return true; // true = tarayıcı konsoluna tekrar yazdırma
 };
 window.addEventListener('unhandledrejection', function(e){
-  console.warn('[gövdağ promise]', e.reason);
+  e.preventDefault();
 });
 </script>
   <meta property="og:type" content="website">
@@ -1847,9 +1849,6 @@ function hesaplaCore(){
   document.getElementById('result').style.display='block';
   document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
 
-  // Geçmişe kaydet
-  try {
-    const htmlDetay = document.getElementById('result').innerHTML;
   // Kopyala butonu ekle
   (function(){
     var rEl = document.getElementById('result');
@@ -1862,7 +1861,7 @@ function hesaplaCore(){
     var btn = document.createElement('button');
     btn.id = '_kopyalaBtn';
     btn.title = 'Sonucu panoya kopyala';
-    btn.style.cssText = 'display:flex;align-items:center;gap:5px;padding:5px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:7px;font-size:.75rem;font-weight:600;color:#374162;cursor:pointer;font-family:inherit;transition:all .15s;';
+    btn.style.cssText = 'display:flex;align-items:center;gap:5px;padding:5px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:6px;font-size:.75rem;color:#475569;cursor:pointer;font-family:inherit;transition:.15s;';
     btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Kopyala';
     btn.onmouseenter = function(){ this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; };
     btn.onmouseleave = function(){ this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; };
@@ -1870,6 +1869,10 @@ function hesaplaCore(){
     bar.appendChild(btn);
     rEl.insertBefore(bar, rEl.firstChild);
   })();
+
+  // Geçmişe kaydet
+  try {
+    const htmlDetay = document.getElementById('result').innerHTML;
     gecmiseKaydet({
       ulke:      String(ulke || ''),
       ulkeHam:   String(ulke || ''),
@@ -1886,8 +1889,8 @@ function hesaplaCore(){
       muaf:      ibkbMatrah === 0,
       adimlar:   adimlar.map(a=>({l:a.l, v:a.v})),
       muafDilim: (adimlar.find(a=>a.l&&a.l.includes('15.000'))||{}).v || '—',
-      brutMatrah:(adimlar.find(a=>a.l&&(a.l.includes('Brüt matrah')||a.l.includes('Matrah'))&&!a.l.includes('Düzenlenmesi'))||{}).v || '—',
-      saat:      new Date().toLocaleString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+      brutMatrah:(adimlar.find(a=>a.l&&(a.l.includes('Brüt matrah')||a.l.includes('Matrah'))&&!a.l.includes('D'))||{}).v || '—',
+      saat:      new Date().toLocaleString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       htmlDetay: htmlDetay,
     });
   } catch(e) { console.error('Geçmiş kaydedilemedi:', e); }
@@ -2113,7 +2116,7 @@ function gecmisPanelGuncelle(){
   const aramaEl = document.getElementById('gecmisArama');
   if(aramaEl && aramaEl.value) aramaEl.value = '';
   panel.style.display = 'block';
-  sayac.textContent = sorguGecmisi.length + ' sorgu · Sayfa ' + _gecmisSayfa + '/' + _gToplamSayfa;
+  // sayac sayfalama sonrası güncellenecek
   btnPdf.disabled = false;
   // Xlsx butonu da etkinleştir
   const btnXlsxEl = document.getElementById('btnXlsx');
@@ -2128,6 +2131,8 @@ function gecmisPanelGuncelle(){
   const _gBasla = (_gecmisSayfa - 1) * _GECMIS_BOYUTU;
   const _gBitis = Math.min(_gBasla + _GECMIS_BOYUTU, satirlar.length);
   const _sayfaSatirlar = satirlar.slice(_gBasla, _gBitis);
+  // Sayaç güncelle
+  if(sayac) sayac.textContent = sorguGecmisi.length + ' sorgu' + (_gToplamSayfa > 1 ? ' · Sayfa ' + _gecmisSayfa + '/' + _gToplamSayfa : '');
 
   // Adımlardan değer çek
   const adimDeger = (q, anahtar) => {
@@ -2731,5 +2736,16 @@ function xlsxIndir(){
 }
 
 </script>
+
+<footer style="background:#0f172a;padding:18px 32px;text-align:center;margin-top:40px;">
+  <p style="font-size:.75rem;color:rgba(255,255,255,.3);">
+    © 2026 gövdağ İBKB Sorgulama &nbsp;·&nbsp;
+    <a href="./kvkk.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">KVKK Aydınlatma Metni</a>
+    &nbsp;·&nbsp;
+    <a href="./kullanim-kosullari.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">Kullanım Koşulları</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:destek@ibkbsorgulama.com" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">destek@ibkbsorgulama.com</a>
+  </p>
+</footer>
 </body>
 </html>
