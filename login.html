@@ -512,7 +512,7 @@ window.onload = function(){
 
   // Zaten giriş yapılmışsa yönlendir
   var token = sessionStorage.getItem('govdag_token');
-  if(token) document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo');  if(_sLogo && typeof _LOGO_URI !== 'undefined') _sLogo.src = _LOGO_URI;
+  if(token) document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo'); if(_sLogo){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); _sLogo.src = _lc.logo || _LOGO_URI || ''; }catch(e){ _sLogo.src = _LOGO_URI||''; } }
 };
 
 function hataGoster(msg){
@@ -728,7 +728,7 @@ async function davetParolaBelirle(){
           body:JSON.stringify({email:d.email,giris_tarihi:new Date().toISOString()})
         });
       }catch(e){}
-      document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo');  if(_sLogo && typeof _LOGO_URI !== 'undefined') _sLogo.src = _LOGO_URI;
+      document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo'); if(_sLogo){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); _sLogo.src = _lc.logo || _LOGO_URI || ''; }catch(e){ _sLogo.src = _LOGO_URI||''; } }
     } else {
       var msg = d.msg || d.message || d.error_description || 'Bilinmeyen hata';
       hataEl.style.display='flex'; hataMsgEl.textContent='Hata: '+msg;
@@ -974,7 +974,7 @@ async function girisYap(){
     } catch(e){ /* demo kontrol hatası girişi engellemesin */ }
 
     // Yönlendir
-    document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo');  if(_sLogo && typeof _LOGO_URI !== 'undefined') _sLogo.src = _LOGO_URI;
+    document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo'); if(_sLogo){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); _sLogo.src = _lc.logo || _LOGO_URI || ''; }catch(e){ _sLogo.src = _LOGO_URI||''; } }
 
   }catch(err){
     hataGoster('Bağlantı hatası. İnternet bağlantınızı kontrol edin.');
@@ -1031,6 +1031,8 @@ async function girisYap(){
         if(_lcfg.logo){
           var _li = document.getElementById('_logoImgLogin');
           if(_li) _li.src = _lcfg.logo;
+          var _sl = document.getElementById('secimLogo');
+          if(_sl) _sl.src = _lcfg.logo;
         }
         // Favicon
         if(_lcfg.favicon){
