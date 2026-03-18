@@ -65,6 +65,10 @@ if(!sessionStorage.getItem('govdag_token')){
             }
           }, 300);
         }
+        if(_up.get('onceki')){
+          var _ocEl = document.getElementById('oncekiIbkb');
+          if(_ocEl){ _ocEl.value = _up.get('onceki'); if(typeof sayiFormatla==='function') sayiFormatla(_ocEl); }
+        }
         // URL'i temizle (geri tuşu sorunu olmasın)
         window.history.replaceState({}, '', window.location.pathname);
       }

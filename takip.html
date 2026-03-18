@@ -510,6 +510,10 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
             <input type="text" id="f-tutar-tl" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
           </div>
           <div class="fg">
+            <label>Daha Önce Düzenlenen İBKB Tutarı (USD)</label>
+            <input type="text" id="f-onceki-ibkb" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" title="Varsa daha önce düzenlenen İBKB tutarını girin">
+          </div>
+          <div class="fg">
             <label>İhtarname Tebliğ Tarihi</label>
             <input type="date" id="f-ihtarname" title="Vergi dairesinden ihtarname alındıysa tebliğ tarihini girin. Bu tarihten itibaren 90 gün ek süre başlar.">
             <span style="font-size:.72rem;color:var(--g500);margin-top:2px;">📬 Girilirse 90 gün ek süre başlar</span>
@@ -569,6 +573,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
               <th onclick="siralama('ihracat_tarihi')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-tarih">İhracat Tarihi</span></th>
               <th onclick="siralama('ulke')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-ulke">Ülke / Firma</span></th>
               <th onclick="siralama('tutar_usd')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-tutar">Tutar</span></th>
+              <th onclick="siralama('onceki_ibkb')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-onceki">Önceki İBKB</span></th>
               <th onclick="siralama('kalan_sure')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-sure">Kalan Süre</span></th>
               <th onclick="siralama('son_tarih')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-son">Son Tarih</span></th>
               <th onclick="siralama('ihtarname_tarihi')" style="cursor:pointer;user-select:none;" title="Sırala"><span id="th-ihtar">📬 İhtarname / Ek Süre</span></th>
@@ -576,7 +581,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
             </tr>
           </thead>
           <tbody id="tblBody">
-            <tr><td colspan="9"><div class="bos-durum"><div class="ikon">⏳</div><p>Yükleniyor…</p></div></td></tr>
+            <tr><td colspan="10"><div class="bos-durum"><div class="ikon">⏳</div><p>Yükleniyor…</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -815,6 +820,10 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <input type="text" id="d-tutar-tl" placeholder="0,00" inputmode="decimal" oninput="sayiFormatla(this)">
       </div>
       <div class="fg">
+        <label>Daha Önce Düzenlenen İBKB Tutarı (USD)</label>
+        <input type="text" id="d-onceki-ibkb" placeholder="0,00" inputmode="decimal" oninput="sayiFormatla(this)">
+      </div>
+      <div class="fg">
         <label>İhtarname Tebliğ Tarihi</label>
         <input type="date" id="d-ihtarname">
         <span style="font-size:.72rem;color:var(--g500);margin-top:2px;">📬 Girilirse 90 gün ek süre başlar</span>
@@ -880,6 +889,9 @@ function hesaplamaGonder(id){
   } else if(k.tutar_tl && k.tutar_tl > 0){
     params.set('bedel', String(k.tutar_tl).replace('.',','));
     params.set('para', 'TRY');
+  }
+  if(k.onceki_ibkb && k.onceki_ibkb > 0){
+    params.set('onceki', String(k.onceki_ibkb).replace('.',','));
   }
   window.location.href = './index.html?' + params.toString();
 }
@@ -1078,6 +1090,7 @@ function takipPdfIndir(){
       +'<td style="padding:8px 10px;font-size:.82rem;font-weight:600;">'+(k.ulke||'—')+'</td>'
       +'<td style="padding:8px 10px;font-size:.78rem;color:#475569;">'+(k.alici_firma||'—')+'</td>'
       +'<td style="padding:8px 10px;font-size:.8rem;text-align:right;">'+(tutarStr||'—')+'</td>'
+      +'<td style="padding:8px 10px;font-size:.8rem;color:#475569;">'+(k.onceki_ibkb ? '$'+Number(k.onceki_ibkb).toLocaleString('tr-TR',{minimumFractionDigits:2}) : '—')+'</td>'
       +'<td style="padding:8px 10px;font-size:.82rem;">'+sonTarih+'</td>'
       +(function(){
         var _itKalanPdf = k.ihtarname_tarihi ? ihtarKalanGun(k.ihtarname_tarihi) : null;
@@ -1111,7 +1124,7 @@ function takipPdfIndir(){
     +'</div>'
     +'<table><thead><tr>'
     +'<th>#</th><th>Beyanname No</th><th>İhracat Tarihi</th><th>Ülke</th>'
-    +'<th>Alıcı Firma</th><th>Tutar</th><th>Son Tarih</th><th>Kalan Süre</th><th>📬 İhtarname Ek Süre</th><th>Durum</th>'
+    +'<th>Alıcı Firma</th><th>Tutar</th><th>Önceki İBKB</th><th>Son Tarih</th><th>Kalan Süre</th><th>📬 İhtarname Ek Süre</th><th>Durum</th>'
     +'</tr></thead><tbody>'+satirlar+'</tbody></table>'
     +'</div></body></html>';
 
@@ -1153,7 +1166,7 @@ function takipExcelIndir(){
   var esc = function(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
 
   var basliklar = ['#','Beyanname No','İhracat Tarihi','Ülke','Alıcı Firma',
-    'Tutar (USD)','Tutar (TL)','Son Tarih (180. Gün)','Kalan Gün','İhtarname Tebliğ Tarihi','İhtarname Kalan Gün','Durum','Notlar'];
+    'Tutar (USD)','Tutar (TL)','Önceki İBKB (USD)','Son Tarih (180. Gün)','Kalan Gün','İhtarname Tebliğ Tarihi','İhtarname Kalan Gün','Durum','Notlar'];
 
   var hRow = '<Row ss:StyleID="h">'
     + basliklar.map(function(b){ return '<Cell><Data ss:Type="String">'+esc(b)+'</Data></Cell>'; }).join('')
@@ -1172,6 +1185,7 @@ function takipExcelIndir(){
       +'<Cell><Data ss:Type="String">'+esc(k.alici_firma)+'</Data></Cell>'
       +'<Cell><Data ss:Type="Number">'+esc(k.tutar_usd||'')+'</Data></Cell>'
       +'<Cell><Data ss:Type="Number">'+esc(k.tutar_tl||'')+'</Data></Cell>'
+      +'<Cell><Data ss:Type="'+(k.onceki_ibkb!==null&&k.onceki_ibkb!==undefined?'Number':'String')+'">'+esc(k.onceki_ibkb||'')+'</Data></Cell>'
       +'<Cell><Data ss:Type="String">'+esc(sonTarih)+'</Data></Cell>'
       +'<Cell><Data ss:Type="'+(gun!==null?'Number':'String')+'">'+esc(gun!==null?gun:'')+'</Data></Cell>'
       +'<Cell><Data ss:Type="String">'+esc(k.ihtarname_tarihi||'')+'</Data></Cell>'
@@ -1213,7 +1227,7 @@ async function yukle(){
     listele();
   }catch(e){
     document.getElementById('tblBody').innerHTML =
-      '<tr><td colspan="9"><div class="bos-durum"><div class="ikon">⚠️</div><h3>Bağlantı Hatası</h3><p>' + e.message + '</p></div></td></tr>';
+      '<tr><td colspan="10"><div class="bos-durum"><div class="ikon">⚠️</div><h3>Bağlantı Hatası</h3><p>' + e.message + '</p></div></td></tr>';
   }
 }
 
@@ -1328,14 +1342,19 @@ function listele(){
       var ub = (b.tutar_usd || b.tutar_tl || 0);
       return (ua - ub) * _d;
     }
+    if(_k === 'onceki_ibkb'){
+      var oa = (a.onceki_ibkb || 0);
+      var ob = (b.onceki_ibkb || 0);
+      return (oa - ob) * _d;
+    }
     var va = String(a[_k] || '').toLowerCase();
     var vb = String(b[_k] || '').toLowerCase();
     return va.localeCompare(vb, 'tr') * _d;
   });
 
   // Başlık ikonlarını güncelle
-  ['byn','tarih','ulke','tutar','sure','son','ihtar'].forEach(function(s){ var el=document.getElementById('th-'+s); if(el) el.innerHTML=el.textContent.split('▲')[0].split('▼')[0].split('⇅')[0].trim(); });
-  var _ikonMap = {beyanname_no:'byn',ihracat_tarihi:'tarih',ulke:'ulke',tutar_usd:'tutar',kalan_sure:'sure',son_tarih:'son',ihtarname_tarihi:'ihtar'};
+  ['byn','tarih','ulke','tutar','onceki','sure','son','ihtar'].forEach(function(s){ var el=document.getElementById('th-'+s); if(el) el.innerHTML=el.textContent.split('▲')[0].split('▼')[0].split('⇅')[0].trim(); });
+  var _ikonMap = {beyanname_no:'byn',ihracat_tarihi:'tarih',ulke:'ulke',tutar_usd:'tutar',kalan_sure:'sure',son_tarih:'son',ihtarname_tarihi:'ihtar',onceki_ibkb:'onceki'};
   var _aktifEl = document.getElementById('th-' + (_ikonMap[_siralamaKolon]||'tarih'));
   if(_aktifEl) _aktifEl.innerHTML = _aktifEl.textContent.trim() + (_siralamaYon==='asc' ? ' <span style="color:#f59e0b;">▲</span>' : ' <span style="color:#f59e0b;">▼</span>');
 
@@ -1350,7 +1369,7 @@ function listele(){
     filtered.length + '/' + _kayitlar.length + ' kayıt · Sayfa ' + _mevcutSayfa + '/' + _toplamSayfa;
 
   if(filtered.length === 0){
-    tbody.innerHTML = '<tr><td colspan="9"><div class="bos-durum">' +
+    tbody.innerHTML = '<tr><td colspan="10"><div class="bos-durum">' +
       '<div class="ikon">📭</div>' +
       '<h3>' + (_kayitlar.length === 0 ? 'Henüz kayıt yok' : 'Sonuç bulunamadı') + '</h3>' +
       '<p>' + (_kayitlar.length === 0 ? 'Yukarıdan yeni ihracat kaydı ekleyin.' : 'Filtreyi değiştirmeyi deneyin.') + '</p>' +
@@ -1369,6 +1388,7 @@ function listele(){
       '<td>' + tarihFmt + '</td>' +
       '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<br><span style="font-size:.76rem;color:var(--g500)">'+k.alici_firma+'</span>' : '') + '</td>' +
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
+      '<td style="font-size:.8rem;color:var(--g600);">' + (k.onceki_ibkb ? '$'+Number(k.onceki_ibkb).toLocaleString('tr-TR',{minimumFractionDigits:2}) : '<span style="color:var(--g400);">—</span>') + '</td>' +
       '<td>' + (k.durum==='ceza' ? '<span class="sure-badge sure-ceza">⚖ Cezalı</span>' : sureBadge(gun, k.kapatildi||k.durum==='kapali') + sureBar((k.kapatildi||k.durum==='kapali'||k.durum==='ceza') ? null : gun)) + '</td>' +
       '<td style="font-size:.8rem;color:var(--g600);">' + (k.kapatildi||k.durum==='kapali' ? '<span style="color:var(--ok)">Kapatıldı</span>' : k.durum==='ceza' ? '<span style="color:#6d28d9;">⚖ Cezalı</span>' : sonTarihFmt(k.ihracat_tarihi)) + '</td>' +
       (function(){
@@ -1472,6 +1492,7 @@ async function kaydetIhracat(e){
       alici_firma: document.getElementById('f-firma').value.trim()||null,
       tutar_usd: tutarUsd,
       tutar_tl:  tutarTl,
+      onceki_ibkb: sayiToFloat(document.getElementById('f-onceki-ibkb').value),
       notlar: document.getElementById('f-notlar').value.trim()||null,
       ihtarname_tarihi: document.getElementById('f-ihtarname').value || null,
     });
@@ -1538,6 +1559,7 @@ function duzenle(id){
   document.getElementById('d-tutar-tl').value     = k.tutar_tl||'';
   document.getElementById('d-notlar').value       = k.notlar||'';
   document.getElementById('d-ihtarname').value   = k.ihtarname_tarihi||'';
+  document.getElementById('d-onceki-ibkb').value  = k.onceki_ibkb||'';
   document.getElementById('d-ihtarname').value   = k.ihtarname_tarihi||'';
   document.getElementById('duzenleModal').classList.add('ac');
 }
@@ -1555,6 +1577,7 @@ async function duzenleKaydet(){
       tutar_usd: sayiToFloat(document.getElementById('d-tutar-usd').value),
       tutar_tl:  sayiToFloat(document.getElementById('d-tutar-tl').value),
       notlar: document.getElementById('d-notlar').value.trim()||null,
+      onceki_ibkb: sayiToFloat(document.getElementById('d-onceki-ibkb').value),
       ihtarname_tarihi: document.getElementById('d-ihtarname').value || null,
     });
     modalKapat();
@@ -1579,7 +1602,7 @@ function formToggle(){
 }
 
 function formTemizle(kapat_form=false){
-  ['f-beyanname','f-tarih','f-ulke','f-firma','f-tutar-usd','f-tutar-tl','f-ihtarname','f-notlar']
+  ['f-beyanname','f-tarih','f-ulke','f-firma','f-tutar-usd','f-tutar-tl','f-onceki-ibkb','f-ihtarname','f-notlar']
     .forEach(id=>{document.getElementById(id).value='';});
   if(kapat_form){ formAcik=false; document.getElementById('formPanel').style.display='none'; document.getElementById('formToggleIkon').textContent='▼'; }
 }
