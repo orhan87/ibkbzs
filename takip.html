@@ -54,17 +54,8 @@ body{
 }
 
 /* HEADER */
-header{
-  background:rgba(15,23,42,.95);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.08);
-  padding:0 24px;
-  height:56px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;top:0;z-index:100;
-}
+header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
+.hi{max-width:1160px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;}
 .hlogo{display:flex;align-items:center;gap:12px;}
 .hlogo img{height:28px;width:auto;}
 .hlogo-sep{color:rgba(255,255,255,.2);font-size:1.2rem;}
@@ -82,7 +73,7 @@ header{
 .btn-cikis:hover{background:rgba(255,255,255,.12);color:#fff;}
 
 /* ANA YAPI */
-.main{max-width:1200px;margin:0 auto;padding:28px 20px;}
+.main{max-width:1160px;margin:0 auto;padding:28px 24px;}
 
 /* ÖZET KARTLAR */
 .ozet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
@@ -140,13 +131,13 @@ header{
 table{width:100%;border-collapse:collapse;font-size:.83rem;}
 thead tr{background:var(--navy);}
 thead th{
-  padding:10px 12px;text-align:left;color:rgba(255,255,255,.75);
+  padding:7px 10px;text-align:left;color:rgba(255,255,255,.75);
   font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;
   white-space:nowrap;
 }
 tbody tr{border-bottom:1px solid var(--g100);transition:.15s;}
 tbody tr:hover{background:var(--g50);}
-tbody td{padding:10px 12px;vertical-align:middle;}
+tbody td{padding:6px 10px;vertical-align:middle;font-size:.82rem;}
 
 /* SÜRE BADGE */
 .sure-badge{
@@ -223,6 +214,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
 <body>
 
 <header>
+  <div class="hi">
   <div class="hlogo">
     <img id="hdrLogo" alt="gövdag">
     <script>(function(){/* logo Supabase'den yuklenecek */})()</script>
@@ -233,6 +225,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
   <div class="hnav">
     <a href="./index.html" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:6px;color:rgba(255,255,255,.75);font-size:.8rem;font-weight:500;text-decoration:none;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;letter-spacing:.01em;" onmouseover="this.style.background='rgba(255,255,255,.13)';this.style.borderColor='rgba(255,255,255,.25)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,.07)';this.style.borderColor='rgba(255,255,255,.14)';this.style.color='rgba(255,255,255,.75)'"><span style="font-size:.85rem;opacity:.8;">🧮</span> Hesaplama</a>
     <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
+  </div>
   </div>
 </header>
 
@@ -1193,6 +1186,12 @@ function takipPdfIndir(){
     else if(gun<=15){ durumMetin='Kritik: '+gun+' gün'; durumRenk='#dc2626'; }
     else if(gun<=30){ durumMetin='Uyarı: '+gun+' gün'; durumRenk='#d97706'; }
     else { durumMetin='Aktif: '+gun+' gün'; durumRenk='#059669'; }
+    // İhtarname varsa duruma ekle
+    if(k.ihtarname_tarihi && k.durum!=='ceza' && !k.kapatildi && k.durum!=='kapali'){
+      var _itg = ihtarKalanGun(k.ihtarname_tarihi);
+      var _itEk = _itg < 0 ? ' · 📬 İhtarname Süresi Aşıldı' : ' · 📬 İhtarname: '+_itg+' gün';
+      durumMetin += _itEk;
+    }
     var tutarStr = '';
     if(k.tutar_usd) tutarStr += '$'+Number(k.tutar_usd).toLocaleString('tr-TR',{minimumFractionDigits:2});
     if(k.tutar_tl)  tutarStr += (tutarStr?' / ':'')+'₺'+Number(k.tutar_tl).toLocaleString('tr-TR',{minimumFractionDigits:2});
@@ -1291,6 +1290,10 @@ function takipExcelIndir(){
     var sonTarih = k.ihracat_tarihi ? new Date(new Date(k.ihracat_tarihi+'T00:00:00').getTime()+180*86400000).toLocaleDateString('tr-TR') : '';
     var durumMetin = k.durum==='ceza' ? '⚖ Cezalı' : (k.kapatildi||k.durum==='kapali') ? 'Kapatıldı'
       : gun===null ? '' : gun<0 ? 'Süresi Doldu' : gun<=15 ? 'Kritik' : gun<=30 ? 'Uyarı' : 'Aktif';
+    if(k.ihtarname_tarihi && k.durum!=='ceza' && !k.kapatildi && k.durum!=='kapali'){
+      var _itgx = ihtarKalanGun(k.ihtarname_tarihi);
+      durumMetin += _itgx < 0 ? ' | İhtarname Süresi Aşıldı' : ' | İhtarname: '+_itgx+' gün';
+    }
     return '<Row>'
       +'<Cell><Data ss:Type="Number">'+(i+1)+'</Data></Cell>'
       +'<Cell><Data ss:Type="String">'+esc(k.beyanname_no)+'</Data></Cell>'
@@ -1990,8 +1993,4 @@ yukle();
     &nbsp;·&nbsp;
     <a href="./kullanim-kosullari.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">Kullanım Koşulları</a>
     &nbsp;·&nbsp;
-    <a href="mailto:destek@ibkbsorgulama.com" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">destek@ibkbsorgulama.com</a>
-  </p>
-</footer>
-</body>
-</html>
+    <a href="/cdn-cgi/l/email-protection#d9bdbcaaadbcb299b0bbb2bbaab6abbeacb5b8b4b8f7bab6b4" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="_
