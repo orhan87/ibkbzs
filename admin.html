@@ -2130,8 +2130,8 @@ function kullaniciTablosuRender(users, logOnly){
   var tAd = {'demo':'Demo Talep','satin-alma':'Satın Alma','diger':'Diğer'};
 
   var th = '<thead><tr style="background:#f0f4f8;border-bottom:2px solid #e2e8f0;">'
-    + ['E-posta','Ad Soyad','Firma','Telefon','Talep','Etiket / Not','Kayıt','Son Giriş','Giriş','Sorgu','İşlem'].map(function(h){
-        return '<th style="padding:9px 10px;text-align:'+(h==='İşlem'||h==='Kayıt'||h==='Son Giriş'||h==='Giriş'||h==='Sorgu'?'center':'left')+';color:#4a5568;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;white-space:nowrap;">'+h+'</th>';
+    + ['E-posta','Ad Soyad','Firma','Telefon','Talep','Etiket / Not','Kayıt','Son Giriş','Giriş','Sorgu','Durum','İşlem'].map(function(h){
+        return '<th style="padding:9px 10px;text-align:'+(h==='İşlem'||h==='Kayıt'||h==='Son Giriş'||h==='Giriş'||h==='Sorgu'||h==='Durum'?'center':'left')+';color:#4a5568;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700;white-space:nowrap;">'+h+'</th>';
       }).join('')
     + '</tr></thead>';
 
@@ -2166,6 +2166,15 @@ function kullaniciTablosuRender(users, logOnly){
       + '<td style="padding:8px 10px;color:#64748b;text-align:center;white-space:nowrap;">'+fmtSon(u.sonGiris)+'</td>'
       + '<td style="padding:8px 10px;text-align:center;"><span style="background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:.75rem;padding:2px 8px;border-radius:10px;">'+u.girisAdedi+'</span></td>'
       + '<td style="padding:8px 10px;text-align:center;"><span style="background:#f0fdf4;color:#166534;font-weight:700;font-size:.75rem;padding:2px 8px;border-radius:10px;">'+(u.sorguSayisi||0)+'</span></td>'
+      + (function(){
+          var _aktif = !u.banned_until || new Date(u.banned_until) < new Date();
+          return '<td style="padding:8px 10px;text-align:center;">'
+            + '<button data-id="'+eId+'" data-aktif="'+(_aktif?'1':'0')+'" class="_kulDurumToggle" '
+            + 'style="font-size:.72rem;padding:3px 10px;border-radius:10px;cursor:pointer;font-family:inherit;border:1.5px solid;'
+            + (_aktif ? 'background:#f0fdf4;color:#166534;border-color:#86efac;' : 'background:#fef2f2;color:#991b1b;border-color:#fca5a5;')
+            + '">' + (_aktif ? '✓ Aktif' : '✗ Pasif') + '</button>'
+            + '</td>';
+        })()
       + '<td style="padding:8px 10px;text-align:center;">'
       +   '<div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">'
       +     '<button data-id="'+eId+'" data-email="'+eEmail+'" class="_kulSifirla" style="font-size:.68rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Sıfırla</button>'
@@ -2184,6 +2193,7 @@ function kullaniciTablosuRender(users, logOnly){
   el.querySelectorAll('._kulNot').forEach(function(b){ b.addEventListener('click',function(){ kullaniciNotDuzenle(this.dataset.email); }); });
   el.querySelectorAll('._kulSifirla').forEach(function(b){ b.addEventListener('click',function(){ parolaSifirla(this.dataset.id, this.dataset.email); }); });
   el.querySelectorAll('._lisansUzat').forEach(function(b){ b.addEventListener('click',function(){ lisansUzat(this.dataset.id, this.dataset.email, decodeURIComponent(this.dataset.bitis||'')); }); });
+  el.querySelectorAll('._kulDurumToggle').forEach(function(b){ b.addEventListener('click',function(){ kullaniciDurumToggle(this.dataset.id, this.dataset.aktif==='1'); }); });
 }
 
 
@@ -2759,22 +2769,30 @@ async function dashboardYukle(){
     const headers = key ? {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'} : {};
 
     // Paralel fetch
-    const [rUsers, rLog, rSorgu, rBasv] = await Promise.allSettled([
+    const [rUsers, rLog, rSorgu, rBasv, rIhracat] = await Promise.allSettled([
       key ? fetch(sb.url+'/auth/v1/admin/users?per_page=200', {headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key)}}) : Promise.resolve(null),
       key ? fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000', {headers}) : Promise.resolve(null),
       key ? fetch(sb.url+'/rest/v1/sorgular?select=id,tarih&order=tarih.desc&limit=1000', {headers:{'apikey':key,'Authorization':'Bearer '+key}}) : Promise.resolve(null),
       key ? fetch(sb.url+'/rest/v1/basvurular?select=id,tarih,talep&order=tarih.desc&limit=200', {headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/ihracatlar?select=id,durum,kapatildi,created_at&limit=2000', {headers:{'apikey':key,'Authorization':'Bearer '+key}}) : Promise.resolve(null),
     ]);
 
     const usersData  = rUsers.value  && rUsers.value.ok  ? await rUsers.value.json()  : {};
     const logData    = rLog.value    && rLog.value.ok    ? await rLog.value.json()    : [];
     const sorguData  = rSorgu.value  && rSorgu.value.ok  ? await rSorgu.value.json()  : [];
-    const basvData   = rBasv.value   && rBasv.value.ok   ? await rBasv.value.json()   : [];
+    const basvData     = rBasv.value    && rBasv.value.ok    ? await rBasv.value.json()    : [];
+    const ihracatData  = rIhracat.value && rIhracat.value.ok ? await rIhracat.value.json() : [];
 
     const kulSayi = (usersData.users||[]).length;
     const logSayi = Array.isArray(logData) ? logData.length : 0;
     const sorguSayi = Array.isArray(sorguData) ? sorguData.length : 0;
     const basvSayi = Array.isArray(basvData) ? basvData.length : 0;
+
+    // İhracat istatistikleri
+    const ihracatToplam  = Array.isArray(ihracatData) ? ihracatData.length : 0;
+    const ihracatAktif   = Array.isArray(ihracatData) ? ihracatData.filter(function(k){ return !k.kapatildi && k.durum !== 'ceza' && k.durum !== 'kapali'; }).length : 0;
+    const ihracatKapali  = Array.isArray(ihracatData) ? ihracatData.filter(function(k){ return k.kapatildi || k.durum === 'kapali'; }).length : 0;
+    const ihracatCeza    = Array.isArray(ihracatData) ? ihracatData.filter(function(k){ return k.durum === 'ceza'; }).length : 0;
 
     // Bugünkü girişler
     const bugun = new Date().toISOString().slice(0,10);
@@ -2838,6 +2856,13 @@ async function dashboardYukle(){
       + kart('🔐', 'Toplam Giriş', logSayi||'0', '#047857', 'Bugün: '+bugunGiris)
       + kart('🔍', 'Toplam Sorgu', sorguSayi||'0', '#7c3aed', 'Son 7 gün: '+son7Sorgu)
       + kart('📬', 'Başvuru', basvSayi||'0', '#b45309', '')
+      + '</div>'
+      + '<div style="margin:16px 0 6px;font-size:.72rem;font-weight:700;color:#8c97a8;text-transform:uppercase;letter-spacing:.06em;">📦 İhracat Takip Defteri</div>'
+      + '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;">'
+      + kart('📋', 'Toplam Kayıt', ihracatToplam||'0', '#1e3a5f', '')
+      + kart('✅', 'Aktif', ihracatAktif||'0', '#059669', '')
+      + kart('🔒', 'Kapatılan', ihracatKapali||'0', '#64748b', '')
+      + kart('⚖', 'Cezalı', ihracatCeza||'0', '#6d28d9', '')
       + '</div>'
       + aktifListesi
       + lisansBitiyorListesi
@@ -2940,6 +2965,40 @@ async function girisLogTemizle(){
 
 
 // ─── LİSANS +1 YIL UZAT ──────────────────────────────────────────────────────
+// ── KULLANICI DURUM TOGGLE ────────────────────────────────────────────────────
+async function kullaniciDurumToggle(userId, simdikiAktif){
+  var eylem = simdikiAktif ? 'pasife almak' : 'aktif yapmak';
+  if(!confirm('Bu kullanıcıyı ' + eylem + ' istediğinizden emin misiniz?')) return;
+  try{
+    var sb = _sbAyarlar();
+    var body;
+    if(simdikiAktif){
+      // Pasife al: banned_until = 100 yıl sonra
+      body = JSON.stringify({ban_duration: '876000h'});
+    } else {
+      // Aktife al: ban kaldır
+      body = JSON.stringify({ban_duration: 'none'});
+    }
+    var res = await fetch(sb.url + '/auth/v1/admin/users/' + userId, {
+      method: 'PUT',
+      headers: {
+        'apikey': sb.key,
+        'Authorization': 'Bearer ' + sb.key,
+        'Content-Type': 'application/json'
+      },
+      body: body
+    });
+    if(!res.ok){
+      var err = await res.json().catch(function(){ return {}; });
+      throw new Error(err.message || 'HTTP ' + res.status);
+    }
+    toast('✅ Kullanıcı durumu güncellendi');
+    await kullanicilariYukle();
+  }catch(e){
+    toast('✗ Hata: ' + e.message);
+  }
+}
+
 async function lisansUzat(id, email, mevcutBitis){
   const sb = sbCfg(); if(!sb) return;
   // Mevcut bitiş tarihinden +1 yıl, ya da bugünden +1 yıl
