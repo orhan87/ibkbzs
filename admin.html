@@ -1790,7 +1790,6 @@ function _gorselSikistir(dataUrl, maxGenislik, kalite) {
 async function scKaydet(id, value) {
   try {
     const valueStr = (typeof value === 'string') ? value : JSON.stringify(value);
-    console.log('[scKaydet] basliyor:', id, 'boyut:', valueStr.length);
     // PATCH dene
     const upd = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
       method: 'PATCH',
@@ -1802,20 +1801,16 @@ async function scKaydet(id, value) {
       },
       body: JSON.stringify({ value: valueStr, updated_at: new Date().toISOString() })
     });
-    console.log('[scKaydet] PATCH status:', upd.status);
     if(upd.ok) {
       const updText = await upd.text().catch(()=>'[]');
-      console.log('[scKaydet] PATCH response:', updText.slice(0,100));
       try {
         const updData = JSON.parse(updText);
         if(Array.isArray(updData) && updData.length > 0) {
-          console.log('[scKaydet] PATCH basarili - guncellendi');
           return true;
         }
       } catch(e) {}
     }
     // INSERT
-    console.log('[scKaydet] INSERT deneniyor...');
     const ins = await fetch(_SC_URL, {
       method: 'POST',
       headers: {
@@ -1827,10 +1822,8 @@ async function scKaydet(id, value) {
       body: JSON.stringify({ id: id, value: valueStr, updated_at: new Date().toISOString() })
     });
     const insText = await ins.text().catch(()=>'');
-    console.log('[scKaydet] INSERT status:', ins.status, insText.slice(0,200));
     if(!ins.ok) {
       if(ins.status === 409 || insText.includes('duplicate')) {
-        console.log('[scKaydet] duplicate - zaten var, tamam');
         return true;
       }
       return false;
