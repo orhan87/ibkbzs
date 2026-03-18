@@ -151,12 +151,14 @@
 <script>
 // Global hata yakalayıcı - beklenmedik JS hatalarında kullanıcıyı bilgilendir
 window.onerror = function(msg, src, line, col, err){
-  // Token yoksa ya da login sayfasına yönlendirme hatasıysa sessiz geç
-  if(!sessionStorage.getItem('govdag_token') && !window.location.href.includes('login')) return;
-  var bilinen = ['ResizeObserver','Script error','Non-Error promise'];
-  if(bilinen.some(function(b){ return String(msg).indexOf(b) > -1; })) return false;
-  console.warn('[gövdağ hata]', msg, 'L'+line);
-  return false; // Tarayıcı default hata gösterimini engelleme
+  var _msg = String(msg || '');
+  // Cross-origin ve bilinen gürültü hataları - tamamen sessizleştir
+  var _sessiz = ['Script error','ResizeObserver','Non-Error promise','Loading chunk'];
+  if(_sessiz.some(function(b){ return _msg.indexOf(b) > -1; })) return true;
+  // Token yoksa sessiz geç
+  if(!sessionStorage.getItem('govdag_token')) return true;
+  console.warn('[hata]', _msg, src ? 'L'+line : '');
+  return true; // true = tarayıcı konsoluna tekrar yazdırma
 };
 window.addEventListener('unhandledrejection', function(e){
   console.warn('[gövdağ promise]', e.reason);
@@ -1133,6 +1135,13 @@ async function girisYap(){
 
     <p style="color:rgba(255,255,255,.2);font-size:.75rem;margin-top:28px;">Modüller arasında istediğiniz zaman geçiş yapabilirsiniz</p>
   </div>
-</div></div>
-</body>
-</html>
+</div>
+
+<footer style="background:#0f172a;padding:18px 32px;text-align:center;margin-top:40px;">
+  <p style="font-size:.75rem;color:rgba(255,255,255,.3);">
+    © 2026 gövdağ İBKB Sorgulama &nbsp;·&nbsp;
+    <a href="./kvkk.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">KVKK Aydınlatma Metni</a>
+    &nbsp;·&nbsp;
+    <a href="./kullanim-kosullari.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">Kullanım Koşulları</a>
+    &nbsp;·&nbsp;
+    <a href="/cdn-cgi/l/email-protection#3155544245545a7158535a53425e4356445d505c501f525e5c" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="_
