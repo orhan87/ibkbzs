@@ -807,6 +807,12 @@
           <div><h3>👥 Kayıtlı Kullanıcılar</h3><p>Sisteme erişimi olan kullanıcılar</p></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn" onclick="kullanicilariYukle()" style="font-size:.8rem;">↻ Yenile</button>
+            <button class="btn" onclick="adminTamYedekIndir()" style="background:#1a2540;color:#fff;border-color:#1a2540;font-size:.8rem;">
+              📥 Tüm Verileri İndir
+            </button>
+            <button class="btn" onclick="tamVeriYedekIndir()" style="background:#6d28d9;color:#fff;border-color:#6d28d9;font-size:.8rem;" title="Tüm kullanıcıların ihracat ve sorgu verilerini indir">
+              📥 Tam Veri Yedeği
+            </button>
             <button class="btn" onclick="kullaniciExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
               Excel İndir
@@ -1996,6 +2002,155 @@ async function davetGonder(){
 }
 // Geriye dönük uyumluluk
 async function kullaniciEkle(){ await davetGonder(); }
+
+// ── TAM VERİ YEDEĞİ ──────────────────────────────────────────────────────────
+async function tamVeriYedekIndir(){
+  const sb = _sbAyarlar();
+  if(!sb){ toast('⚠ Supabase bağlantısı bulunamadı'); return; }
+
+  toast('⏳ Veriler çekiliyor, lütfen bekleyin…');
+
+  try{
+    // İhracat kayıtları
+    var rIhr = await fetch(sb.url + '/rest/v1/ihracatlar?select=*&order=created_at.desc&limit=10000', {
+      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+    });
+    var ihracatlar = rIhr.ok ? await rIhr.json() : [];
+
+    // Sorgu geçmişi
+    var rSrg = await fetch(sb.url + '/rest/v1/sorgular?select=*&order=tarih.desc&limit=10000', {
+      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+    });
+    var sorgular = rSrg.ok ? await rSrg.json() : [];
+
+    // Başvurular
+    var rBsv = await fetch(sb.url + '/rest/v1/basvurular?select=*&order=tarih.desc&limit=10000', {
+      headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+    });
+    var basvurular = rBsv.ok ? await rBsv.json() : [];
+
+    var esc = function(v){ return String(v===null||v===undefined?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var mkSheet = function(name, cols, rows){
+      return '<Worksheet ss:Name="'+name+'"><Table>'
+        +'<Row ss:StyleID="h">'+cols.map(function(c){ return '<Cell><Data ss:Type="String">'+esc(c)+'</Data></Cell>'; }).join('')+'</Row>'
+        +rows.map(function(r){
+          return '<Row>'+r.map(function(v){ return '<Cell><Data ss:Type="String">'+esc(v)+'</Data></Cell>'; }).join('')+'</Row>';
+        }).join('')
+        +'</Table></Worksheet>';
+    };
+
+    // İhracat sayfası
+    var ihrCols = ['ID','Kullanıcı ID','Beyanname No','İhracat Tarihi','Ülke','Alıcı Firma','Tutar USD','Tutar TL','Önceki İBKB','İhtarname Tarihi','Durum','Kapatıldı','Kapatılma Tarihi','Notlar','Oluşturma Tarihi'];
+    var ihrRows = Array.isArray(ihracatlar) ? ihracatlar.map(function(k){
+      return [k.id,k.user_id,k.beyanname_no,k.ihracat_tarihi,k.ulke,k.alici_firma,k.tutar_usd,k.tutar_tl,k.onceki_ibkb,k.ihtarname_tarihi,k.durum||'aktif',k.kapatildi?'Evet':'Hayır',k.kapatilma_tarihi,k.notlar,k.created_at];
+    }) : [];
+
+    // Sorgular sayfası
+    var srgCols = ['ID','Kullanıcı ID','E-posta','Tarih'];
+    var srgRows = Array.isArray(sorgular) ? sorgular.map(function(s){
+      var v = s.veri || {};
+      return [s.id, s.user_id, s.email, s.tarih];
+    }) : [];
+
+    // Başvurular sayfası
+    var bsvCols = ['ID','Ad Soyad','Firma','E-posta','Telefon','Talep','Mesaj','Tarih','Okundu'];
+    var bsvRows = Array.isArray(basvurular) ? basvurular.map(function(b){
+      return [b.id,b.ad_soyad,b.firma,b.email,b.telefon,b.talep,b.mesaj,b.tarih,b.okundu?'Evet':'Hayır'];
+    }) : [];
+
+    var xml = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>'
+      +'<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+      +'<Styles>'
+      +'<Style ss:ID="h"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0F172A" ss:Pattern="Solid"/></Style>'
+      +'</Styles>'
+      + mkSheet('İhracat Kayıtları', ihrCols, ihrRows)
+      + mkSheet('Sorgu Geçmişi', srgCols, srgRows)
+      + mkSheet('Başvurular', bsvCols, bsvRows)
+      +'</Workbook>';
+
+    var tarih = new Date().toISOString().slice(0,10);
+    var blob = new Blob([xml], {type:'application/vnd.ms-excel;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ibkb-tam-veri-yedek-' + tarih + '.xls';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('✅ Tam veri yedeği indirildi (' + (ihrRows.length) + ' ihracat, ' + (srgRows.length) + ' sorgu, ' + (bsvRows.length) + ' başvuru)');
+  }catch(e){
+    toast('✗ Yedek hatası: ' + e.message);
+  }
+}
+
+// ── ADMİN TAM VERİ YEDEĞİ ────────────────────────────────────────────────────
+async function adminTamYedekIndir(){
+  toast('⏳ Veriler hazırlanıyor…');
+  try{
+    var sb = _sbAyarlar();
+    if(!sb){ toast('✗ Supabase bağlantısı yok'); return; }
+    var key = sb.serviceKey || sb.key;
+    var headers = {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'};
+
+    // Paralel çek
+    var [rIhracat, rSorgu, rBasv] = await Promise.all([
+      fetch(sb.url+'/rest/v1/ihracatlar?select=*&order=created_at.desc&limit=10000', {headers}),
+      fetch(sb.url+'/rest/v1/sorgular?select=*&order=tarih.desc&limit=10000', {headers}),
+      fetch(sb.url+'/rest/v1/basvurular?select=*&order=tarih.desc&limit=1000', {headers}),
+    ]);
+    var ihracatlar  = rIhracat.ok  ? await rIhracat.json()  : [];
+    var sorgular    = rSorgu.ok    ? await rSorgu.json()     : [];
+    var basvurular  = rBasv.ok     ? await rBasv.json()      : [];
+
+    var esc = function(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var mkRow = function(cells, style){
+      return '<Row'+(style?' ss:StyleID="'+style+'"':'')+'>'+cells.map(function(c){
+        var t = (typeof c === 'number') ? 'Number' : 'String';
+        return '<Cell><Data ss:Type="'+t+'">'+esc(c)+'</Data></Cell>';
+      }).join('')+'</Row>';
+    };
+
+    // İhracat sayfası
+    var ihracatBaslik = ['ID','Kullanıcı','Beyanname No','İhracat Tarihi','Ülke','Alıcı Firma','Tutar USD','Tutar TL','Önceki İBKB','Notlar','Durum','Kapatıldı','Kapatılma Tarihi','İhtarname Tarihi','Oluşturulma'];
+    var ihracatRows = ihracatlar.map(function(k){
+      return mkRow([k.id,k.user_id,k.beyanname_no,k.ihracat_tarihi,k.ulke,k.alici_firma,k.tutar_usd||'',k.tutar_tl||'',k.onceki_ibkb||'',k.notlar||'',k.durum||'aktif',k.kapatildi?'Evet':'Hayır',k.kapatilma_tarihi||'',k.ihtarname_tarihi||'',k.created_at||'']);
+    });
+
+    // Sorgu sayfası
+    var sorguBaslik = ['ID','Kullanıcı','E-posta','Tarih'];
+    var sorguRows = sorgular.map(function(s){
+      return mkRow([s.id,s.user_id,s.email||'',s.tarih||'']);
+    });
+
+    // Başvuru sayfası
+    var basvBaslik = ['ID','Ad Soyad','Firma','E-posta','Telefon','Talep','Mesaj','Tarih','Okundu'];
+    var basvRows = basvurular.map(function(b){
+      return mkRow([b.id,b.ad_soyad||'',b.firma||'',b.email||'',b.telefon||'',b.talep||'',b.mesaj||'',b.tarih||'',b.okundu?'Evet':'Hayır']);
+    });
+
+    var mkSheet = function(name, baslik, rows){
+      return '<Worksheet ss:Name="'+name+'"><Table>'
+        + mkRow(baslik,'h')
+        + rows.join('')
+        + '</Table></Worksheet>';
+    };
+
+    var xml = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>'
+      +'<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+      +'<Styles><Style ss:ID="h"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0F172A" ss:Pattern="Solid"/></Style></Styles>'
+      + mkSheet('İhracat Kayıtları', ihracatBaslik, ihracatRows)
+      + mkSheet('Sorgular', sorguBaslik, sorguRows)
+      + mkSheet('Başvurular', basvBaslik, basvRows)
+      +'</Workbook>';
+
+    var blob = new Blob([xml], {type:'application/vnd.ms-excel;charset=utf-8'});
+    var a = document.createElement('a');
+    var tarih = new Date().toISOString().slice(0,10);
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ibkb-tam-yedek-'+tarih+'.xls';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('✅ Tam yedek indirildi — '+ihracatlar.length+' ihracat, '+sorgular.length+' sorgu, '+basvurular.length+' başvuru');
+  }catch(e){ toast('✗ Yedek hatası: '+e.message); }
+}
 
 async function kullanicilariYukle(){
   const sb=sbCfg(); if(!sb) return;
