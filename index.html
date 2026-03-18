@@ -191,7 +191,7 @@ if(!sessionStorage.getItem('govdag_token')){
               + '<h2 style="margin-bottom:8px;">Sistem Bak\u0131mda</h2>'
               + '<p style="color:#94a3b8;">' + _bm + '</p></div></div>';
           }
-        }catch(e){ console.warn('[cfg sync]', e.message); }
+        }catch(e){ /* cfg sync hatası sessiz */; }
       })();
       var hb = document.getElementById('heroBaslik');
       if(hb && met.heroBaslik) hb.textContent = met.heroBaslik;
@@ -594,7 +594,7 @@ window.addEventListener('unhandledrejection', function(e){
   <div class="hi">
     <div class="logo"><img id="hdrLogo" alt="gövdag" style="height:30px;width:auto;"><script>(function(){var e=document.getElementById("hdrLogo");if(e&&typeof _LOGO_URI!=="undefined")e.src=_LOGO_URI;})();</script></div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <a href="./takip.html" style="font-size:.82rem;color:#1a2540;background:#f59e0b;border:none;padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:700;white-space:nowrap;transition:.2s;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(245,158,11,.4);" onmouseover="this.style.background='#d97706';this.style.boxShadow='0 3px 12px rgba(245,158,11,.5)'" onmouseout="this.style.background='#f59e0b';this.style.boxShadow='0 2px 8px rgba(245,158,11,.4)'">📦 İhracat Takip</a>
+      <a href="./takip.html" style="display:inline-flex;align-items:center;gap:7px;padding:7px 16px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:7px;color:#f59e0b;font-size:.8rem;font-weight:600;text-decoration:none;transition:.15s;white-space:nowrap;" onmouseover="this.style.background='rgba(245,158,11,.2)';this.style.borderColor='rgba(245,158,11,.6)'" onmouseout="this.style.background='rgba(245,158,11,.12)';this.style.borderColor='rgba(245,158,11,.35)'"><span style="font-size:.9rem;">📦</span> İhracat Takip</a>
       <span id="kullanicEmail" style="font-size:.75rem;color:rgba(255,255,255,.85);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"></span>
       <button onclick="cikisYap()" style="font-size:.75rem;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);padding:5px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:600;">Çıkış Yap</button>
     </div>
@@ -1924,13 +1924,9 @@ let sorguGecmisi = [];
 // tarih alanı boş başlıyor
 listele();
 
-// Sayfa tamamen yüklenince Supabase geçmişini çek
-document.addEventListener('DOMContentLoaded', function(){
-  // Fonksiyonlar hazır, geçmişi yükle
-  setTimeout(supabaseSorguYukle, 100);
-  // Demo kalan hak bannerı
-  setTimeout(demoBilgiGoster, 600);
-});
+// Supabase geçmişini ve demo bilgisini yükle
+setTimeout(supabaseSorguYukle, 300);
+setTimeout(demoBilgiGoster, 800);
 
 async function demoBilgiGoster(){
   try{
@@ -2025,7 +2021,7 @@ async function supabaseSorguKaydet(kayit){
 async function supabaseSorguYukle(){
   try{
     const token = sessionStorage.getItem('govdag_token');
-    if(!token){ console.warn('SB Yükle: token yok'); return; }
+    if(!token){ /* token yok */; return; }
     const res = await fetch(SB_URL + '/rest/v1/sorgular?order=tarih.desc&limit=1000', {
       headers:{
         'apikey': SB_KEY,

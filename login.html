@@ -1101,30 +1101,36 @@ async function girisYap(){
 </script>
 
 <!-- SAYFA SEÇİM EKRANI -->
-<div id="sayfaSecimEkrani" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(15,23,42,.96);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
-  <div style="text-align:center;padding:20px;">
-    <div style="margin-bottom:32px;">
-      <img id="secimLogo" style="height:36px;width:auto;opacity:.9;" alt="gövdag">
-      <p style="color:rgba(255,255,255,.5);font-size:.85rem;margin-top:10px;">Nereye gitmek istersiniz?</p>
-    </div>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <a href="./index.html" style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 36px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);border-radius:16px;text-decoration:none;transition:.2s;min-width:180px;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.borderColor='rgba(255,255,255,.3)'" onmouseout="this.style.background='rgba(255,255,255,.06)';this.style.borderColor='rgba(255,255,255,.15)'">
-        <span style="font-size:2.5rem;">🧮</span>
-        <div>
-          <div style="color:#fff;font-size:1rem;font-weight:700;margin-bottom:4px;">İBKB Hesaplama</div>
-          <div style="color:rgba(255,255,255,.5);font-size:.78rem;">Zorunluluk sorgula ve hesapla</div>
-        </div>
+<div id="sayfaSecimEkrani" style="display:none;position:fixed;inset:0;z-index:999;background:#0f172a;align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:520px;padding:40px 24px;text-align:center;">
+
+    <img id="secimLogo" alt="gövdag" style="height:40px;width:auto;margin-bottom:32px;opacity:.95;">
+
+    <h2 style="color:#fff;font-size:1.25rem;font-weight:600;margin:0 0 6px;">Hoş geldiniz</h2>
+    <p style="color:rgba(255,255,255,.45);font-size:.875rem;margin:0 0 40px;">Devam etmek istediğiniz modülü seçin</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+      <a href="./index.html" style="display:block;padding:28px 20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;text-decoration:none;transition:background .15s,border-color .15s;"
+         onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.2)'"
+         onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.1)'">
+        <div style="width:44px;height:44px;background:rgba(37,99,235,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.25rem;">🧮</div>
+        <div style="color:#fff;font-size:.9rem;font-weight:600;margin-bottom:5px;">İBKB Hesaplama</div>
+        <div style="color:rgba(255,255,255,.4);font-size:.78rem;line-height:1.5;">İhracat bedeli zorunluluk sorgulama ve hesaplama</div>
       </a>
-      <a href="./takip.html" style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 36px;background:rgba(245,158,11,.08);border:1.5px solid rgba(245,158,11,.3);border-radius:16px;text-decoration:none;transition:.2s;min-width:180px;" onmouseover="this.style.background='rgba(245,158,11,.15)';this.style.borderColor='rgba(245,158,11,.5)'" onmouseout="this.style.background='rgba(245,158,11,.08)';this.style.borderColor='rgba(245,158,11,.3)'">
-        <span style="font-size:2.5rem;">📦</span>
-        <div>
-          <div style="color:#f59e0b;font-size:1rem;font-weight:700;margin-bottom:4px;">İhracat Takip</div>
-          <div style="color:rgba(255,255,255,.5);font-size:.78rem;">180 gün süre takibi</div>
-        </div>
+
+      <a href="./takip.html" style="display:block;padding:28px 20px;background:rgba(217,119,6,.06);border:1px solid rgba(245,158,11,.2);border-radius:14px;text-decoration:none;transition:background .15s,border-color .15s;"
+         onmouseover="this.style.background='rgba(245,158,11,.12)';this.style.borderColor='rgba(245,158,11,.4)'"
+         onmouseout="this.style.background='rgba(217,119,6,.06)';this.style.borderColor='rgba(245,158,11,.2)'">
+        <div style="width:44px;height:44px;background:rgba(245,158,11,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.25rem;">📦</div>
+        <div style="color:#f59e0b;font-size:.9rem;font-weight:600;margin-bottom:5px;">İhracat Takip</div>
+        <div style="color:rgba(255,255,255,.4);font-size:.78rem;line-height:1.5;">180 gün süre takibi ve beyanname yönetimi</div>
       </a>
+
     </div>
-    <p style="color:rgba(255,255,255,.3);font-size:.72rem;margin-top:24px;">İstediğiniz zaman diğer sayfaya geçebilirsiniz</p>
+
+    <p style="color:rgba(255,255,255,.2);font-size:.75rem;margin-top:28px;">Modüller arasında istediğiniz zaman geçiş yapabilirsiniz</p>
   </div>
-</div>
+</div></div>
 </body>
 </html>
