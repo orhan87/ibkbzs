@@ -752,7 +752,7 @@ window.addEventListener('unhandledrejection', function(e){
         <span class="gecmis-sayac" id="gecmisSayac">0 sorgu</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <input type="text" id="gecmisArama" placeholder="🔍 Beyanname, ülke, tarih…" 
+        <input type="text" id="gecmisArama" placeholder="🔍 Beyanname, ülke, tarih…" autocomplete="off" autocorrect="off" spellcheck="false"
           oninput="gecmisFiltrele(this.value)"
           style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;width:200px;background:#f8fafc;"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
