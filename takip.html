@@ -1846,7 +1846,7 @@ function listele(){
     return '<tr class="' + _trClass + '" data-id="' + k.id + '" style="' + (k.durum==='ceza'?'opacity:.6;':'') + '">' +
       '<td><span style="font-family:monospace,monospace;font-size:.82rem;">' + (k.beyanname_no||'<span style="color:var(--g400)">—</span>') + '</span></td>' +
       '<td>' + tarihFmt + '</td>' +
-      '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<br><span style="font-size:.76rem;color:var(--g500)">'+k.alici_firma+'</span>' : '') + '</td>' +
+      '<td><strong>' + (k.ulke||'—') + '</strong>' + (k.alici_firma ? '<span style="font-size:.72rem;color:var(--g500)"> ('+k.alici_firma+')</span>' : '') + '</td>' +
       '<td style="font-size:.8rem;">' + tutarFmt(k.tutar_usd, k.tutar_tl) + '</td>' +
       '<td style="font-size:.8rem;color:var(--g600);">' + (k.onceki_ibkb ? '$'+Number(k.onceki_ibkb).toLocaleString('tr-TR',{minimumFractionDigits:2}) : '<span style="color:var(--g400);">—</span>') + '</td>' +
       '<td>' + (k.durum==='ceza' ? '<span class="sure-badge sure-ceza">⚖ Cezalı</span>' : sureBadge(gun, k.kapatildi||k.durum==='kapali') + sureBar((k.kapatildi||k.durum==='kapali'||k.durum==='ceza') ? null : gun)) + '</td>' +
@@ -1873,13 +1873,13 @@ function listele(){
         (k.durum==='ceza'
           ? '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#f5f3ff;border:1.5px solid #c4b5fd;color:#6d28d9;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aktife Al</button>'
           : !k.kapatildi && k.durum!=='kapali'
-            ? '<button class="btn btn-ok btn-sm" onclick="kapat(\''+k.id+'\')">&#10003; Kapat</button>'
+            ? '<button class="btn btn-ok btn-sm" onclick="kapat(\''+k.id+'\')">✓ Kapat</button>'
               + '<button class="btn btn-sm" onclick="cezaKaydet(\''+k.id+'\')" style="background:#f5f3ff;border:1.5px solid #c4b5fd;color:#6d28d9;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">⚖ Ceza</button>'
             : '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#eff6ff;border:1.5px solid #93c5fd;color:#1d4ed8;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aç</button>'
         ) +
         '<button class="btn btn-primary btn-sm" onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesaplama sayfasına gönder">🧮 Hesapla</button>' +
-        '<button class="btn btn-secondary btn-sm" onclick="duzenle(\''+k.id+'\')">&#9999;</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="sil(\''+k.id+'\')">&#128465;</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="duzenle(\''+k.id+'\')" title=\"Düzenle\">✏</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="sil(\''+k.id+'\')" title=\"Sil\">🗑</button>' +
         '</div>' +
       '</td>' +
     '</tr>';
