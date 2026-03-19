@@ -1884,31 +1884,6 @@ function hesaplaCore(){
     rEl.insertBefore(bar, rEl.firstChild);
   })();
 
-  // Geçmişe kaydet
-  try {
-    const htmlDetay = document.getElementById('result').innerHTML;
-    gecmiseKaydet({
-      ulke:      String(ulke || ''),
-      ulkeHam:   String(ulke || ''),
-      bedelHam:  bedel,
-      tarihHam:  tarih,
-      bedel:     F(bedel, para),
-      para:      para,
-      tarih:     new Date(tarih).toLocaleDateString('tr-TR', {day:'2-digit', month:'long', year:'numeric'}),
-      beyanname: String(byn || ''),
-      oncekiIbkb: oncekiIbkb > 0 ? F(oncekiIbkb, para) : '',
-      ibkb:      ibkbMatrah > 0 ? F(ibkbMatrah, para) : 'Yok',
-      tcmb:      sat > 0 ? F(sat, para) : 'Yok',
-      sonTarih:  ibkbMatrah > 0 ? st : '—',
-      muaf:      ibkbMatrah === 0,
-      adimlar:   adimlar.map(a=>({l:a.l, v:a.v})),
-      muafDilim: (adimlar.find(a=>a.l&&a.l.includes('15.000'))||{}).v || '—',
-      brutMatrah:(adimlar.find(a=>a.l&&(a.l.includes('Brüt matrah')||a.l.includes('Matrah'))&&!a.l.includes('D'))||{}).v || '—',
-      saat:      new Date().toLocaleString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}),
-      htmlDetay: htmlDetay,
-    });
-  } catch(e) { console.error('Geçmiş kaydedilemedi:', e); }
-}
 
 function mukKapat(){
   document.getElementById('mukKutu').classList.remove('goster');
@@ -2699,6 +2674,33 @@ function pdfIndir(){
 // ─── PDF ──────────────────────────────────────────────────────────────────────
 
 // ─── EXCEL ────────────────────────────────────────────────────────────────────
+  // Geçmişe kaydet
+  try {
+    const htmlDetay = document.getElementById('result').innerHTML;
+    gecmiseKaydet({
+      ulke:      String(ulke || ''),
+      ulkeHam:   String(ulke || ''),
+      bedelHam:  bedel,
+      tarihHam:  tarih,
+      bedel:     F(bedel, para),
+      para:      para,
+      tarih:     new Date(tarih).toLocaleDateString('tr-TR', {day:'2-digit', month:'long', year:'numeric'}),
+      beyanname: String(byn || ''),
+      oncekiIbkb: oncekiIbkb > 0 ? F(oncekiIbkb, para) : '',
+      ibkb:      ibkbMatrah > 0 ? F(ibkbMatrah, para) : 'Yok',
+      tcmb:      sat > 0 ? F(sat, para) : 'Yok',
+      sonTarih:  ibkbMatrah > 0 ? st : '—',
+      muaf:      ibkbMatrah === 0,
+      adimlar:   adimlar.map(a=>({l:a.l, v:a.v})),
+      muafDilim: (adimlar.find(a=>a.l&&a.l.includes('15.000'))||{}).v || '—',
+      brutMatrah:(adimlar.find(a=>a.l&&(a.l.includes('Brüt matrah')||a.l.includes('Matrah'))&&!a.l.includes('D'))||{}).v || '—',
+      saat:      new Date().toLocaleString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}),
+      htmlDetay: htmlDetay,
+    });
+  } catch(e) { console.error('Geçmiş kaydedilemedi:', e); }
+}
+
+
 function xlsxIndir(){
   if(sorguGecmisi.length === 0) return;
   const sorgular = sorguGecmisi.filter(q=>q&&q.ulke).slice().reverse();
