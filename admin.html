@@ -948,6 +948,18 @@
       </div>
     </div>
 
+
+  <!-- ─── DEĞİŞİKLİK LOGU ───────────────────────────────────────────────────── -->
+  <div class="pc">
+    <div class="pc-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <div><h3>📋 Son Değişiklikler</h3><p>site_config tablosundaki güncellemeler</p></div>
+    </div>
+    <div class="pc-body" style="display:none;">
+      <button class="btn" onclick="degisiklikLoguYukle()" style="font-size:.8rem;margin-bottom:12px;">↻ Yenile</button>
+      <div id="degisiklikLogu" style="font-size:.82rem;"></div>
+    </div>
+  </div>
+
   </main>
 </div>
 
@@ -1273,6 +1285,7 @@ async function girisYap(){
       bfSifirla();
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('adminPanel').style.display='block';
+      localStorage.setItem('ibkb_admin_email', 'orhankelahmet@gmail.com');
       baslat();
     } else {
       const bf2 = bfDurumAl();
@@ -1793,6 +1806,42 @@ function _gorselSikistir(dataUrl, maxGenislik, kalite) {
 }
 
 
+// ── DEĞİŞİKLİK LOGU ──────────────────────────────────────────────────────────
+async function degisiklikLoguYukle(){
+  var el = document.getElementById('degisiklikLogu');
+  if(!el) return;
+  el.innerHTML = '<div style="color:#8c97a8;">Yükleniyor…</div>';
+  try{
+    var r = await fetch(_SC_URL + '?select=id,updated_at,updated_by&order=updated_at.desc&limit=50', {
+      headers:{'apikey':_SC_SVC,'Authorization':'Bearer '+_SC_SVC,'Accept':'application/json'}
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var rows = await r.json();
+    if(!Array.isArray(rows)||rows.length===0){
+      el.innerHTML='<div style="color:#8c97a8;padding:8px 0;">Henüz kayıt yok.</div>'; return;
+    }
+    var html = '<table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="background:#f0f4f8;">'
+      +'<th style="padding:8px 10px;text-align:left;font-size:.72rem;color:#4a5568;font-weight:700;text-transform:uppercase;">Alan</th>'
+      +'<th style="padding:8px 10px;text-align:left;font-size:.72rem;color:#4a5568;font-weight:700;text-transform:uppercase;">Tarih</th>'
+      +'<th style="padding:8px 10px;text-align:left;font-size:.72rem;color:#4a5568;font-weight:700;text-transform:uppercase;">Değiştiren</th>'
+      +'</tr></thead><tbody>';
+    rows.forEach(function(row,i){
+      var tarih = row.updated_at ? new Date(row.updated_at).toLocaleString('tr-TR') : '—';
+      var kim   = row.updated_by || '—';
+      html += '<tr style="border-bottom:1px solid #e2e8f0;background:'+(i%2===0?'#fff':'#f8fafc')+';">'
+        +'<td style="padding:7px 10px;font-weight:600;color:#1a2540;">'+row.id+'</td>'
+        +'<td style="padding:7px 10px;color:#475569;white-space:nowrap;">'+tarih+'</td>'
+        +'<td style="padding:7px 10px;color:#475569;">'+kim+'</td>'
+        +'</tr>';
+    });
+    html += '</tbody></table>';
+    el.innerHTML = html;
+  }catch(e){
+    el.innerHTML = '<div style="color:#dc2626;font-size:.82rem;">Hata: '+e.message+'</div>';
+  }
+}
+
 async function scKaydet(id, value) {
   try {
     const valueStr = (typeof value === 'string') ? value : JSON.stringify(value);
@@ -1805,7 +1854,7 @@ async function scKaydet(id, value) {
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ value: valueStr, updated_at: new Date().toISOString() })
+      body: JSON.stringify({ value: valueStr, updated_at: new Date().toISOString(), updated_by: localStorage.getItem('ibkb_admin_email')||'admin' })
     });
     if(upd.ok) {
       const updText = await upd.text().catch(()=>'[]');
@@ -1825,7 +1874,7 @@ async function scKaydet(id, value) {
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ id: id, value: valueStr, updated_at: new Date().toISOString() })
+      body: JSON.stringify({ id: id, value: valueStr, updated_at: new Date().toISOString(), updated_by: localStorage.getItem('ibkb_admin_email')||'admin' })
     });
     const insText = await ins.text().catch(()=>'');
     if(!ins.ok) {
@@ -2005,7 +2054,7 @@ async function kullaniciEkle(){ await davetGonder(); }
 
 // ── TAM VERİ YEDEĞİ ──────────────────────────────────────────────────────────
 async function tamVeriYedekIndir(){
-  const sb = _sbAyarlar();
+  const sb = sbCfg();
   if(!sb){ toast('⚠ Supabase bağlantısı bulunamadı'); return; }
 
   toast('⏳ Veriler çekiliyor, lütfen bekleyin…');
@@ -2013,13 +2062,13 @@ async function tamVeriYedekIndir(){
   try{
     // İhracat kayıtları
     var rIhr = await fetch(sb.url + '/rest/v1/ihracatlar?select=*&order=created_at.desc&limit=10000', {
-      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+      headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var ihracatlar = rIhr.ok ? await rIhr.json() : [];
 
     // Sorgu geçmişi
     var rSrg = await fetch(sb.url + '/rest/v1/sorgular?select=*&order=tarih.desc&limit=10000', {
-      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+      headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var sorgular = rSrg.ok ? await rSrg.json() : [];
 
@@ -2085,7 +2134,7 @@ async function tamVeriYedekIndir(){
 async function adminTamYedekIndir(){
   toast('⏳ Veriler hazırlanıyor…');
   try{
-    var sb = _sbAyarlar();
+    var sb = sbCfg();
     if(!sb){ toast('✗ Supabase bağlantısı yok'); return; }
     var key = sb.serviceKey || sb.key;
     var headers = {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'};

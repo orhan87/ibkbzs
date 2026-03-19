@@ -756,6 +756,23 @@ window.addEventListener('unhandledrejection', function(e){
           oninput="gecmisFiltrele(this.value)"
           style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;width:200px;background:#f8fafc;"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
+        <input type="date" id="gecmisTarihBas" title="Başlangıç tarihi"
+          onchange="gecmisFiltrele(document.getElementById('gecmisArama').value)"
+          style="padding:5px 8px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;background:#f8fafc;cursor:pointer;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
+        <span style="font-size:.75rem;color:var(--g400);">—</span>
+        <input type="date" id="gecmisTarihBit" title="Bitiş tarihi"
+          onchange="gecmisFiltrele(document.getElementById('gecmisArama').value)"
+          style="padding:5px 8px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;background:#f8fafc;cursor:pointer;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
+        <select id="gecmisDurumFiltre" onchange="gecmisFiltrele(document.getElementById('gecmisArama').value)"
+          style="padding:5px 8px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;background:#f8fafc;cursor:pointer;">
+          <option value="">Tümü</option>
+          <option value="aktif">Devam Ediyor</option>
+          <option value="gecti">Süresi Dolmuş</option>
+          <option value="muaf">Muaf</option>
+        </select>
+        <button onclick="gecmisFiltreTemizle()" style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.75rem;background:#f8fafc;cursor:pointer;font-family:inherit;color:var(--g600);">✕ Sıfırla</button>
       </div>
       <div class="gh-right">
         <button class="btn-pdf" id="btnPdf" onclick="pdfIndir()" disabled>
@@ -2119,33 +2136,41 @@ async function supabaseSorguTemizle(){
 }
 
 function gecmisFiltrele(aramaMetni){
-  const el = document.getElementById('gecmisArama');
-  const metin = aramaMetni.trim().toLowerCase();
-  // Tüm tablo satırlarını filtrele
-  const liste = document.getElementById('gecmisListe');
-  if(!liste) return;
-  const satirlar = liste.querySelectorAll('tbody tr');
-  let gozukenSayi = 0;
-  satirlar.forEach(tr=>{
-    const icerik = tr.textContent.toLowerCase();
-    if(!metin || icerik.includes(metin)){
-      tr.style.display = '';
-      gozukenSayi++;
-    } else {
-      tr.style.display = 'none';
-    }
-  });
-  // Sayacı güncelle
-  const sayac = document.getElementById('gecmisSayac');
-  if(sayac){
-    sayac.textContent = metin
-      ? gozukenSayi + '/' + sorguGecmisi.length + ' sorgu'
-      : sorguGecmisi.length + ' sorgu';
-  }
+  const metin = (aramaMetni||'').trim().toLowerCase();
+  const tarihBas = document.getElementById('gecmisTarihBas')?.value || '';
+  const tarihBit = document.getElementById('gecmisTarihBit')?.value || '';
+  const durumFlt = document.getElementById('gecmisDurumFiltre')?.value || '';
+
+  // gecmisPanelGuncelle'yi filtreyle çağır
+  _gecmisFiltreMetin = metin;
+  _gecmisFiltreBasTarih = tarihBas;
+  _gecmisFiltreBitTarih = tarihBit;
+  _gecmisFiltreDurum = durumFlt;
+  _gecmisSayfa = 1;
+  gecmisPanelGuncelle();
 }
 
-let _gecmisSayfa = 1;
-const _GECMIS_BOYUTU = 50;
+function gecmisFiltreTemizle(){
+  var el = document.getElementById('gecmisArama');
+  var tb = document.getElementById('gecmisTarihBas');
+  var tt = document.getElementById('gecmisTarihBit');
+  var df = document.getElementById('gecmisDurumFiltre');
+  if(el) el.value = '';
+  if(tb) tb.value = '';
+  if(tt) tt.value = '';
+  if(df) df.value = '';
+  _gecmisFiltreMetin = '';
+  _gecmisFiltreBasTarih = '';
+  _gecmisFiltreBitTarih = '';
+  _gecmisFiltreDurum = '';
+  _gecmisSayfa = 1;
+  gecmisPanelGuncelle();
+}
+
+let _gecmisFiltreMetin = '';
+let _gecmisFiltreBasTarih = '';
+let _gecmisFiltreBitTarih = '';
+let _gecmisFiltreDurum = '';
 
 function gecmisSayfaDegistir(yeni){
   _gecmisSayfa = yeni;
@@ -2175,7 +2200,51 @@ function gecmisPanelGuncelle(){
   if(btnXlsxEl) btnXlsxEl.disabled = false;
   document.getElementById('btnXlsx').disabled = false;
 
-  const satirlar = sorguGecmisi.filter(q => q && q.ulke);
+  const satirlar = sorguGecmisi.filter(function(q){
+    if(!q || !q.ulke) return false;
+    // Metin filtresi
+    if(_gecmisFiltreMetin){
+      var hay = (q.ulke+' '+(q.beyanname||'')+' '+(q.tarih||'')+' '+(q.saat||'')).toLowerCase();
+      if(!hay.includes(_gecmisFiltreMetin)) return false;
+    }
+    // Tarih aralığı - saat alanı kullan (YYYY-MM-DD formatına çevir)
+    if(_gecmisFiltreBasTarih || _gecmisFiltreBitTarih){
+      // saat: "25.03.2026 14:30:00" → tarih kısmını al
+      var _saat = q.saat || '';
+      var _tarihParcala = _saat.split(' ')[0]; // "25.03.2026"
+      var _prc = _tarihParcala.split('.');
+      var _iso = _prc.length===3 ? _prc[2]+'-'+_prc[1]+'-'+_prc[0] : '';
+      if(_gecmisFiltreBasTarih && _iso && _iso < _gecmisFiltreBasTarih) return false;
+      if(_gecmisFiltreBitTarih && _iso && _iso > _gecmisFiltreBitTarih) return false;
+    }
+    // Durum filtresi
+    if(_gecmisFiltreDurum){
+      if(_gecmisFiltreDurum === 'muaf' && !q.muaf) return false;
+      if(_gecmisFiltreDurum === 'aktif'){
+        if(q.muaf) return false;
+        if(!q.sonTarih || q.sonTarih==='—') return false;
+        var _bugunD = new Date(); _bugunD.setHours(0,0,0,0);
+        var _aylarD = {Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
+        var _pD = q.sonTarih.replace(/ /g,' ').split(' ');
+        if(_pD.length===3 && _aylarD[_pD[1]]!==undefined){
+          var _stD = new Date(parseInt(_pD[2]),_aylarD[_pD[1]],parseInt(_pD[0]));
+          if(_stD < _bugunD) return false;
+        }
+      }
+      if(_gecmisFiltreDurum === 'gecti'){
+        if(q.muaf) return false;
+        if(!q.sonTarih || q.sonTarih==='—') return false;
+        var _bugunG = new Date(); _bugunG.setHours(0,0,0,0);
+        var _aylarG = {Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
+        var _pG = q.sonTarih.replace(/ /g,' ').split(' ');
+        if(_pG.length===3 && _aylarG[_pG[1]]!==undefined){
+          var _stG = new Date(parseInt(_pG[2]),_aylarG[_pG[1]],parseInt(_pG[0]));
+          if(_stG >= _bugunG) return false;
+        }
+      }
+    }
+    return true;
+  });
 
   // Sayfalama
   if(_gecmisSayfa > Math.ceil(satirlar.length / _GECMIS_BOYUTU)) _gecmisSayfa = 1;

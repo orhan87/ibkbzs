@@ -1,7 +1,7 @@
-// GÖVDAĞ İBKB — Service Worker
-// Offline desteği + cache stratejisi
+// GÖVDAĞ İBKB — Service Worker v2
+// Offline desteği + cache + push bildirimleri
 
-const CACHE_ADI = 'ibkb-v1';
+const CACHE_ADI = 'ibkb-v2';
 const CACHE_DOSYALAR = [
   '/login.html',
   '/index.html',
@@ -9,7 +9,7 @@ const CACHE_DOSYALAR = [
   '/manifest.json'
 ];
 
-// Install: temel dosyaları cache'e al
+// Install
 self.addEventListener('install', function(e){
   e.waitUntil(
     caches.open(CACHE_ADI).then(function(cache){
@@ -19,7 +19,7 @@ self.addEventListener('install', function(e){
   self.skipWaiting();
 });
 
-// Activate: eski cache'leri temizle
+// Activate
 self.addEventListener('activate', function(e){
   e.waitUntil(
     caches.keys().then(function(keys){
@@ -32,30 +32,69 @@ self.addEventListener('activate', function(e){
   self.clients.claim();
 });
 
-// Fetch: Network-first, offline fallback
+// Fetch: Network-first
 self.addEventListener('fetch', function(e){
-  // Sadece GET isteklerini handle et
   if(e.request.method !== 'GET') return;
-  // Supabase API isteklerini bypass et (her zaman network)
   if(e.request.url.includes('supabase.co')) return;
-
   e.respondWith(
     fetch(e.request)
       .then(function(res){
-        // Başarılı network cevabını cache'e de yaz
         if(res && res.status === 200 && res.type === 'basic'){
-          var resKopyasi = res.clone();
-          caches.open(CACHE_ADI).then(function(cache){
-            cache.put(e.request, resKopyasi);
-          });
+          var kopy = res.clone();
+          caches.open(CACHE_ADI).then(function(cache){ cache.put(e.request, kopy); });
         }
         return res;
       })
       .catch(function(){
-        // Network yoksa cache'den sun
         return caches.match(e.request).then(function(cached){
           return cached || caches.match('/login.html');
         });
       })
   );
 });
+
+// Push bildirimi al
+self.addEventListener('push', function(e){
+  var data = {};
+  try{ data = e.data ? e.data.json() : {}; }catch(err){}
+  var baslik = data.title || 'İBKB Sorgulama';
+  var secenekler = {
+    body:    data.body    || 'Bildiriminiz var.',
+    icon:    data.icon    || '/manifest.json',
+    badge:   data.badge   || '/manifest.json',
+    tag:     data.tag     || 'ibkb-bildirim',
+    data:    data.url     || '/takip.html',
+    requireInteraction: false,
+    actions: data.actions || []
+  };
+  e.waitUntil(self.registration.showNotification(baslik, secenekler));
+});
+
+// Bildirime tıklama
+self.addEventListener('notificationclick', function(e){
+  e.notification.close();
+  var url = e.notification.data || '/takip.html';
+  e.waitUntil(
+    clients.matchAll({type:'window', includeUncontrolled:true}).then(function(list){
+      for(var i=0; i<list.length; i++){
+        if(list[i].url.includes(self.location.origin)){
+          return list[i].focus().then(function(c){ return c.navigate(url); });
+        }
+      }
+      return clients.openWindow(url);
+    })
+  );
+});
+
+// Periyodik bildirim kontrolü (background sync)
+self.addEventListener('periodicsync', function(e){
+  if(e.tag === 'ibkb-ihracat-kontrol'){
+    e.waitUntil(ihracatKontrolEt());
+  }
+});
+
+async function ihracatKontrolEt(){
+  // Client'lara mesaj gönder — kontrol yapmaları için
+  var allClients = await clients.matchAll({type:'window', includeUncontrolled:true});
+  allClients.forEach(function(c){ c.postMessage({type:'IHRACAT_KONTROL'}); });
+}

@@ -395,7 +395,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <div class="form-grid">
           <div class="fg">
             <label>Beyanname No <span style="color:var(--err);">*</span></label>
-            <input type="text" id="f-beyanname" placeholder="23000000EX123456" required>
+            <input type="text" id="f-beyanname" placeholder="23000000EX123456" required autocomplete="off">
           </div>
           <div class="fg">
             <label>İhracat Tarihi *</label>
@@ -649,7 +649,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <p id="listeAlt">Yükleniyor…</p>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-        <input type="text" id="aramaInput" placeholder="🔍 Ara…" oninput="_mevcutSayfa=1;listele()"
+        <input type="text" id="aramaInput" placeholder="🔍 Ara…" autocomplete="off" autocorrect="off" spellcheck="false" oninput="_mevcutSayfa=1;listele()"
           style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;width:150px;">
         <select id="durumFiltre" onchange="_mevcutSayfa=1;listele()"
           style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;">
@@ -1567,6 +1567,95 @@ async function veriYedekIndir(){
   }catch(e){ alert('İndirme hatası: '+e.message); }
 }
 
+// ── PUSH BİLDİRİM ────────────────────────────────────────────────────────────
+async function pushIzniIste(){
+  if(!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  if(Notification.permission === 'granted') return bildirimKontrolBaslat();
+  if(Notification.permission === 'denied') return;
+  // İzin iste - kullanıcı onayı
+  var izin = await Notification.requestPermission();
+  if(izin === 'granted') bildirimKontrolBaslat();
+}
+
+function bildirimGonder(baslik, mesaj, url){
+  if(Notification.permission !== 'granted') return;
+  navigator.serviceWorker.ready.then(function(reg){
+    reg.showNotification(baslik, {
+      body: mesaj,
+      icon: '/manifest.json',
+      tag: 'ibkb-' + Date.now(),
+      data: url || '/takip.html',
+      requireInteraction: false
+    });
+  });
+}
+
+function bildirimKontrolBaslat(){
+  // Sayfa açılışında kontrol et
+  setTimeout(function(){ ihracatBildirimKontrol(); }, 3000);
+  // Her 4 saatte bir kontrol
+  setInterval(function(){ ihracatBildirimKontrol(); }, 4 * 60 * 60 * 1000);
+}
+
+function ihracatBildirimKontrol(){
+  if(!_kayitlar || !_kayitlar.length) return;
+  var simdi = new Date(); simdi.setHours(0,0,0,0);
+  var bildirimGonderildi = false;
+
+  _kayitlar.forEach(function(k){
+    if(k.kapatildi || k.durum === 'kapali' || k.durum === 'ceza') return;
+    var gun = kalanGun(k.ihracat_tarihi);
+    if(gun === null) return;
+
+    // 30 gün uyarısı
+    if(gun === 30 && !bildirimGonderildi){
+      bildirimGonder(
+        '⚠ İhracat Süresi Uyarısı',
+        (k.beyanname_no||'Beyanname') + ' için 30 gün kaldı. İBKB belgesini düzenlemeyi unutmayın.',
+        '/takip.html'
+      );
+      bildirimGonderildi = true;
+    }
+    // 15 gün kritik uyarısı
+    else if(gun === 15 && !bildirimGonderildi){
+      bildirimGonder(
+        '🔴 Kritik: 15 Gün Kaldı',
+        (k.beyanname_no||'Beyanname') + ' — İBKB düzenleme süresi dolmak uzere!',
+        '/takip.html'
+      );
+      bildirimGonderildi = true;
+    }
+    // 7 gün son uyarı
+    else if(gun === 7 && !bildirimGonderildi){
+      bildirimGonder(
+        '🚨 Son 7 Gün!',
+        (k.beyanname_no||'Beyanname') + ' — İBKB için yalnizca 7 gununuz kaldi!',
+        '/takip.html'
+      );
+      bildirimGonderildi = true;
+    }
+    // İhtarname uyarısı
+    if(k.ihtarname_tarihi){
+      var itg = ihtarKalanGun(k.ihtarname_tarihi);
+      if(itg === 15 && !bildirimGonderildi){
+        bildirimGonder(
+          '📬 İhtarname Süresi Dolmak Üzere',
+          (k.beyanname_no||'Beyanname') + ' ihtarname suresi 15 gun icinde doluyor.',
+          '/takip.html'
+        );
+        bildirimGonderildi = true;
+      }
+    }
+  });
+}
+
+// SW'den gelen mesajları dinle
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('message', function(e){
+    if(e.data && e.data.type === 'IHRACAT_KONTROL') ihracatBildirimKontrol();
+  });
+}
+
 async function yukle(){
   try{
     const userId = jwtUserId(TOKEN);
@@ -1578,6 +1667,7 @@ async function yukle(){
     _kayitlar = Array.isArray(data) ? data : [];
     ozetGuncelle();
     listele();
+    setTimeout(pushIzniIste, 2000); // Push izni iste
   }catch(e){
     document.getElementById('tblBody').innerHTML =
       '<tr><td colspan="9"><div class="bos-durum"><div class="ikon">⚠️</div><h3>Bağlantı Hatası</h3><p>' + e.message + '</p></div></td></tr>';
