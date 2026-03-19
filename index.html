@@ -1911,13 +1911,16 @@ function sifirla(){
 }
 
 // ─── GEÇMİŞ ──────────────────────────────────────────────────────────────────
+let _gecmisFiltreMetin    = '';
+let _gecmisSiralamaKolon  = '_sbTarih';
+let _gecmisSiralamaYon    = 'desc';
 let sorguGecmisi = [];
 
 // tarih alanı boş başlıyor
 listele();
 
 // Supabase geçmişini ve demo bilgisini yükle
-_gecmisFiltreMetin = ''; setTimeout(supabaseSorguYukle, 300);
+setTimeout(supabaseSorguYukle, 300);
 setTimeout(demoBilgiGoster, 800);
 
 async function demoBilgiGoster(){
@@ -2100,9 +2103,6 @@ function gecmisFiltrele(aramaMetni){
 }
 
 
-let _gecmisFiltreMetin = '';
-let _gecmisSiralamaKolon = '_sbTarih';
-let _gecmisSiralamaYon   = 'desc';
 
 function gecmisSiralama(kolon){
   if(_gecmisSiralamaKolon === kolon){
