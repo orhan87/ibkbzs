@@ -1494,7 +1494,7 @@ async function girisYap(){
     btn.disabled = true;
     try {
       const _pr = await fetch(_SC_URL + '?id=eq.parola&select=value&limit=1', {
-        headers: { 'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC }
+        headers: { 'Authorization': 'Bearer ' + _SC_SVC }
       });
       if(_pr.ok) {
         const _pd = await _pr.json();
@@ -1559,7 +1559,7 @@ async function baslat(){
   // Önce Supabase'den güncel config çek, localStorage'a yaz
   try{
     const _br = await fetch(_SC_URL + '?select=id,value', {
-      headers: {'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC}
+      headers: {'Authorization': 'Bearer ' + _SC_SVC}
     });
     if(_br.ok){
       const _brows = await _br.json();
@@ -1636,7 +1636,7 @@ async function baslat(){
     try{
       const sb = sbCfg(); if(!sb) return;
       const r = await fetch(sb.url+'/rest/v1/site_config?id=eq.eft&select=id',
-        {headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}});
+        {headers:{'Authorization':'Bearer '+sb.serviceKey}});
       const rows = r.ok ? await r.json() : [];
       if(!rows.length){
         // Henüz kayıt yok - varsayılanı kaydet
@@ -1670,7 +1670,6 @@ async function siteConfigKaydet(anahtar, deger){
     const res = await fetch(sb.url + '/rest/v1/site_config', {
       method: 'POST',
       headers: {
-        'apikey': key,
         'Authorization': 'Bearer ' + key,
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates'
@@ -1691,7 +1690,6 @@ async function siteConfigYukle(anahtar){
   try{
     const res = await fetch(sb.url + '/rest/v1/site_config?id=eq.' + encodeURIComponent(anahtar) + '&select=value&limit=1', {
       headers: {
-        'apikey': sb.key,
         'Authorization': 'Bearer ' + sb.key,
         'Accept': 'application/json'
       }
@@ -1709,7 +1707,6 @@ async function siteConfigTumunuYukle(){
   try{
     const res = await fetch(sb.url + '/rest/v1/site_config?id=in.(logo,favicon)&select=id,value', {
       headers: {
-        'apikey': sb.key,
         'Authorization': 'Bearer ' + sb.key,
         'Accept': 'application/json'
       }
@@ -2080,7 +2077,7 @@ async function degisiklikLoguYukle(){
   el.innerHTML = '<div style="color:#8c97a8;">Yükleniyor…</div>';
   try{
     var r = await fetch(_SC_URL + '?select=id,updated_at,updated_by&order=updated_at.desc&limit=50', {
-      headers:{'apikey':_SC_SVC,'Authorization':'Bearer '+_SC_SVC,'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+_SC_SVC,'Accept':'application/json'}
     });
     if(!r.ok) throw new Error('HTTP '+r.status);
     var rows = await r.json();
@@ -2202,7 +2199,6 @@ async function scKaydet(id, value) {
     const upd = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
       method: 'PATCH',
       headers: {
-        'apikey': _SC_SVC,
         'Authorization': 'Bearer ' + _SC_SVC,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
@@ -2222,7 +2218,6 @@ async function scKaydet(id, value) {
     const ins = await fetch(_SC_URL, {
       method: 'POST',
       headers: {
-        'apikey': _SC_SVC,
         'Authorization': 'Bearer ' + _SC_SVC,
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal'
@@ -2247,7 +2242,7 @@ async function scKaydet(id, value) {
 async function scYukle() {
   try {
     const res = await fetch(_SC_URL + '?select=id,value', {
-      headers: { 'apikey': _SC_KEY, 'Authorization': 'Bearer ' + _SC_KEY }
+      headers: { 'Authorization': 'Bearer ' + _SC_KEY }
     });
     if (!res.ok) return null;
     const rows = await res.json();
@@ -2307,7 +2302,7 @@ async function supabaseTest(){
   el.style.display='block'; el.style.background='#f0f2f5'; el.style.color='#4a5568';
   el.textContent='Test ediliyor…';
   try{
-    const r=await fetch(sb.url+'/auth/v1/settings',{headers:{'apikey':sb.key}});
+    const r=await fetch(sb.url+'/auth/v1/settings',{headers:{'Authorization':'Bearer '+sb.key}});
     if(r.ok){
       el.style.background='#e8f5ef'; el.style.color='#1a7a4a';
       el.textContent='✓ Bağlantı başarılı! Supabase çalışıyor.';
@@ -2335,7 +2330,7 @@ async function davetGonder(){
   // Kayıtlı kullanıcı kontrolü
   try{
     const mevcut=await fetch(sb.url+'/auth/v1/admin/users?per_page=200',{
-      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
+      headers:{'Authorization':'Bearer '+sb.serviceKey}
     });
     if(mevcut.ok){
       const mData=await mevcut.json();
@@ -2356,7 +2351,7 @@ async function davetGonder(){
     const tmpPass=Math.random().toString(36).slice(-8)+Math.random().toString(36).slice(-4).toUpperCase()+'1!';
     const r=await fetch(sb.url+'/auth/v1/admin/users',{
       method:'POST',
-      headers:{'Content-Type':'application/json','apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey},
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+sb.serviceKey},
       body:JSON.stringify({email,password:tmpPass,email_confirm:true,user_metadata:{ilk_giris:true,tip:tip,not:aciklama}})
     });
     const rawText=await r.text();
@@ -2415,19 +2410,19 @@ async function tamVeriYedekIndir(){
   try{
     // İhracat kayıtları
     var rIhr = await fetch(sb.url + '/rest/v1/ihracatlar?select=*&order=created_at.desc&limit=10000', {
-      headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var ihracatlar = rIhr.ok ? await rIhr.json() : [];
 
     // Sorgu geçmişi
     var rSrg = await fetch(sb.url + '/rest/v1/sorgular?select=*&order=tarih.desc&limit=10000', {
-      headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var sorgular = rSrg.ok ? await rSrg.json() : [];
 
     // Başvurular
     var rBsv = await fetch(sb.url + '/rest/v1/basvurular?select=*&order=tarih.desc&limit=10000', {
-      headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var basvurular = rBsv.ok ? await rBsv.json() : [];
 
@@ -2490,7 +2485,7 @@ async function adminTamYedekIndir(){
     var sb = sbCfg();
     if(!sb){ toast('✗ Supabase bağlantısı yok'); return; }
     var key = sb.serviceKey || sb.key;
-    var headers = {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'};
+    var headers = {'Authorization':'Bearer '+key,'Accept':'application/json'};
 
     // Paralel çek
     var [rIhracat, rSorgu, rBasv] = await Promise.all([
@@ -2562,13 +2557,13 @@ async function kullanicilariYukle(){
     // giris_log'dan giriş istatistiklerini çek
     const _svcK = sb.serviceKey || sb.key;
     const rLog=await fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000',{
-      headers:{'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
     });
     const logData = rLog.ok ? await rLog.json() : [];
 
     // sorgular tablosundan sorgu sayısını çek
     const rSrg=await fetch(sb.url+'/rest/v1/sorgular?select=email&limit=2000',{
-      headers:{'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
     });
     const srgData = rSrg.ok ? await rSrg.json() : [];
     const sorguMap={};
@@ -2577,7 +2572,7 @@ async function kullanicilariYukle(){
     // Başvurular tablosundan firma/tel/talep bilgilerini çek
     const svcKey2 = sb.serviceKey || sb.key;
     const rBas = await fetch(sb.url+'/rest/v1/basvurular?select=email,ad_soyad,firma,telefon,talep&order=tarih.desc&limit=500',{
-      headers:{'apikey':svcKey2,'Authorization':'Bearer '+svcKey2,'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+svcKey2,'Accept':'application/json'}
     });
     const basData = rBas.ok ? await rBas.json() : [];
     // Her email için en son başvuruyu al
@@ -2592,7 +2587,7 @@ async function kullanicilariYukle(){
     // Supabase admin/users ile kayıt tarihi almaya çalış
     const svcKey = sb.serviceKey || sb.key;
     const rAuth=await fetch(sb.url+'/auth/v1/admin/users?per_page=200',{
-      headers:{'apikey':svcKey,'Authorization':'Bearer '+svcKey}
+      headers:{'Authorization':'Bearer '+svcKey}
     });
     const authData = rAuth.ok ? await rAuth.json() : {};
     const authUsers = authData.users || [];
@@ -2770,7 +2765,7 @@ async function parolaSifirla(id, email){
   try{
     const r = await fetch(sb.url + '/auth/v1/admin/users/' + id, {
       method: 'PUT',
-      headers: {'Content-Type':'application/json','apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey},
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+sb.serviceKey},
       body: JSON.stringify({password: tmpPass, user_metadata: {ilk_giris: true}})
     });
     if(r.ok){
@@ -2803,7 +2798,7 @@ async function kullanicisil(id, email){
   try{
     const r=await fetch(sb.url+'/auth/v1/admin/users/'+id,{
       method:'DELETE',
-      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
+      headers:{'Authorization':'Bearer '+sb.serviceKey}
     });
     if(r.ok||r.status===204){
       auditKaydet('Kullanıcı Silindi', email);
@@ -2950,7 +2945,7 @@ async function topluMailGonder(){
   try{
     // Kullanıcıları çek
     const uRes = await fetch(sb.url+'/auth/v1/admin/users?per_page=500',{
-      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
+      headers:{'Authorization':'Bearer '+sb.serviceKey}
     });
     const uData = uRes.ok ? await uRes.json() : {};
     const users = (uData.users||[]);
@@ -3296,7 +3291,7 @@ async function tumunuSifirla(){
     for(const alan of alanlar){
       await fetch(_SC_URL + '?id=eq.' + alan, {
         method: 'DELETE',
-        headers: {'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC}
+        headers: {'Authorization': 'Bearer ' + _SC_SVC}
       });
     }
   }catch(e){ console.warn('Supabase silme:', e.message); }
@@ -3343,7 +3338,7 @@ async function basvurulariYukle(){
   try{
     const key = sb.serviceKey;
     const r = await fetch(sb.url + '/rest/v1/basvurular?order=tarih.desc&limit=200',{
-      headers:{'apikey':key,'Authorization':'Bearer '+key}
+      headers:{'Authorization':'Bearer '+key}
     });
     const d = await r.json();
     if(!r.ok){
@@ -3412,7 +3407,7 @@ async function girisLogYukle(){
   try{
     const key=sb.serviceKey||sb.key;
     const r=await fetch(sb.url+'/rest/v1/giris_log?order=giris_tarihi.desc&limit=100',{
-      headers:{'apikey':key,'Authorization':'Bearer '+key}
+      headers:{'Authorization':'Bearer '+key}
     });
     const d=await r.json();
     if(!r.ok){el.innerHTML='<p style="color:#b91c1c;padding:20px;">Hata: '+JSON.stringify(d)+'</p>';return;}
@@ -3436,15 +3431,15 @@ async function dashboardYukle(){
 
   try{
     const key = sb ? (sb.serviceKey || sb.key) : null;
-    const headers = key ? {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'} : {};
+    const headers = key ? {'Authorization':'Bearer '+key,'Accept':'application/json'} : {};
 
     // Paralel fetch
     const [rUsers, rLog, rSorgu, rBasv, rIhracat] = await Promise.allSettled([
-      key ? fetch(sb.url+'/auth/v1/admin/users?per_page=200', {headers:{'apikey':sb.serviceKey||sb.key,'Authorization':'Bearer '+(sb.serviceKey||sb.key)}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/auth/v1/admin/users?per_page=200', {headers:{'Authorization':'Bearer '+(sb.serviceKey||sb.key)}}) : Promise.resolve(null),
       key ? fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000', {headers}) : Promise.resolve(null),
-      key ? fetch(sb.url+'/rest/v1/sorgular?select=id,tarih&order=tarih.desc&limit=1000', {headers:{'apikey':key,'Authorization':'Bearer '+key}}) : Promise.resolve(null),
-      key ? fetch(sb.url+'/rest/v1/basvurular?select=id,tarih,talep&order=tarih.desc&limit=200', {headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}}) : Promise.resolve(null),
-      key ? fetch(sb.url+'/rest/v1/ihracatlar?select=id,durum,kapatildi,created_at&limit=2000', {headers:{'apikey':key,'Authorization':'Bearer '+key}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/sorgular?select=id,tarih&order=tarih.desc&limit=1000', {headers:{'Authorization':'Bearer '+key}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/basvurular?select=id,tarih,talep&order=tarih.desc&limit=200', {headers:{'Authorization':'Bearer '+sb.serviceKey}}) : Promise.resolve(null),
+      key ? fetch(sb.url+'/rest/v1/ihracatlar?select=id,durum,kapatildi,created_at&limit=2000', {headers:{'Authorization':'Bearer '+key}}) : Promise.resolve(null),
     ]);
 
     const usersData  = rUsers.value  && rUsers.value.ok  ? await rUsers.value.json()  : {};
@@ -3550,7 +3545,7 @@ async function basvuruSil(id){
   try{
     const r = await fetch(sb.url + '/rest/v1/basvurular?id=eq.'+id, {
       method:'DELETE',
-      headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}
+      headers:{'Authorization':'Bearer '+sb.serviceKey}
     });
     if(r.ok){ toast('✓ Başvuru silindi'); basvurulariYukle(); }
     else { const d=await r.json(); toast('✗ '+(d.message||r.status)); }
@@ -3626,7 +3621,7 @@ async function girisLogTemizle(){
   try{
     const key = sb.serviceKey || sb.key;
     const r = await fetch(sb.url+'/rest/v1/giris_log?id=neq.00000000-0000-0000-0000-000000000000',{
-      method:'DELETE', headers:{'apikey':key,'Authorization':'Bearer '+key}
+      method:'DELETE', headers:{'Authorization':'Bearer '+key}
     });
     if(r.ok){ _girisLogTum=[]; toast('✓ Giriş geçmişi temizlendi'); girisLogYukle(); }
     else { toast('✗ Silinemedi: '+r.status); }
@@ -3652,7 +3647,6 @@ async function kullaniciDurumToggle(userId, simdikiAktif){
     var res = await fetch(sb.url + '/auth/v1/admin/users/' + userId, {
       method: 'PUT',
       headers: {
-        'apikey': sb.key,
         'Authorization': 'Bearer ' + sb.key,
         'Content-Type': 'application/json'
       },
@@ -3692,7 +3686,6 @@ async function lisansUzat(id, email, mevcutBitis){
     const res = await fetch(sb.url + '/auth/v1/admin/users/' + id, {
       method: 'PUT',
       headers: {
-        'apikey': sb.serviceKey,
         'Authorization': 'Bearer ' + sb.serviceKey,
         'Content-Type': 'application/json'
       },
@@ -3778,7 +3771,7 @@ async function kullaniciNotDuzenle(email){
       if(sb2 && sb2.serviceKey){
         // Kullanıcı id'sini bul
         const rU = await fetch(sb2.url+'/auth/v1/admin/users?per_page=200',{
-          headers:{'apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey}
+          headers:{'Authorization':'Bearer '+sb2.serviceKey}
         });
         if(rU.ok){
           const uData = await rU.json();
@@ -3786,7 +3779,7 @@ async function kullaniciNotDuzenle(email){
           if(hedef){
             await fetch(sb2.url+'/auth/v1/admin/users/'+hedef.id,{
               method:'PUT',
-              headers:{'Content-Type':'application/json','apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey},
+              headers:{'Content-Type':'application/json','Authorization':'Bearer '+sb2.serviceKey},
               body:JSON.stringify({user_metadata:(()=>{
               const mevMeta = hedef.user_metadata || {};
               const meta = {tip:tip, not:ac, ilk_giris: mevMeta.ilk_giris};
@@ -3821,7 +3814,7 @@ async function kullaniciNotDuzenle(email){
       try{
         await fetch(sb2.url+'/auth/v1/admin/users/'+userId,{
           method:'PUT',
-          headers:{'Content-Type':'application/json','apikey':sb2.serviceKey,'Authorization':'Bearer '+sb2.serviceKey},
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+sb2.serviceKey},
           body: JSON.stringify({user_metadata:{tip:'',not:'',lisans_baslangic:null,lisans_bitis:null,ilk_giris:false}})
         });
       }catch(e){ console.warn('Metadata temizlenemedi:', e); }
@@ -3987,7 +3980,7 @@ async function istatistikYukle(){
   try{
     const key = sb.serviceKey || sb.key;
     const r = await fetch(sb.url+'/rest/v1/sorgular?select=email,tarih,veri&order=tarih.desc&limit=2000',{
-      headers:{'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'}
+      headers:{'Authorization':'Bearer '+key,'Accept':'application/json'}
     });
     if(!r.ok){ el.innerHTML='<div style="color:#b91c1c;padding:12px;">Hata: '+r.status+'</div>'; return; }
     const rows = await r.json();
