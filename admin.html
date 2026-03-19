@@ -566,7 +566,66 @@
         </div>
       </div>
 
-    </div>
+    
+      <!-- EFT / BANKA BİLGİSİ -->
+      <div class="panel-card">
+        <div class="pc-head">
+          <div><h3>🏦 EFT / Banka Bilgileri</h3><p>Lisans ödemesi için EFT bilgilerini girin — başvuru onayında kullanıcıya mail ile gönderilir</p></div>
+          <button class="ob ob-dark" onclick="eftKaydet()">💾 Kaydet</button>
+        </div>
+        <div class="pc-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Banka Adı</label>
+              <input type="text" id="eft-banka" placeholder="Ziraat Bankası" style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Hesap Sahibi</label>
+              <input type="text" id="eft-sahip" placeholder="gövdağ Yazılım Ltd. Şti." style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">IBAN</label>
+            <input type="text" id="eft-iban" placeholder="TR00 0000 0000 0000 0000 0000 00" maxlength="32"
+              oninput="this.value=this.value.toUpperCase().replace(/[^TR0-9 ]/g,'').replace(/(.{4})/g,'$1 ').trim()"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:monospace;box-sizing:border-box;letter-spacing:.05em;">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Lisans Ücreti</label>
+              <div style="display:flex;gap:6px;">
+                <input type="number" id="eft-ucret" placeholder="500" min="0" style="flex:1;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+                <select id="eft-para" style="padding:9px 10px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                  <option>TRY</option><option>USD</option><option>EUR</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Lisans Süresi</label>
+              <select id="eft-sure" style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                <option value="1 yıl">1 Yıl</option>
+                <option value="6 ay">6 Ay</option>
+                <option value="3 ay">3 Ay</option>
+                <option value="ömür boyu">Ömür Boyu</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom:18px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Ek Not (opsiyonel)</label>
+            <textarea id="eft-not" rows="2" placeholder="Ödeme açıklamasına adınızı ve telefon numaranızı yazmanızı rica ederiz."
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+          </div>
+          <div id="eft-onizle" style="display:none;background:#f8fafc;border:1.5px solid var(--g200);border-radius:8px;padding:14px 16px;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">📧 Kullanıcıya Gönderilecek Mail Önizlemesi</div>
+            <div id="eft-onizle-icerik" style="font-size:.82rem;color:var(--navy2);line-height:1.7;"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <button class="ob ob-blue" onclick="eftOnizle()">👁 Önizle</button>
+          </div>
+        </div>
+      </div>
+
+</div>
 
     <!-- LOGO & LOGIN -->
     <div id="tab-logologin" class="tab-content">
@@ -1553,6 +1612,7 @@ async function baslat(){
   // Dashboard'u başlangıçta yükle
   setTimeout(dashboardYukle, 300);
   gorununuYukle();
+  eftYukle();
 }
 
 // ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
@@ -2635,6 +2695,7 @@ function kullaniciTablosuRender(users, logOnly){
       +   '<div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">'
       +     '<button data-id="'+eId+'" data-email="'+eEmail+'" class="_kulSifirla" style="font-size:.68rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">🔑 Sıfırla</button>'
       +     (u.tip==='lisans' ? '<button data-id="'+eId+'" data-email="'+eEmail+'" data-bitis="'+encodeURIComponent(u.lisans_bitis||'')+'" class="_lisansUzat" style="font-size:.68rem;color:#166534;background:#f0fdf4;border:1px solid #86efac;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;">+1 Yıl</button>' : '')
+      + '<button class="_eftMail" data-email="'+u.email+'" data-ad="'+encodeURIComponent((u.user_metadata&&u.user_metadata.ad_soyad)||u.email)+'" style="font-size:.68rem;color:#1d4ed8;background:#eff6ff;border:1px solid #93c5fd;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;" title="EFT bilgilerini mail gönder">📧 EFT</button>'
       +     silBtn
       +   '</div>'
       + '</td>'
@@ -2649,6 +2710,11 @@ function kullaniciTablosuRender(users, logOnly){
   el.querySelectorAll('._kulNot').forEach(function(b){ b.addEventListener('click',function(){ kullaniciNotDuzenle(this.dataset.email); }); });
   el.querySelectorAll('._kulSifirla').forEach(function(b){ b.addEventListener('click',function(){ parolaSifirla(this.dataset.id, this.dataset.email); }); });
   el.querySelectorAll('._lisansUzat').forEach(function(b){ b.addEventListener('click',function(){ lisansUzat(this.dataset.id, this.dataset.email, decodeURIComponent(this.dataset.bitis||'')); }); });
+  el.querySelectorAll('._eftMail').forEach(function(b){
+    b.addEventListener('click', function(){
+      eftMailGonder(this.dataset.email, decodeURIComponent(this.dataset.ad||''));
+    });
+  });
   el.querySelectorAll('._kulDurumToggle').forEach(function(b){ b.addEventListener('click',function(){ kullaniciDurumToggle(this.dataset.id, this.dataset.aktif==='1'); }); });
 }
 
@@ -2906,6 +2972,113 @@ async function topluMailGonder(){
     toast('✗ Hata: ' + e.message);
   }
 }
+
+// ── EFT / BANKA BİLGİSİ ────────────────────────────────────────────────────
+function eftYukle(){
+  const cfg = depoyuYukle() || {};
+  const e = cfg.eft || {};
+  if(e.banka)  document.getElementById('eft-banka').value = e.banka;
+  if(e.sahip)  document.getElementById('eft-sahip').value = e.sahip;
+  if(e.iban)   document.getElementById('eft-iban').value  = e.iban;
+  if(e.ucret)  document.getElementById('eft-ucret').value = e.ucret;
+  if(e.para){  const s=document.getElementById('eft-para'); for(let i=0;i<s.options.length;i++) if(s.options[i].value===e.para){s.selectedIndex=i;break;} }
+  if(e.sure){  const s=document.getElementById('eft-sure'); for(let i=0;i<s.options.length;i++) if(s.options[i].value===e.sure){s.selectedIndex=i;break;} }
+  if(e.not)    document.getElementById('eft-not').value   = e.not;
+}
+
+function eftKaydet(){
+  const cfg = depoyuYukle() || {};
+  cfg.eft = {
+    banka:  document.getElementById('eft-banka').value.trim(),
+    sahip:  document.getElementById('eft-sahip').value.trim(),
+    iban:   document.getElementById('eft-iban').value.trim(),
+    ucret:  document.getElementById('eft-ucret').value.trim(),
+    para:   document.getElementById('eft-para').value,
+    sure:   document.getElementById('eft-sure').value,
+    not:    document.getElementById('eft-not').value.trim(),
+  };
+  if(!cfg.eft.iban){ toast('⚠ IBAN alanı zorunludur'); return; }
+  depoyaKaydet(cfg);
+  scKaydet('eft', cfg.eft);
+  auditKaydet('EFT Bilgisi Güncellendi', cfg.eft.banka + ' — ' + cfg.eft.iban);
+  toast('✅ EFT bilgileri kaydedildi');
+}
+
+function eftMailHtml(e, adSoyad){
+  const ucretStr = (e.ucret && e.para) ? e.ucret + ' ' + e.para : '';
+  return '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;">'
+    + '<div style="background:#1a2540;color:#fff;padding:16px 20px;border-radius:8px 8px 0 0;">'
+    + '<strong style="font-size:1rem;">gövdağ İBKB Sorgulama</strong>'
+    + '</div>'
+    + '<div style="background:#fff;border:1px solid #e2e8f0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">'
+    + '<p style="color:#1e293b;margin-bottom:16px;">Merhaba' + (adSoyad?' '+adSoyad:'') + ',</p>'
+    + '<p style="color:#475569;margin-bottom:20px;">Başvurunuz değerlendirilmiştir. Lisans aktivasyonu için aşağıdaki banka hesabına EFT/havale yapmanızı rica ederiz.</p>'
+    + '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:16px 20px;margin-bottom:20px;">'
+    + '<div style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Ödeme Bilgileri</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:.88rem;">'
+    + (e.banka  ? '<tr><td style="padding:5px 0;color:#64748b;width:40%;">Banka</td><td style="padding:5px 0;font-weight:600;color:#1e293b;">'+e.banka+'</td></tr>' : '')
+    + (e.sahip  ? '<tr><td style="padding:5px 0;color:#64748b;">Hesap Sahibi</td><td style="padding:5px 0;font-weight:600;color:#1e293b;">'+e.sahip+'</td></tr>' : '')
+    + (e.iban   ? '<tr><td style="padding:5px 0;color:#64748b;">IBAN</td><td style="padding:5px 0;font-weight:700;color:#1e293b;font-family:monospace;letter-spacing:.04em;">'+e.iban+'</td></tr>' : '')
+    + (ucretStr ? '<tr><td style="padding:5px 0;color:#64748b;">Tutar</td><td style="padding:5px 0;font-weight:700;color:#2563eb;">'+ucretStr+'</td></tr>' : '')
+    + (e.sure   ? '<tr><td style="padding:5px 0;color:#64748b;">Lisans Süresi</td><td style="padding:5px 0;font-weight:600;color:#1e293b;">'+e.sure+'</td></tr>' : '')
+    + '</table>'
+    + '</div>'
+    + (e.not ? '<p style="color:#475569;font-size:.85rem;margin-bottom:16px;"><strong>Not:</strong> '+e.not+'</p>' : '')
+    + '<p style="color:#475569;font-size:.85rem;margin-bottom:8px;">Ödeme sonrasında hesabınız aktive edilecektir. Herhangi bir sorunuz için <a href="mailto:destek@ibkbsorgulama.com" style="color:#2563eb;">destek@ibkbsorgulama.com</a> adresine yazabilirsiniz.</p>'
+    + '<hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">'
+    + '<p style="font-size:.75rem;color:#94a3b8;">gövdağ İBKB Sorgulama — <a href="https://ibkbsorgulama.com" style="color:#2563eb;">ibkbsorgulama.com</a></p>'
+    + '</div></div>';
+}
+
+function eftOnizle(){
+  const cfg = depoyuYukle() || {};
+  const e = {
+    banka:  document.getElementById('eft-banka').value.trim(),
+    sahip:  document.getElementById('eft-sahip').value.trim(),
+    iban:   document.getElementById('eft-iban').value.trim(),
+    ucret:  document.getElementById('eft-ucret').value.trim(),
+    para:   document.getElementById('eft-para').value,
+    sure:   document.getElementById('eft-sure').value,
+    not:    document.getElementById('eft-not').value.trim(),
+  };
+  const onizle = document.getElementById('eft-onizle');
+  const icerik = document.getElementById('eft-onizle-icerik');
+  if(onizle && icerik){
+    icerik.innerHTML = eftMailHtml(e, 'Değerli Kullanıcı');
+    onizle.style.display = 'block';
+  }
+}
+
+async function eftMailGonder(email, adSoyad){
+  const sb = sbCfg();
+  if(!sb){ toast('⚠ Service Role Key gerekli'); return; }
+  const cfg = depoyuYukle() || {};
+  const e = cfg.eft || {};
+  if(!e.iban){ toast('⚠ Önce EFT bilgilerini kaydedin'); return; }
+  const RESEND_KEY = 're_7nWzHa4U_Ab3qut7vhayNoDNxKMP6c8z5';
+  const html = eftMailHtml(e, adSoyad);
+  try{
+    const res = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        to: [email],
+        subject: 'İBKB Sorgulama — EFT / Havale Bilgileri',
+        html: html,
+        resend_key: RESEND_KEY,
+        from_name: 'gövdağ İBKB'
+      })
+    });
+    const data = res.ok ? await res.json() : {};
+    if(data.basarili > 0){
+      auditKaydet('EFT Maili Gönderildi', email);
+      toast('✅ EFT bilgileri ' + email + ' adresine gönderildi');
+    } else {
+      toast('✗ Mail gönderilemedi');
+    }
+  }catch(err){ toast('✗ Hata: ' + err.message); }
+}
+
 
 // ─── AUDİT LOG ─────────────────────────────────────────────────────────────
 const AUDIT_KEY = 'ibkb_audit_log';

@@ -298,6 +298,7 @@ window.addEventListener('unhandledrejection', function(e){
         <span style="font-size:1.2rem;">✅</span>
         <div id="basvuruBasariMetin"><strong>Başvurunuz alındı!</strong><br><span style="font-weight:400;">En kısa sürede sizinle iletişime geçeceğiz.</span></div>
       </div>
+      <div id="basvuruEftKutu" style="display:none;"></div>
       <div id="basvuruHata" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:9px;padding:12px 14px;margin-bottom:12px;font-size:.84rem;color:#991b1b;"></div>
       <div style="display:flex;flex-direction:column;gap:11px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
@@ -605,6 +606,35 @@ async function basvuruGonder(){
     if(res.ok || res.status === 201){
       gosterBasari(talep);
       basariEl.style.display = 'flex';
+      // EFT bilgisi Supabase'den çek ve göster
+      (async function(){
+        try{
+          var _sbK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+          var _r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?id=eq.eft&select=value',
+            {headers:{'apikey':_sbK,'Authorization':'Bearer '+_sbK}});
+          if(!_r.ok) return;
+          var _rows = await _r.json();
+          if(!_rows.length) return;
+          var _e;
+          try{ _e = JSON.parse(_rows[0].value); }catch(ex){ return; }
+          if(!_e || !_e.iban) return;
+          var _eftDiv = document.getElementById('basvuruEftKutu');
+          if(!_eftDiv) return;
+          var _ucretStr = (_e.ucret&&_e.para) ? '<strong>'+_e.ucret+' '+_e.para+'</strong>' : '';
+          _eftDiv.innerHTML = '<div style="margin-top:14px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:9px;padding:14px 16px;">'
+            + '<div style="font-size:.72rem;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">🏦 Ödeme Bilgileri</div>'
+            + '<table style="width:100%;border-collapse:collapse;font-size:.83rem;">'
+            + (_e.banka  ? '<tr><td style="padding:4px 0;color:#475569;width:40%;">Banka</td><td style="padding:4px 0;font-weight:600;color:#0f172a;">'+_e.banka+'</td></tr>' : '')
+            + (_e.sahip  ? '<tr><td style="padding:4px 0;color:#475569;">Hesap Sahibi</td><td style="padding:4px 0;font-weight:600;color:#0f172a;">'+_e.sahip+'</td></tr>' : '')
+            + (_e.iban   ? '<tr><td style="padding:4px 0;color:#475569;">IBAN</td><td style="padding:4px 0;font-weight:700;color:#0f172a;font-family:monospace;letter-spacing:.04em;">'+_e.iban+'</td></tr>' : '')
+            + (_ucretStr ? '<tr><td style="padding:4px 0;color:#475569;">Lisans Ücreti</td><td style="padding:4px 0;">'+_ucretStr+'</td></tr>' : '')
+            + (_e.sure   ? '<tr><td style="padding:4px 0;color:#475569;">Lisans Süresi</td><td style="padding:4px 0;font-weight:600;color:#0f172a;">'+_e.sure+'</td></tr>' : '')
+            + '</table>'
+            + (_e.not ? '<p style="margin-top:10px;margin-bottom:0;font-size:.78rem;color:#475569;"><strong>Not:</strong> '+_e.not+'</p>' : '')
+            + '</div>';
+          _eftDiv.style.display = 'block';
+        }catch(ex){}
+      })();
       document.getElementById('bAd').value = '';
       document.getElementById('bFirma').value = '';
       document.getElementById('bEmail').value = '';
