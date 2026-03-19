@@ -1405,7 +1405,7 @@ async function parolaSifirlaBaslat(){
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'
+        'Authorization': 'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'
       },
       body: JSON.stringify({ code: _sifirlamaKodu })
     });
@@ -2027,8 +2027,8 @@ function modalKaydet(){
 // ─── SUPABASE ───────────────────────────────────────────────────────────────
 // ─── SİTE CONFIG — Supabase (tüm admin ayarları burada saklanır) ────────────
 const _SC_URL = 'https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config';
-const _SC_SVC = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKIhhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY';
-const _SC_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+const _SC_SVC = (function(){ try{ var _s=JSON.parse(localStorage.getItem('ibkb_supabase')||'{}'); return _s.serviceKey||''; }catch(e){return '';} })();
+const _SC_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 
 // Supabase'e yaz (service role ile — RLS bypass)
 // Görsel sıkıştırma - canvas ile boyut ve kaliteyi düşür
@@ -2260,8 +2260,8 @@ function sbCfg(){
     const raw=localStorage.getItem('ibkb_config');
     const cfg=raw?JSON.parse(raw):{};
     const sb=cfg.supabase||{};
-    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:sb.serviceKey||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKIhhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY'};
-  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg',serviceKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKIhhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY'};}
+    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',serviceKey:sb.serviceKey||''};
+  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',serviceKey:''};}
 }
 
 function supabaseKaydet(){
@@ -2971,7 +2971,7 @@ async function topluMailGonder(){
     try{
       const edgeRes = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'},
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'},
         body: JSON.stringify({
           to: hedefler,
           subject: konu,
@@ -3084,7 +3084,7 @@ async function eftMailGonder(email, adSoyad){
   try{
     const res = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
       method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'},
+      headers: {'Content-Type':'application/json','Authorization':'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'},
       body: JSON.stringify({
         to: [email],
         subject: 'İBKB Sorgulama — EFT / Havale Bilgileri',

@@ -1040,7 +1040,7 @@ function hesaplamaGonder(id){
 }
 
 const SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+const SB_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 const TOKEN  = sessionStorage.getItem('govdag_token');
 const EMAIL  = sessionStorage.getItem('govdag_email') || '';
 const GUN_180 = 180;
@@ -2104,7 +2104,7 @@ function formTemizle(kapat_form=false){
 (async function(){
   try{
     const r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?id=in.(logo,favicon)&select=id,value', {
-      headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'}
+      headers:{'apikey':'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg','Authorization':'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'}
     });
     if(!r.ok) return;
     const rows = await r.json();

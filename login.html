@@ -346,7 +346,7 @@ window.addEventListener('unhandledrejection', function(e){
 <script>
 // ─── SUPABASE YAPILANDIRMASI ─────────────────────────────────────────────────
 const SUPABASE_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+const SUPABASE_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 
 let sbUrl = SUPABASE_URL;
 let sbKey  = SUPABASE_KEY;
@@ -609,7 +609,7 @@ async function basvuruGonder(){
       // EFT bilgisi Supabase'den çek ve göster
       (async function(){
         try{
-          var _sbK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg';
+          var _sbK = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
           var _r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?id=eq.eft&select=value',
             {headers:{'apikey':_sbK,'Authorization':'Bearer '+_sbK}});
           if(!_r.ok) return;
@@ -1045,7 +1045,7 @@ async function girisYap(){
     (async function(){
       try{
         var _lr = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?select=id,value', {
-          headers: {'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'}
+          headers: {'apikey': 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg', 'Authorization': 'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'}
         });
         if(!_lr.ok) return;
         var _lrows = await _lr.json();
