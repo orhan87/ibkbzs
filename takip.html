@@ -208,6 +208,21 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
   thead th:nth-child(n+7){display:none;}
   tbody td:nth-child(n+7){display:none;}
 }
+
+/* ─── ORTAK BUTON SİSTEMİ ──────────────────────────────────────────────── */
+.ob{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;white-space:nowrap;transition:opacity .15s;}
+.ob:hover{opacity:.82;}
+.ob:disabled{opacity:.4;cursor:not-allowed;}
+.ob-blue{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;}
+.ob-green{background:#f0fdf4;border-color:#86efac;color:#166534;}
+.ob-red{background:#fef2f2;border-color:#fca5a5;color:#991b1b;}
+.ob-purple{background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;}
+.ob-gold{background:#fffbeb;border-color:#fcd34d;color:#92400e;}
+.ob-gray{background:#f8fafc;border-color:#cbd5e1;color:#475569;}
+.ob-dark{background:#1e3a5f;border-color:#2563eb;color:#fff;}
+.ob-navy{background:#0f172a;border-color:#334155;color:rgba(255,255,255,.8);}
+.ob-ghost{background:transparent;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7);}
+
 </style>
 </head>
 <body>
@@ -322,8 +337,8 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
 
       <!-- Şablon indir -->
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-        <button class="btn btn-secondary btn-sm" onclick="topluSablonIndir()">📄 CSV Şablon İndir</button>
-        <button class="btn btn-secondary btn-sm" onclick="topluExcelSablonIndir()">📊 Excel Şablon İndir</button>
+        <button class="ob ob-gray" onclick="topluSablonIndir()" title="CSV Şablon">📄 CSV Şablon İndir</button>
+        <button class="ob ob-gray" onclick="topluExcelSablonIndir()" title="Excel Şablon">📊 Excel Şablon İndir</button>
       </div>
 
       <!-- Dosya yükleme -->
@@ -349,9 +364,9 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       </div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-secondary btn-sm" onclick="topluOnizle()">🔍 Önizle</button>
+        <button class="ob ob-blue" onclick="topluOnizle()" title="Önizle">🔍 Önizle</button>
         <button class="btn btn-primary" id="topluKaydetBtn" onclick="topluKaydet()" style="display:none;">💾 <span id="topluKaydetSay">0</span> Kaydı Yükle</button>
-        <button class="btn btn-secondary btn-sm" onclick="topluTemizle()">✕ Temizle</button>
+        <button class="ob ob-ghost" onclick="topluTemizle()" title="Temizle">✕ Temizle</button>
       </div>
 
       <!-- Önizleme tablosu -->
@@ -631,8 +646,8 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           </div>
         </div>
         <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
-          <button type="submit" class="btn btn-primary">💾 Kaydet</button>
-          <button type="button" class="btn btn-secondary" onclick="formTemizle()">✕ Temizle</button>
+          <button type="submit" class="ob ob-dark">💾 Kaydet</button>
+          <button type="button" class="ob ob-ghost" onclick="formTemizle()">✕ Temizle</button>
         </div>
         <p style="font-size:.75rem;color:var(--g500);margin-top:4px;">* USD veya TL'den en az biri zorunludur.</p>
         <p id="tutarMsg" style="margin-top:6px;font-size:.8rem;color:var(--warn);display:none;"></p>
@@ -661,14 +676,8 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
           <option value="kapali">Kapatılan</option>
           <option value="ceza">⚖ Cezalı</option>
         </select>
-        <button class="btn btn-sm" onclick="takipPdfIndir()"
-          style="background:#fef2f2;border:1.5px solid #fca5a5;color:#b91c1c;padding:5px 12px;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">
-          📄 PDF
-        </button>
-        <button class="btn btn-sm" onclick="takipExcelIndir()"
-          style="background:#f0fdf4;border:1.5px solid #6ee7b7;color:#059669;padding:5px 12px;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">
-          📊 Excel
-        </button>
+        <button class="ob ob-blue" onclick="takipPdfIndir()" title="PDF İndir">📄 PDF</button>
+        <button class="ob ob-green" onclick="takipExcelIndir()" title="Excel İndir">📊 Excel</button>
       </div>
     </div>
     <div class="panel-body" style="padding:0;">
@@ -945,8 +954,8 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat()">İptal</button>
-      <button class="btn btn-primary" onclick="duzenleKaydet()">💾 Güncelle</button>
+      <button class="ob ob-ghost" onclick="modalKapat()">İptal</button>
+      <button class="ob ob-dark" onclick="duzenleKaydet()">💾 Güncelle</button>
     </div>
   </div>
 </div>
@@ -1871,15 +1880,15 @@ function listele(){
       '<td style="white-space:nowrap;">' +
         '<div style="display:flex;gap:4px;align-items:center;">' +
         (k.durum==='ceza'
-          ? '<button onclick="yenidenAc(\''+k.id+'\')" title="Aktife Al" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;">↩ Aktife Al</button>'
+          ? '<button class="ob ob-purple" onclick="yenidenAc(\''+k.id+'\')" title="Aktife Al">↩ Aktife Al</button>'
           : !k.kapatildi && k.durum!=='kapali'
-            ? '<button onclick="kapat(\''+k.id+'\')" title="Kapat" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f0fdf4;border-color:#86efac;color:#166534;">✓ Kapat</button>'
-              + '<button onclick="cezaKaydet(\''+k.id+'\')" title="Ceza İşaretle" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;">⚖ Ceza</button>'
-            : '<button onclick="yenidenAc(\''+k.id+'\')" title="Yeniden Aç" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;">↩ Aç</button>'
+            ? '<button class="ob ob-green" onclick="kapat(\''+k.id+'\')" title="Kapat">✓ Kapat</button>'
+              + '<button class="ob ob-purple" onclick="cezaKaydet(\''+k.id+'\')" title="Ceza İşaretle">⚖ Ceza</button>'
+            : '<button class="ob ob-blue" onclick="yenidenAc(\''+k.id+'\')" title="Yeniden Aç">↩ Aç</button>'
         ) +
-        '<button onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesapla" style="display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#fffbeb;border-color:#fcd34d;color:#92400e;">🧮</button>' +
-        '<button onclick="duzenle(\''+k.id+'\')" title="Düzenle" style="display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;font-size:.71rem;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f8fafc;border-color:#cbd5e1;color:#475569;">✏</button>' +
-        '<button onclick="sil(\''+k.id+'\')" title="Sil" style="display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;font-size:.71rem;cursor:pointer;font-family:inherit;border:1.5px solid;background:#fef2f2;border-color:#fca5a5;color:#991b1b;">🗑</button>' +
+        '<button class="ob ob-gold" onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesapla">🧮</button>' +
+        '<button class="ob ob-gray" onclick="duzenle(\''+k.id+'\')" title="Düzenle">✏</button>' +
+        '<button class="ob ob-red" onclick="sil(\''+k.id+'\')" title="Sil">🗑</button>' +
         '</div>' +
       '</td>' +
     '</tr>';
