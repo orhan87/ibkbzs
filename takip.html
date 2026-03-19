@@ -40,7 +40,7 @@ if(!sessionStorage.getItem('govdag_token')){
         if(_gG.radius) _gC+='--radius:'+_gG.radius+';';
         _gC+='}';
         if(_gG.fontAile)    _gC+='body{font-family:'+_gG.fontAile+'!important;}';
-        if(_gG.tabloBoyut)  _gC+='tbody td,thead th{font-size:'+_gG.tabloBoyut+'px!important;}';
+        if(_gG.tabloBoyut)  _gC+='tbody td,thead th{font-size:'+_gG.tabloBoyut+'px!important;color:rgba(255,255,255,.85)!important;}';
         if(_gG.tabloPadding)_gC+='tbody td{padding:'+_gG.tabloPadding+'px 8px!important;}';
         _gS.textContent=_gC;
         if(_gG.seoBaslik) document.title=_gG.seoBaslik+' — İhracat Takip';
@@ -153,9 +153,9 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 table{width:max-content;min-width:100%;border-collapse:collapse;font-size:.78rem;}
 thead tr{background:var(--navy2);}
 thead th{
-  padding:5px 8px;text-align:left;color:rgba(255,255,255,.75);
-  font-weight:600;font-size:.71rem;text-transform:uppercase;letter-spacing:.05em;
-  white-space:nowrap;
+  padding:5px 8px;text-align:left;color:rgba(255,255,255,.9);
+  font-weight:700;font-size:.71rem;text-transform:uppercase;letter-spacing:.05em;
+  white-space:nowrap;background:var(--navy2);
 }
 tbody tr{border-bottom:1px solid var(--g100);transition:background .1s;}
 tbody tr:hover{background:var(--g50);}
