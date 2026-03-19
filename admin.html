@@ -803,7 +803,7 @@
           </div>
           <div class="fgg" style="margin-bottom:12px;">
             <label>Supabase Anon Key</label>
-            <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            <input type="text" id="sb-key" placeholder="sb_secret_...">
             <p class="acik">Supabase → Project Settings → API → anon public</p>
           </div>
           <div class="fgg" style="margin-bottom:12px;">
@@ -1613,6 +1613,24 @@ async function baslat(){
   setTimeout(dashboardYukle, 300);
   gorununuYukle();
   eftYukle();
+  // Supabase bağlantı alanlarını mevcut değerlerle doldur
+  (function(){
+    try{
+      var cfg = depoyuYukle() || {};
+      var sb = cfg.supabase || {};
+      var urlEl = document.getElementById('sb-url');
+      var keyEl = document.getElementById('sb-key');
+      var svcEl = document.getElementById('sb-service-key');
+      if(urlEl && !urlEl.value) urlEl.value = sb.url || 'https://ydhzektalfhojnmznvji.supabase.co';
+      if(keyEl && !keyEl.value) keyEl.value = sb.key || '';
+      if(svcEl && !svcEl.value) svcEl.value = sb.serviceKey || '';
+      // Bağlı değilse uyarı göster
+      if(!sb.serviceKey){
+        var dur = document.getElementById('sbDurum');
+        if(dur){ dur.textContent='⚠ Service Key Girilmeli'; dur.style.background='#fffbeb'; dur.style.color='#92400e'; }
+      }
+    }catch(e){}
+  })();
   // EFT varsayılan - Supabase'de yoksa kaydet
   (async function(){
     try{
