@@ -99,7 +99,7 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 }
 .panel-head h2{font-size:1rem;font-weight:700;color:var(--navy);}
 .panel-head p{font-size:.8rem;color:var(--g500);margin-top:2px;}
-.panel-body{padding:24px;}
+.panel-body{padding:0;}
 
 /* BUTONLAR */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;
@@ -127,16 +127,16 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 
 /* TABLO */
 .tbl-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:.83rem;}
+table{width:max-content;min-width:100%;border-collapse:collapse;font-size:.78rem;}
 thead tr{background:var(--navy);}
 thead th{
-  padding:7px 10px;text-align:left;color:rgba(255,255,255,.75);
-  font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;
+  padding:5px 8px;text-align:left;color:rgba(255,255,255,.75);
+  font-weight:600;font-size:.71rem;text-transform:uppercase;letter-spacing:.05em;
   white-space:nowrap;
 }
 tbody tr{border-bottom:1px solid var(--g100);transition:.15s;}
 tbody tr:hover{background:var(--g50);}
-tbody td{padding:6px 10px;vertical-align:middle;font-size:.82rem;}
+tbody td{padding:4px 8px;vertical-align:middle;font-size:.78rem;white-space:nowrap;}
 
 /* SÜRE BADGE */
 .sure-badge{
@@ -1868,18 +1868,18 @@ function listele(){
           + '</div>'
           + '</td>';
       })() +
-      '<td>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+      '<td style="white-space:nowrap;">' +
+        '<div style="display:flex;gap:4px;align-items:center;">' +
         (k.durum==='ceza'
-          ? '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#f5f3ff;border:1.5px solid #c4b5fd;color:#6d28d9;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aktife Al</button>'
+          ? '<button onclick="yenidenAc(\''+k.id+'\')" title="Aktife Al" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;">↩ Aktife Al</button>'
           : !k.kapatildi && k.durum!=='kapali'
-            ? '<button class="btn btn-ok btn-sm" onclick="kapat(\''+k.id+'\')">✓ Kapat</button>'
-              + '<button class="btn btn-sm" onclick="cezaKaydet(\''+k.id+'\')" style="background:#f5f3ff;border:1.5px solid #c4b5fd;color:#6d28d9;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">⚖ Ceza</button>'
-            : '<button class="btn btn-sm" onclick="yenidenAc(\''+k.id+'\')" style="background:#eff6ff;border:1.5px solid #93c5fd;color:#1d4ed8;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">↩ Aç</button>'
+            ? '<button onclick="kapat(\''+k.id+'\')" title="Kapat" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f0fdf4;border-color:#86efac;color:#166534;">✓ Kapat</button>'
+              + '<button onclick="cezaKaydet(\''+k.id+'\')" title="Ceza İşaretle" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;">⚖ Ceza</button>'
+            : '<button onclick="yenidenAc(\''+k.id+'\')" title="Yeniden Aç" style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;">↩ Aç</button>'
         ) +
-        '<button class="btn btn-primary btn-sm" onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesaplama sayfasına gönder">🧮 Hesapla</button>' +
-        '<button class="btn btn-secondary btn-sm" onclick="duzenle(\''+k.id+'\')" title=\"Düzenle\">✏</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="sil(\''+k.id+'\')" title=\"Sil\">🗑</button>' +
+        '<button onclick="hesaplamaGonder(\''+k.id+'\')" title="Hesapla" style="display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;background:#fffbeb;border-color:#fcd34d;color:#92400e;">🧮</button>' +
+        '<button onclick="duzenle(\''+k.id+'\')" title="Düzenle" style="display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;font-size:.71rem;cursor:pointer;font-family:inherit;border:1.5px solid;background:#f8fafc;border-color:#cbd5e1;color:#475569;">✏</button>' +
+        '<button onclick="sil(\''+k.id+'\')" title="Sil" style="display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;font-size:.71rem;cursor:pointer;font-family:inherit;border:1.5px solid;background:#fef2f2;border-color:#fca5a5;color:#991b1b;">🗑</button>' +
         '</div>' +
       '</td>' +
     '</tr>';
