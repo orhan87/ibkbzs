@@ -2560,14 +2560,15 @@ async function kullanicilariYukle(){
   el.innerHTML='<div style="color:#8c97a8;font-size:.83rem;padding:12px 0;">Kullanıcılar yükleniyor…</div>';
   try{
     // giris_log'dan giriş istatistiklerini çek
+    const _svcK = sb.serviceKey || sb.key;
     const rLog=await fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000',{
-      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+      headers:{'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
     });
     const logData = rLog.ok ? await rLog.json() : [];
 
     // sorgular tablosundan sorgu sayısını çek
     const rSrg=await fetch(sb.url+'/rest/v1/sorgular?select=email&limit=2000',{
-      headers:{'apikey':sb.key,'Authorization':'Bearer '+sb.key,'Accept':'application/json'}
+      headers:{'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
     });
     const srgData = rSrg.ok ? await rSrg.json() : [];
     const sorguMap={};
