@@ -763,28 +763,11 @@ window.addEventListener('unhandledrejection', function(e){
         <button class="btn-gecmis-temizle" onclick="gecmisTemizle()">Temizle</button>
       </div>
     </div>
-    <div style="padding:8px 16px 10px;background:#f8fafc;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <div style="padding:6px 16px 8px;background:#f8fafc;border-bottom:1px solid var(--g100);">
       <input type="text" id="gecmisArama" placeholder="🔍 Beyanname, ülke, tarih…" autocomplete="off" autocorrect="off" spellcheck="false"
         oninput="gecmisFiltrele(this.value)"
-        style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;width:200px;background:#fff;"
+        style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;width:250px;background:#fff;"
         onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
-      <input type="date" id="gecmisTarihBas" title="Başlangıç tarihi"
-        onchange="gecmisFiltrele(document.getElementById('gecmisArama').value)"
-        style="padding:5px 8px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;background:#fff;cursor:pointer;"
-        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
-      <span style="font-size:.75rem;color:var(--g400);">—</span>
-      <input type="date" id="gecmisTarihBit" title="Bitiş tarihi"
-        onchange="gecmisFiltrele(document.getElementById('gecmisArama').value)"
-        style="padding:5px 8px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;background:#fff;cursor:pointer;"
-        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='var(--g200)'">
-      <select id="gecmisDurumFiltre" onchange="gecmisFiltrele(document.getElementById('gecmisArama').value)"
-        style="padding:5px 8px;border:1.5px solid var(--g200);border-radius:7px;font-size:.78rem;font-family:inherit;outline:none;background:#fff;cursor:pointer;">
-        <option value="">Tümü</option>
-        <option value="aktif">Devam Ediyor</option>
-        <option value="gecti">Süresi Dolmuş</option>
-        <option value="muaf">Muaf</option>
-      </select>
-      <button onclick="gecmisFiltreTemizle()" style="padding:5px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:.75rem;background:#fff;cursor:pointer;font-family:inherit;color:var(--g600);">✕ Sıfırla</button>
     </div>
     <div class="gecmis-liste" id="gecmisListe">
       <div class="gecmis-bos">Henüz sorgu yapılmadı.</div>
@@ -2136,41 +2119,33 @@ async function supabaseSorguTemizle(){
 }
 
 function gecmisFiltrele(aramaMetni){
-  const metin = (aramaMetni||'').trim().toLowerCase();
-  const tarihBas = document.getElementById('gecmisTarihBas')?.value || '';
-  const tarihBit = document.getElementById('gecmisTarihBit')?.value || '';
-  const durumFlt = document.getElementById('gecmisDurumFiltre')?.value || '';
-
-  // gecmisPanelGuncelle'yi filtreyle çağır
-  _gecmisFiltreMetin = metin;
-  _gecmisFiltreBasTarih = tarihBas;
-  _gecmisFiltreBitTarih = tarihBit;
-  _gecmisFiltreDurum = durumFlt;
+  _gecmisFiltreMetin = (aramaMetni||'').trim().toLowerCase();
   _gecmisSayfa = 1;
   gecmisPanelGuncelle();
 }
 
-function gecmisFiltreTemizle(){
-  var el = document.getElementById('gecmisArama');
-  var tb = document.getElementById('gecmisTarihBas');
-  var tt = document.getElementById('gecmisTarihBit');
-  var df = document.getElementById('gecmisDurumFiltre');
-  if(el) el.value = '';
-  if(tb) tb.value = '';
-  if(tt) tt.value = '';
-  if(df) df.value = '';
-  _gecmisFiltreMetin = '';
-  _gecmisFiltreBasTarih = '';
-  _gecmisFiltreBitTarih = '';
-  _gecmisFiltreDurum = '';
-  _gecmisSayfa = 1;
-  gecmisPanelGuncelle();
-}
 
 let _gecmisFiltreMetin = '';
-let _gecmisFiltreBasTarih = '';
-let _gecmisFiltreBitTarih = '';
-let _gecmisFiltreDurum = '';
+let _gecmisSiralamaKolon = '_sbTarih';
+let _gecmisSiralamaYon   = 'desc';
+
+function gecmisSiralama(kolon){
+  if(_gecmisSiralamaKolon === kolon){
+    _gecmisSiralamaYon = _gecmisSiralamaYon === 'asc' ? 'desc' : 'asc';
+  } else {
+    _gecmisSiralamaKolon = kolon;
+    _gecmisSiralamaYon = 'desc';
+  }
+  _gecmisSayfa = 1;
+  gecmisPanelGuncelle();
+}
+
+function _gecmisIkon(kolon){
+  if(_gecmisSiralamaKolon !== kolon) return ' <span style="color:rgba(255,255,255,.25);font-size:.65rem;">⇅</span>';
+  return _gecmisSiralamaYon === 'asc'
+    ? ' <span style="color:#f59e0b;font-size:.75rem;">▲</span>'
+    : ' <span style="color:#f59e0b;font-size:.75rem;">▼</span>';
+}
 
 function gecmisSayfaDegistir(yeni){
   _gecmisSayfa = yeni;
@@ -2202,48 +2177,27 @@ function gecmisPanelGuncelle(){
 
   const satirlar = sorguGecmisi.filter(function(q){
     if(!q || !q.ulke) return false;
-    // Metin filtresi
     if(_gecmisFiltreMetin){
       var hay = (q.ulke+' '+(q.beyanname||'')+' '+(q.tarih||'')+' '+(q.saat||'')).toLowerCase();
       if(!hay.includes(_gecmisFiltreMetin)) return false;
     }
-    // Tarih aralığı - saat alanı kullan (YYYY-MM-DD formatına çevir)
-    if(_gecmisFiltreBasTarih || _gecmisFiltreBitTarih){
-      // saat: "25.03.2026 14:30:00" → tarih kısmını al
-      var _saat = q.saat || '';
-      var _tarihParcala = _saat.split(' ')[0]; // "25.03.2026"
-      var _prc = _tarihParcala.split('.');
-      var _iso = _prc.length===3 ? _prc[2]+'-'+_prc[1]+'-'+_prc[0] : '';
-      if(_gecmisFiltreBasTarih && _iso && _iso < _gecmisFiltreBasTarih) return false;
-      if(_gecmisFiltreBitTarih && _iso && _iso > _gecmisFiltreBitTarih) return false;
-    }
-    // Durum filtresi
-    if(_gecmisFiltreDurum){
-      if(_gecmisFiltreDurum === 'muaf' && !q.muaf) return false;
-      if(_gecmisFiltreDurum === 'aktif'){
-        if(q.muaf) return false;
-        if(!q.sonTarih || q.sonTarih==='—') return false;
-        var _bugunD = new Date(); _bugunD.setHours(0,0,0,0);
-        var _aylarD = {Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
-        var _pD = q.sonTarih.replace(/ /g,' ').split(' ');
-        if(_pD.length===3 && _aylarD[_pD[1]]!==undefined){
-          var _stD = new Date(parseInt(_pD[2]),_aylarD[_pD[1]],parseInt(_pD[0]));
-          if(_stD < _bugunD) return false;
-        }
-      }
-      if(_gecmisFiltreDurum === 'gecti'){
-        if(q.muaf) return false;
-        if(!q.sonTarih || q.sonTarih==='—') return false;
-        var _bugunG = new Date(); _bugunG.setHours(0,0,0,0);
-        var _aylarG = {Ocak:0,Şubat:1,Mart:2,Nisan:3,Mayıs:4,Haziran:5,Temmuz:6,Ağustos:7,Eylül:8,Ekim:9,Kasım:10,Aralık:11};
-        var _pG = q.sonTarih.replace(/ /g,' ').split(' ');
-        if(_pG.length===3 && _aylarG[_pG[1]]!==undefined){
-          var _stG = new Date(parseInt(_pG[2]),_aylarG[_pG[1]],parseInt(_pG[0]));
-          if(_stG >= _bugunG) return false;
-        }
-      }
-    }
     return true;
+  })
+
+  // Sıralama
+  satirlar.sort(function(a, b){
+    var k = _gecmisSiralamaKolon;
+    var d = _gecmisSiralamaYon === 'asc' ? 1 : -1;
+    if(k === '_sbTarih' || k === 'tarih' || k === 'sonTarih'){
+      var va = String(a[k]||''), vb = String(b[k]||'');
+      return va.localeCompare(vb) * d;
+    }
+    if(k === 'bedelHam'){
+      var na = parseFloat(String(a.bedelHam||'').replace(/[^0-9.]/g,''))||0;
+      var nb = parseFloat(String(b.bedelHam||'').replace(/[^0-9.]/g,''))||0;
+      return (na - nb) * d;
+    }
+    return String(a[k]||'').localeCompare(String(b[k]||''), 'tr') * d;
   });
 
   // Sayfalama
@@ -2265,13 +2219,13 @@ function gecmisPanelGuncelle(){
   liste.innerHTML = '<div class="gecmis-tablo-wrap"><table class="gt">'
     + '<thead><tr>'
     + '<th>#</th>'
-    + '<th>Sorgulama Tarihi</th>'
-    + '<th>Beyanname No</th>'
-    + '<th>İhracat Tarihi</th>'
-    + '<th>İhracat Bedeli</th>'
+    + '<th onclick="gecmisSiralama(&quot;_sbTarih&quot;)" style="cursor:pointer;user-select:none;">Sorgulama Tarihi</th>'
+    + '<th onclick="gecmisSiralama(&quot;beyanname&quot;)" style="cursor:pointer;user-select:none;">Beyanname No</th>'
+    + '<th onclick="gecmisSiralama(&quot;tarih&quot;)" style="cursor:pointer;user-select:none;">İhracat Tarihi</th>'
+    + '<th onclick="gecmisSiralama(&quot;bedelHam&quot;)" style="cursor:pointer;user-select:none;">İhracat Bedeli</th>'
     + '<th>Para Birimi</th>'
-    + '<th>Hedef Ülke</th>'
-    + '<th>Son Tarih (180. Gün)</th>'
+    + '<th onclick="gecmisSiralama(&quot;ulke&quot;)" style="cursor:pointer;user-select:none;">Hedef Ülke</th>'
+    + '<th onclick="gecmisSiralama(&quot;sonTarih&quot;)" style="cursor:pointer;user-select:none;">Son Tarih (180. Gün)</th>'
     + '<th>Süre Durumu</th>'
     + '<th>15.000 USD Muaf Dilim</th>'
     + '<th>Brüt Matrah</th>'
