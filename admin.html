@@ -2971,7 +2971,7 @@ async function topluMailGonder(){
     try{
       const edgeRes = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'},
         body: JSON.stringify({
           to: hedefler,
           subject: konu,
@@ -3084,7 +3084,7 @@ async function eftMailGonder(email, adSoyad){
   try{
     const res = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type':'application/json','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHpla3RhbGZob2pubXpudmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDA3MjgsImV4cCI6MjA4ODIxNjcyOH0.20cxRsS-9_sjJEDiVYZ3yBcebs7IseQ4pSF82knejCg'},
       body: JSON.stringify({
         to: [email],
         subject: 'İBKB Sorgulama — EFT / Havale Bilgileri',
