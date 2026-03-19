@@ -1937,7 +1937,9 @@ function sifirla(){
 }
 
 // ─── GEÇMİŞ ──────────────────────────────────────────────────────────────────
-let sorguGecmisi = [];
+let sorguGecmisi    = [];
+let _gecmisSayfa    = 1;
+const _GECMIS_BOYUTU = 50;
 let _gecmisFiltreMetin    = '';
 let _gecmisSiralamaKolon  = '_sbTarih';
 let _gecmisSiralamaYon    = 'desc';
@@ -2238,11 +2240,6 @@ function gecmisPanelGuncelle(){
     + '<th>Brüt Matrah</th>'
     + '<th>Önceki İBKB</th>';
 
-  // Geriye kalan th'leri eski fonksiyondan al - adimlar başlıkları
-  var THR_IDX = old_fn.indexOf("'<th class=\"");
-  if(THR_IDX > 0){
-    // eski fonksiyondan kalan başlıkları al
-  }
   html += '<th class="td-islem">İşlem</th></tr></thead><tbody>';
 
   _sayfa.forEach(function(q, i){
