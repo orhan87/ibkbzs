@@ -2248,7 +2248,7 @@ function gecmisPanelGuncelle(){
     var muafDilim = adimDeger(q, '15.000');
     var brutMatrah = adimDeger(q, 'Brüt matrah');
     var onceki = q.oncekiIbkb || (adimDeger(q, 'önce düzenlenen') !== '—' ? adimDeger(q, 'önce düzenlenen') : '');
-    html += '<tr class="' + (muaf ? 'muaf-satir' : '') + '" onclick="gecmisToggle(' + realIdx + ')" style="cursor:pointer;">';
+    html += '<tr class="' + (muaf ? 'muaf-satir' : '') + '">';
     html += '<td class="td-no">' + (sorguGecmisi.length - realIdx) + '</td>';
     html += '<td class="td-saat">' + (q.saat||'—') + '</td>';
     html += '<td class="td-byn">' + (q.beyanname||'—') + '</td>';
@@ -2269,22 +2269,7 @@ function gecmisPanelGuncelle(){
     html += '<td class="td-islem"><button class="btn-sil-gecmis" onclick="event.stopPropagation();gecmisSatirSil(' + realIdx + ')" title="Kaydı sil">🗑</button></td>';
     html += '</tr>';
     // Detay satırı
-    html += '<tr class="detay-satir" id="detay-' + realIdx + '"><td colspan="13">';
-    html += '<div class="detay-ic">';
-    if(q.htmlDetay){
-      html += q.htmlDetay;
-    } else {
-      // Özet bilgi - Supabase'den yüklenen kayıtlar için
-      html += '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:#475569;padding:4px 0;">';
-      html += '<span><strong>Beyanname:</strong> ' + (q.beyanname||'—') + '</span>';
-      html += '<span><strong>Ülke:</strong> ' + (q.ulke||'—') + '</span>';
-      html += '<span><strong>Bedel:</strong> ' + (q.bedel||'—') + ' ' + (q.para||'') + '</span>';
-      html += '<span><strong>İBKB:</strong> ' + (q.ibkb||'—') + '</span>';
-      html += '<span><strong>TCMB Satışı:</strong> ' + (q.tcmb||'—') + '</span>';
-      html += '<span><strong>Son Tarih:</strong> ' + (q.sonTarih||'—') + '</span>';
-      html += '</div>';
-    }
-    html += '</div></td></tr>';
+
   });
 
   html += '</tbody></table></div>';
