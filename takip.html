@@ -32,16 +32,22 @@ if(!sessionStorage.getItem('govdag_token')){
 
 <style>
 :root{
-  --navy:#0f172a;--navy2:#1e293b;--navy3:#334155;
+  --navy:#0f172a;--navy2:var(--navy2);--navy3:var(--navy3);
   --blue:#2563eb;--blue2:#3b82f6;--blue3:#eff6ff;
   --gold:#d97706;--gold2:#f59e0b;
   --bg:#f0f4f8;--white:#fff;
-  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
-  --g400:#94a3b8;--g500:#64748b;--g600:#475569;
-  --ok:#059669;--ok-bg:#ecfdf5;
-  --err:#dc2626;--err-bg:#fef2f2;
-  --warn:#d97706;--warn-bg:#fffbeb;
-  --radius:12px;--shadow:0 2px 16px rgba(0,0,0,.08);
+  --g50:var(--g50);--g100:var(--g100);--g200:var(--g200);--g300:#cbd5e1;
+  --g400:var(--g400);--g500:var(--g500);--g600:var(--g600);--g700:var(--navy3);
+  --ok:#059669;--ok-bg:#ecfdf5;--ok2:#d1fae5;
+  --err:#dc2626;--err-bg:#fef2f2;--err2:#fee2e2;
+  --warn:#d97706;--warn-bg:#fffbeb;--warn2:#fef3c7;
+  --org:#ea580c;--org-bg:#fff7ed;--org2:#ffedd5;
+  --pur:#7c3aed;--pur-bg:#f5f3ff;--pur2:#ede9fe;
+  --tel:#0891b2;--tel-bg:#ecfeff;--tel2:#cffafe;
+  --text:#0f172a;
+  --border:#e2e8f0;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
+  --radius:12px;
 }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -49,7 +55,7 @@ body{
   font-family:'DM Sans',sans-serif;
   background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);
   min-height:100vh;
-  color:#1e293b;
+  color:var(--navy2);
   opacity:0;
   transition:opacity .3s;
 }
@@ -72,16 +78,12 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 .btn-cikis:hover{background:rgba(255,255,255,.12);color:#fff;}
 
 /* ANA YAPI */
-.main{max-width:1160px;margin:0 auto;padding:28px 24px;}
+.main{max-width:1160px;margin:0 auto;padding:28px 24px 60px;background:transparent;}
 
 /* ÖZET KARTLAR */
 .ozet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
-.ozet-kart{
-  background:#fff;border-radius:var(--radius);padding:20px;
-  box-shadow:var(--shadow);border:1.5px solid var(--g200);
-  display:flex;flex-direction:column;gap:6px;
-}
-.ozet-kart .label{font-size:.72rem;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;}
+.ozet-kart{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:16px 20px;box-shadow:var(--shadow);}
+.ozet-kart .label{font-size:.68rem;font-weight:600;color:var(--g500);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px;}
 .ozet-kart .deger{font-size:1.8rem;font-weight:700;color:var(--navy);line-height:1;}
 .ozet-kart .alt{font-size:.78rem;color:var(--g500);}
 .ozet-kart.krit{ border-color:#fca5a5;background:#fff5f5; }
@@ -92,13 +94,11 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 .ozet-kart.ok .deger{color:var(--ok);}
 
 /* PANEL */
-.panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--g200);margin-bottom:24px;overflow:hidden;}
-.panel-head{
-  padding:18px 24px;border-bottom:1px solid var(--g100);
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
-}
-.panel-head h2{font-size:1rem;font-weight:700;color:var(--navy);}
-.panel-head p{font-size:.8rem;color:var(--g500);margin-top:2px;}
+.panel{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:24px;overflow:hidden;}
+.panel-head{background:var(--navy);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.panel-head h2{font-size:.88rem;font-weight:600;color:#fff;margin:0;}
+.panel-head h2,.panel-head h3{color:#fff;font-size:.88rem;font-weight:600;margin:0;}
+.panel-head p{color:rgba(255,255,255,.55);font-size:.72rem;margin:0;}
 .panel-body{padding:0;}
 
 /* BUTONLAR */
@@ -114,13 +114,16 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 .btn-sm{padding:5px 12px;font-size:.76rem;}
 
 /* FORM */
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
-.fg{display:flex;flex-direction:column;gap:5px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px 20px;}
+.fg{display:flex;flex-direction:column;gap:6px;}
 .fg label{font-size:.78rem;font-weight:600;color:var(--g600);}
 .fg input,.fg select,.fg textarea{
-  padding:9px 12px;border:1.5px solid var(--g200);border-radius:8px;
-  font-size:.88rem;font-family:inherit;color:var(--navy);background:#fff;
+  padding:10px 14px;border:1.5px solid var(--g300);border-radius:8px;
+  font-size:.85rem;font-family:inherit;color:var(--navy);background:#fff;
   transition:.15s;outline:none;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);
 }
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
 .fg textarea{resize:vertical;min-height:60px;}
@@ -128,13 +131,13 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 /* TABLO */
 .tbl-wrap{overflow-x:auto;}
 table{width:max-content;min-width:100%;border-collapse:collapse;font-size:.78rem;}
-thead tr{background:var(--navy);}
+thead tr{background:var(--navy2);}
 thead th{
   padding:5px 8px;text-align:left;color:rgba(255,255,255,.75);
   font-weight:600;font-size:.71rem;text-transform:uppercase;letter-spacing:.05em;
   white-space:nowrap;
 }
-tbody tr{border-bottom:1px solid var(--g100);transition:.15s;}
+tbody tr{border-bottom:1px solid var(--g100);transition:background .1s;}
 tbody tr:hover{background:var(--g50);}
 tbody td{padding:4px 8px;vertical-align:middle;font-size:.78rem;white-space:nowrap;}
 
@@ -146,7 +149,7 @@ tbody td{padding:4px 8px;vertical-align:middle;font-size:.78rem;white-space:nowr
 .sure-ok{background:#dcfce7;color:#15803d;}
 .sure-uyari{background:#fef9c3;color:#854d0e;}
 .sure-krit{background:#fee2e2;color:#b91c1c;}
-.sure-gecti{background:#f1f5f9;color:#64748b;text-decoration:line-through;}
+.sure-gecti{background:var(--g100);color:var(--g500);text-decoration:line-through;}
 .sure-kapali{background:#f0fdf4;color:#15803d;}
 .sure-ceza{background:#f5f3ff;color:#6d28d9;border:1px solid #c4b5fd;}
 
@@ -159,12 +162,12 @@ tbody td{padding:4px 8px;vertical-align:middle;font-size:.78rem;white-space:nowr
 
 /* KAPATILDI */
 tr.kapali td{opacity:.5;}
-tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
+tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
 
 /* BOŞ DURUM */
 .bos-durum{text-align:center;padding:60px 20px;color:var(--g400);}
 .bos-durum .ikon{font-size:3rem;margin-bottom:12px;}
-.bos-durum h3{font-size:1rem;color:var(--g500);margin-bottom:6px;}
+.bos-durum h3{font-size:.82rem;font-weight:600;color:var(--navy);margin:0;}
 .bos-durum p{font-size:.84rem;}
 
 /* MODAL */
@@ -173,11 +176,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
   display:none;align-items:center;justify-content:center;padding:20px;
 }
 .modal-overlay.ac{display:flex;}
-.modal{
-  background:#fff;border-radius:16px;padding:28px;
-  max-width:640px;width:100%;max-height:90vh;overflow-y:auto;
-  box-shadow:0 20px 60px rgba(0,0,0,.3);
-}
+.modal{background:#fff;border-radius:var(--radius);max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.18);padding:28px;max-height:90vh;overflow-y:auto;}
 .modal h3{font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:20px;
   padding-bottom:14px;border-bottom:1px solid var(--g100);}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;
@@ -194,7 +193,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
 /* TOAST */
 #toast{
   position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:#1e293b;color:#fff;padding:10px 22px;border-radius:10px;
+  background:var(--navy2);color:#fff;padding:10px 22px;border-radius:10px;
   font-size:.84rem;font-weight:600;z-index:9999;transition:.3s;opacity:0;white-space:nowrap;
   box-shadow:0 4px 20px rgba(0,0,0,.3);
 }
@@ -218,9 +217,9 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
 .ob-red{background:#fef2f2;border-color:#fca5a5;color:#991b1b;}
 .ob-purple{background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;}
 .ob-gold{background:#fffbeb;border-color:#fcd34d;color:#92400e;}
-.ob-gray{background:#f8fafc;border-color:#cbd5e1;color:#475569;}
+.ob-gray{background:var(--g50);border-color:#cbd5e1;color:var(--g600);}
 .ob-dark{background:#1e3a5f;border-color:#2563eb;color:#fff;}
-.ob-navy{background:#0f172a;border-color:#334155;color:rgba(255,255,255,.8);}
+.ob-navy{background:#0f172a;border-color:var(--navy3);color:rgba(255,255,255,.8);}
 .ob-ghost{background:transparent;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7);}
 
 </style>
@@ -320,7 +319,7 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <h2>📥 Toplu Veri Girişi</h2>
         <p>CSV veya Excel formatında birden fazla ihracat kaydı yükleyin</p>
       </div>
-      <span id="topluToggleIkon" style="font-size:1.2rem;color:var(--g400);">▼</span>
+      <span id="topluToggleIkon" style="font-size:1.1rem;color:rgba(255,255,255,.7);">▼</span>
     </div>
     <div class="panel-body" id="topluPanel" style="display:none;">
 
@@ -403,9 +402,9 @@ tr.kapali .sure-badge{background:#f1f5f9;color:#94a3b8;}
         <h2>➕ Yeni İhracat Kaydı</h2>
         <p>İhracat bilgilerini girerek 180 günlük takip başlatın</p>
       </div>
-      <span id="formToggleIkon" style="font-size:1.2rem;color:var(--g400);">▼</span>
+      <span id="formToggleIkon" style="font-size:1.1rem;color:rgba(255,255,255,.7);">▼</span>
     </div>
-    <div class="panel-body" id="formPanel">
+    <div class="panel-body" id="formPanel" style="padding:20px 24px;">
       <form onsubmit="kaydetIhracat(event)">
         <div class="form-grid">
           <div class="fg">
