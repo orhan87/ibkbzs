@@ -228,6 +228,7 @@
       <button class="tab-btn"    onclick="tab('girislog',this)">📋 Giriş Geçmişi</button>
       <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular</button>
       <button class="tab-btn"    onclick="tab('audit',this)" id="tabAudit">📋 İşlem Günlüğü</button>
+      <button class="tab-btn"    onclick="tab('gorunum',this)" id="tabGorunum">🎨 Görünüm</button>
     </div>
 
     <!-- DASHBOARD -->
@@ -960,6 +961,170 @@
     </div>
   </div>
 
+
+      <!-- ─── GÖRÜNÜM TAB ─────────────────────────────────────────────────── -->
+      <div id="tab-gorunum" class="tab-content">
+
+        <!-- RENK ŞEMASI -->
+        <div class="panel-card">
+          <div class="pc-head"><div><h3>🎨 Renk Şeması</h3><p>Ana renkler — tüm sayfalara anında yansır</p></div></div>
+          <div class="pc-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:18px;">
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Ana Renk (--blue)</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="color" id="renk-blue" value="#2563eb" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+                  <input type="text" id="renk-blue-hex" value="#2563eb" maxlength="7" placeholder="#2563eb"
+                    oninput="document.getElementById('renk-blue').value=this.value"
+                    style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">Butonlar, linkler, odak halkası</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Vurgu Rengi (--gold)</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="color" id="renk-gold" value="#d97706" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+                  <input type="text" id="renk-gold-hex" value="#d97706" maxlength="7" placeholder="#d97706"
+                    oninput="document.getElementById('renk-gold').value=this.value"
+                    style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">Uyarı, vurgu, ikinci renk</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Arka Plan (--navy)</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="color" id="renk-navy" value="#0f172a" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+                  <input type="text" id="renk-navy-hex" value="#0f172a" maxlength="7" placeholder="#0f172a"
+                    oninput="document.getElementById('renk-navy').value=this.value"
+                    style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">Header, gradient arka plan</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Köşe Yuvarlama (--radius)</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="range" id="renk-radius" min="0" max="20" value="12" step="2"
+                    oninput="document.getElementById('renk-radius-val').textContent=this.value+'px'"
+                    style="flex:1;accent-color:var(--blue);">
+                  <span id="renk-radius-val" style="font-size:.85rem;font-weight:700;color:var(--navy);min-width:36px;">12px</span>
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">Kart ve buton köşeleri</small>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button class="ob ob-dark" onclick="gorununuKaydet()">💾 Renkleri Kaydet</button>
+              <button class="ob ob-ghost" onclick="gorununuSifirla()">↩ Varsayılana Dön</button>
+              <div id="renkOnizle" style="display:flex;gap:6px;align-items:center;margin-left:auto;">
+                <span style="font-size:.75rem;color:var(--g500);">Önizleme:</span>
+                <div id="renkOnizleMavi" style="width:28px;height:28px;border-radius:6px;background:#2563eb;"></div>
+                <div id="renkOnizleAltin" style="width:28px;height:28px;border-radius:6px;background:#d97706;"></div>
+                <div id="renkOnizleKoyu" style="width:28px;height:28px;border-radius:6px;background:#0f172a;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TİPOGRAFİ -->
+        <div class="panel-card">
+          <div class="pc-head"><div><h3>🔤 Tipografi</h3><p>Font ailesi ve boyut ayarları</p></div></div>
+          <div class="pc-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px;">
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Font Ailesi</label>
+                <select id="font-aile" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                  <option value="'DM Sans', sans-serif">DM Sans (mevcut)</option>
+                  <option value="'Inter', sans-serif">Inter</option>
+                  <option value="'Poppins', sans-serif">Poppins</option>
+                  <option value="'Nunito', sans-serif">Nunito</option>
+                  <option value="system-ui, sans-serif">Sistem Fontu</option>
+                  <option value="'Roboto', sans-serif">Roboto</option>
+                  <option value="Arial, sans-serif">Arial</option>
+                </select>
+                <small style="color:var(--g400);font-size:.71rem;">Seçim sonrası sayfa yenilenmesi gerekebilir</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Taban Font Boyutu</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="range" id="font-boyut" min="12" max="18" value="14" step="1"
+                    oninput="document.getElementById('font-boyut-val').textContent=this.value+'px'"
+                    style="flex:1;accent-color:var(--blue);">
+                  <span id="font-boyut-val" style="font-size:.85rem;font-weight:700;color:var(--navy);min-width:36px;">14px</span>
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">Sayfa genelindeki yazı boyutu</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Tablo Font Boyutu</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="range" id="tablo-boyut" min="10" max="16" value="13" step="1"
+                    oninput="document.getElementById('tablo-boyut-val').textContent=this.value+'px'"
+                    style="flex:1;accent-color:var(--blue);">
+                  <span id="tablo-boyut-val" style="font-size:.85rem;font-weight:700;color:var(--navy);min-width:36px;">13px</span>
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">İhracat ve sorgu tabloları</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Satır Yüksekliği</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="range" id="tablo-padding" min="2" max="10" value="4" step="1"
+                    oninput="document.getElementById('tablo-padding-val').textContent=this.value+'px'"
+                    style="flex:1;accent-color:var(--blue);">
+                  <span id="tablo-padding-val" style="font-size:.85rem;font-weight:700;color:var(--navy);min-width:36px;">4px</span>
+                </div>
+                <small style="color:var(--g400);font-size:.71rem;">Tablo satır iç boşluğu</small>
+              </div>
+            </div>
+            <button class="ob ob-dark" onclick="gorununuKaydet()">💾 Tipografiyi Kaydet</button>
+          </div>
+        </div>
+
+        <!-- SEO & META -->
+        <div class="panel-card">
+          <div class="pc-head"><div><h3>🔍 SEO & Meta Etiketler</h3><p>Arama motorları için sayfa açıklamaları</p></div></div>
+          <div class="pc-body">
+            <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px;">
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Site Başlığı (title)</label>
+                <input type="text" id="seo-baslik" placeholder="İBKB Zorunluluğu Sorgulama Yazılımı — gövdağ"
+                  style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                <small style="color:var(--g400);font-size:.71rem;">Tarayıcı sekmesinde ve Google'da görünür</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Meta Açıklama</label>
+                <textarea id="seo-aciklama" rows="2" placeholder="İhracat bedeli kabul belgesi (İBKB) düzenleme zorunluluğunu hesaplayın..."
+                  style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;resize:vertical;"></textarea>
+                <small style="color:var(--g400);font-size:.71rem;">Google arama sonuçlarında görünür (150-160 karakter önerilir)</small>
+              </div>
+              <div>
+                <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Anahtar Kelimeler</label>
+                <input type="text" id="seo-keywords" placeholder="ibkb, ihracat, tcmb, ihracat bedeli kabul belgesi"
+                  style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                <small style="color:var(--g400);font-size:.71rem;">Virgülle ayrılmış kelimeler</small>
+              </div>
+            </div>
+            <button class="ob ob-dark" onclick="gorununuKaydet()">💾 SEO Kaydet</button>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="panel-card">
+          <div class="pc-head"><div><h3>📄 Footer Metni</h3><p>Alt bilgi alanı</p></div></div>
+          <div class="pc-body">
+            <div style="margin-bottom:14px;">
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Footer Sol Metin</label>
+              <input type="text" id="footer-sol" placeholder="© 2026 gövdağ İBKB Sorgulama"
+                style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+            </div>
+            <div style="margin-bottom:18px;">
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Footer Ek Metin</label>
+              <input type="text" id="footer-ek" placeholder="Bu araç yalnızca bilgilendirme amaçlıdır"
+                style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+            </div>
+            <button class="ob ob-dark" onclick="gorununuKaydet()">💾 Footer Kaydet</button>
+          </div>
+        </div>
+
+      </div>
+
   </main>
 </div>
 
@@ -1387,6 +1552,7 @@ async function baslat(){
   logoTabYukle();
   // Dashboard'u başlangıçta yükle
   setTimeout(dashboardYukle, 300);
+  gorununuYukle();
 }
 
 // ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
@@ -1841,6 +2007,92 @@ async function degisiklikLoguYukle(){
     el.innerHTML = '<div style="color:#dc2626;font-size:.82rem;">Hata: '+e.message+'</div>';
   }
 }
+
+// ── GÖRÜNÜM YÖNETİMİ ─────────────────────────────────────────────────────────
+function gorununuYukle(){
+  const cfg = depoyuYukle() || {};
+  const g = cfg.gorunum || {};
+  if(g.blue)   { document.getElementById('renk-blue').value   = g.blue;   document.getElementById('renk-blue-hex').value   = g.blue; }
+  if(g.gold)   { document.getElementById('renk-gold').value   = g.gold;   document.getElementById('renk-gold-hex').value   = g.gold; }
+  if(g.navy)   { document.getElementById('renk-navy').value   = g.navy;   document.getElementById('renk-navy-hex').value   = g.navy; }
+  if(g.radius !== undefined){ document.getElementById('renk-radius').value = parseInt(g.radius); document.getElementById('renk-radius-val').textContent = g.radius; }
+  if(g.fontAile){ const sel = document.getElementById('font-aile'); for(let i=0;i<sel.options.length;i++) if(sel.options[i].value===g.fontAile){ sel.selectedIndex=i; break; } }
+  if(g.fontBoyut !== undefined){ document.getElementById('font-boyut').value = g.fontBoyut; document.getElementById('font-boyut-val').textContent = g.fontBoyut+'px'; }
+  if(g.tabloBoyut !== undefined){ document.getElementById('tablo-boyut').value = g.tabloBoyut; document.getElementById('tablo-boyut-val').textContent = g.tabloBoyut+'px'; }
+  if(g.tabloPadding !== undefined){ document.getElementById('tablo-padding').value = g.tabloPadding; document.getElementById('tablo-padding-val').textContent = g.tabloPadding+'px'; }
+  if(g.seoBaslik) document.getElementById('seo-baslik').value = g.seoBaslik;
+  if(g.seoAciklama) document.getElementById('seo-aciklama').value = g.seoAciklama;
+  if(g.seoKeywords) document.getElementById('seo-keywords').value = g.seoKeywords;
+  if(g.footerSol) document.getElementById('footer-sol').value = g.footerSol;
+  if(g.footerEk) document.getElementById('footer-ek').value = g.footerEk;
+  // Önizleme güncelle
+  gorununuOnizle();
+}
+
+function gorununuOnizle(){
+  const blue = document.getElementById('renk-blue').value;
+  const gold = document.getElementById('renk-gold').value;
+  const navy = document.getElementById('renk-navy').value;
+  const el1 = document.getElementById('renkOnizleMavi');
+  const el2 = document.getElementById('renkOnizleAltin');
+  const el3 = document.getElementById('renkOnizleKoyu');
+  if(el1) el1.style.background = blue;
+  if(el2) el2.style.background = gold;
+  if(el3) el3.style.background = navy;
+}
+
+function gorununuKaydet(){
+  const cfg = depoyuYukle() || {};
+  cfg.gorunum = {
+    blue:        document.getElementById('renk-blue').value,
+    gold:        document.getElementById('renk-gold').value,
+    navy:        document.getElementById('renk-navy').value,
+    radius:      document.getElementById('renk-radius').value + 'px',
+    fontAile:    document.getElementById('font-aile').value,
+    fontBoyut:   parseInt(document.getElementById('font-boyut').value),
+    tabloBoyut:  parseInt(document.getElementById('tablo-boyut').value),
+    tabloPadding:parseInt(document.getElementById('tablo-padding').value),
+    seoBaslik:   document.getElementById('seo-baslik').value,
+    seoAciklama: document.getElementById('seo-aciklama').value,
+    seoKeywords: document.getElementById('seo-keywords').value,
+    footerSol:   document.getElementById('footer-sol').value,
+    footerEk:    document.getElementById('footer-ek').value,
+  };
+  depoyaKaydet(cfg);
+  scKaydet('gorunum', cfg.gorunum);
+  gorununuOnizle();
+  auditKaydet('Görünüm Güncellendi', 'Renk/font/SEO ayarları değiştirildi');
+  toast('✅ Görünüm ayarları kaydedildi');
+}
+
+function gorununuSifirla(){
+  if(!confirm('Tüm görünüm ayarları varsayılana dönecek. Emin misiniz?')) return;
+  const cfg = depoyuYukle() || {};
+  delete cfg.gorunum;
+  depoyaKaydet(cfg);
+  scKaydet('gorunum', null);
+  document.getElementById('renk-blue').value='#2563eb';   document.getElementById('renk-blue-hex').value='#2563eb';
+  document.getElementById('renk-gold').value='#d97706';   document.getElementById('renk-gold-hex').value='#d97706';
+  document.getElementById('renk-navy').value='#0f172a';   document.getElementById('renk-navy-hex').value='#0f172a';
+  document.getElementById('renk-radius').value=12;        document.getElementById('renk-radius-val').textContent='12px';
+  document.getElementById('font-aile').value="'DM Sans', sans-serif";
+  document.getElementById('font-boyut').value=14;         document.getElementById('font-boyut-val').textContent='14px';
+  document.getElementById('tablo-boyut').value=13;        document.getElementById('tablo-boyut-val').textContent='13px';
+  document.getElementById('tablo-padding').value=4;       document.getElementById('tablo-padding-val').textContent='4px';
+  gorununuOnizle();
+  auditKaydet('Görünüm Sıfırlandı', 'Varsayılan ayarlara dönüldü');
+  toast('↩ Görünüm varsayılana döndü');
+}
+
+// Color input sync
+['blue','gold','navy'].forEach(function(k){
+  var el = document.getElementById('renk-'+k);
+  var hex = document.getElementById('renk-'+k+'-hex');
+  if(el && hex){
+    el.addEventListener('input', function(){ hex.value=this.value; gorununuOnizle(); });
+    hex.addEventListener('input', function(){ if(/^#[0-9a-fA-F]{6}$/.test(this.value)){ el.value=this.value; gorununuOnizle(); } });
+  }
+});
 
 async function scKaydet(id, value) {
   try {

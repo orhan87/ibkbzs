@@ -184,6 +184,48 @@ if(!sessionStorage.getItem('govdag_token')){
             var _mv = document.getElementById('sistemDuyuruBanner');
             if(_mv && !_cfg.duyuru?.aktif){ _mv.textContent = _cfg.mevzuat.metin; _mv.style.display = 'block'; }
           }
+
+          // Görünüm (renk/font/SEO ayarları)
+          if(_cfg.gorunum){
+            var _g = _cfg.gorunum;
+            var _style = document.getElementById('_gorununStyle');
+            if(!_style){ _style = document.createElement('style'); _style.id='_gorununStyle'; document.head.appendChild(_style); }
+            var _css = ':root{';
+            if(_g.blue)   _css += '--blue:'+_g.blue+';--blue2:'+_g.blue+';--blue3:'+_g.blue+'22;';
+            if(_g.gold)   _css += '--gold:'+_g.gold+';--gold2:'+_g.gold+';';
+            if(_g.navy)   _css += '--navy:'+_g.navy+';';
+            if(_g.radius) _css += '--radius:'+_g.radius+';';
+            _css += '}';
+            if(_g.fontAile) _css += 'body{font-family:'+_g.fontAile+'!important;}';
+            if(_g.tabloBoyut){
+              _css += 'table td,table th,.gt td,.gt th,tbody td,thead th{font-size:'+_g.tabloBoyut+'px!important;}';
+            }
+            if(_g.tabloPadding){
+              _css += 'tbody td{padding:'+_g.tabloPadding+'px 8px!important;}';
+            }
+            _style.textContent = _css;
+            // Font Google Fonts yükle
+            if(_g.fontAile && !_g.fontAile.includes('system') && !_g.fontAile.includes('Arial')){
+              var _fn = _g.fontAile.replace(/'/g,'').split(',')[0].trim().replace(/ /g,'+');
+              if(_fn && !document.getElementById('_gorununFont')){
+                var _lnk = document.createElement('link');
+                _lnk.id = '_gorununFont';
+                _lnk.rel = 'stylesheet';
+                _lnk.href = 'https://fonts.googleapis.com/css2?family='+_fn+':wght@400;500;600;700&display=swap';
+                document.head.appendChild(_lnk);
+              }
+            }
+            // SEO
+            if(_g.seoBaslik) document.title = _g.seoBaslik;
+            if(_g.seoAciklama){
+              var _sm = document.querySelector('meta[name="description"]');
+              if(_sm) _sm.content = _g.seoAciklama;
+            }
+            if(_g.seoKeywords){
+              var _sk = document.querySelector('meta[name="keywords"]');
+              if(_sk) _sk.content = _g.seoKeywords;
+            }
+          }
           // Bakim modu
           if(_cfg.bakim && _cfg.bakim.aktif){
             var _bm = (_cfg.bakim && _cfg.bakim.mesaj) || 'Sistem bakimda.';
