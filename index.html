@@ -2228,15 +2228,15 @@ function gecmisPanelGuncelle(){
 
   var html = '<div class="gecmis-tablo-wrap"><table class="gt"><thead><tr>'
     + '<th>#</th>'
-    + '<th onclick="gecmisSiralama(&quot;_sbTarih&quot;)" style="' + thStyle + '">Sorgulama Tarihi' + ikon('_sbTarih') + '</th>'
-    + '<th onclick="gecmisSiralama(&quot;beyanname&quot;)" style="' + thStyle + '">Beyanname No' + ikon('beyanname') + '</th>'
-    + '<th onclick="gecmisSiralama(&quot;tarih&quot;)" style="' + thStyle + '">İhracat Tarihi' + ikon('tarih') + '</th>'
-    + '<th onclick="gecmisSiralama(&quot;bedelHam&quot;)" style="' + thStyle + '">İhracat Bedeli' + ikon('bedelHam') + '</th>'
-    + '<th>Para Birimi</th>'
-    + '<th onclick="gecmisSiralama(&quot;ulke&quot;)" style="' + thStyle + '">Hedef Ülke' + ikon('ulke') + '</th>'
-    + '<th onclick="gecmisSiralama(&quot;sonTarih&quot;)" style="' + thStyle + '">Son Tarih (180. Gün)' + ikon('sonTarih') + '</th>'
-    + '<th>Süre Durumu</th>'
-    + '<th>15.000 USD Muaf Dilim</th>'
+    + '<th onclick="gecmisSiralama(&quot;_sbTarih&quot;)" style="' + thStyle + '">Tarih' + ikon('_sbTarih') + '</th>'
+    + '<th onclick="gecmisSiralama(&quot;beyanname&quot;)" style="' + thStyle + '">Beyanname' + ikon('beyanname') + '</th>'
+    + '<th onclick="gecmisSiralama(&quot;tarih&quot;)" style="' + thStyle + '">İhr. Tarihi' + ikon('tarih') + '</th>'
+    + '<th onclick="gecmisSiralama(&quot;bedelHam&quot;)" style="' + thStyle + '">Bedel' + ikon('bedelHam') + '</th>'
+    + '<th>Para</th>'
+    + '<th onclick="gecmisSiralama(&quot;ulke&quot;)" style="' + thStyle + '">Ülke' + ikon('ulke') + '</th>'
+    + '<th onclick="gecmisSiralama(&quot;sonTarih&quot;)" style="' + thStyle + '">Son Tarih' + ikon('sonTarih') + '</th>'
+    + '<th>Durum</th>'
+    + '<th>Muaf Dilim</th>'
     + '<th>Brüt Matrah</th>'
     + '<th>Önceki İBKB</th>';
 
@@ -2266,13 +2266,24 @@ function gecmisPanelGuncelle(){
     html += '<td class="td-r">' + (muafDilim !== '—' ? muafDilim : '—') + '</td>';
     html += '<td class="td-r">' + (brutMatrah !== '—' ? brutMatrah : '—') + '</td>';
     html += '<td class="td-r">' + (onceki||'—') + '</td>';
-    html += '<td class="td-islem"><button class="btn-sil-gecmis" onclick="event.stopPropagation();gecmisSatirSil(' + realIdx + ')" title="Sil">✕</button></td>';
+    html += '<td class="td-islem"><button class="btn-sil-gecmis" onclick="event.stopPropagation();gecmisSatirSil(' + realIdx + ')" title="Kaydı sil">🗑</button></td>';
     html += '</tr>';
     // Detay satırı
     html += '<tr class="detay-satir" id="detay-' + realIdx + '"><td colspan="13">';
     html += '<div class="detay-ic">';
-    if(q.htmlDetay){ html += q.htmlDetay; }
-    else { html += '<span style="color:#8c97a8;font-size:.8rem;">Detay bilgisi bu oturumda alınmadı.</span>'; }
+    if(q.htmlDetay){
+      html += q.htmlDetay;
+    } else {
+      // Özet bilgi - Supabase'den yüklenen kayıtlar için
+      html += '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:#475569;padding:4px 0;">';
+      html += '<span><strong>Beyanname:</strong> ' + (q.beyanname||'—') + '</span>';
+      html += '<span><strong>Ülke:</strong> ' + (q.ulke||'—') + '</span>';
+      html += '<span><strong>Bedel:</strong> ' + (q.bedel||'—') + ' ' + (q.para||'') + '</span>';
+      html += '<span><strong>İBKB:</strong> ' + (q.ibkb||'—') + '</span>';
+      html += '<span><strong>TCMB Satışı:</strong> ' + (q.tcmb||'—') + '</span>';
+      html += '<span><strong>Son Tarih:</strong> ' + (q.sonTarih||'—') + '</span>';
+      html += '</div>';
+    }
     html += '</div></td></tr>';
   });
 
