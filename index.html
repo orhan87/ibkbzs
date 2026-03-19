@@ -1942,7 +1942,7 @@ let sorguGecmisi = [];
 listele();
 
 // Supabase geçmişini ve demo bilgisini yükle
-setTimeout(supabaseSorguYukle, 300);
+_gecmisFiltreMetin = ''; setTimeout(supabaseSorguYukle, 300);
 setTimeout(demoBilgiGoster, 800);
 
 async function demoBilgiGoster(){
@@ -2164,9 +2164,9 @@ function gecmisPanelGuncelle(){
     panel.style.display = 'none';
     return;
   }
-  // Arama kutusunu sıfırla
+  // Arama kutusundan güncel filreyi oku (sıfırlama)
   const aramaEl = document.getElementById('gecmisArama');
-  if(aramaEl && aramaEl.value) aramaEl.value = '';
+  if(aramaEl) _gecmisFiltreMetin = aramaEl.value.trim().toLowerCase();
   panel.style.display = 'block';
   // sayac sayfalama sonrası güncellenecek
   btnPdf.disabled = false;
@@ -2359,11 +2359,10 @@ function gecmisTemizle(){
   if(sorguGecmisi.length === 0) return;
   if(!confirm('Tüm sorgu geçmişi silinecek. Emin misiniz?')) return;
   supabaseSorguTemizle();
-  sorguGecmisi = [];
+  sorguGecmisi = []; _gecmisFiltreMetin = "";
   gecmisPanelGuncelle();
   // Arama kutusunu sıfırla
   const aramaEl = document.getElementById('gecmisArama');
-  if(aramaEl) aramaEl.value = '';
   const r = document.getElementById('result');
   r.style.display = 'none'; r.innerHTML = '';
 }
