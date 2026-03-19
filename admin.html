@@ -1613,6 +1613,29 @@ async function baslat(){
   setTimeout(dashboardYukle, 300);
   gorununuYukle();
   eftYukle();
+  // EFT varsayılan - Supabase'de yoksa kaydet
+  (async function(){
+    try{
+      const sb = sbCfg(); if(!sb) return;
+      const r = await fetch(sb.url+'/rest/v1/site_config?id=eq.eft&select=id',
+        {headers:{'apikey':sb.serviceKey,'Authorization':'Bearer '+sb.serviceKey}});
+      const rows = r.ok ? await r.json() : [];
+      if(!rows.length){
+        // Henüz kayıt yok - varsayılanı kaydet
+        const varsayilan = {
+          banka:'Ziraat Bankası',
+          sahip:'GÖVDAĞ GIDA TİCARET LİMİTED ŞİRKETİ',
+          iban:'TR95 0001 0020 7597 8021 5850 01',
+          ucret:'', para:'TRY', sure:'1 yıl', not:''
+        };
+        await scKaydet('eft', varsayilan);
+        // localStorage'ı da güncelle
+        const cfg = depoyuYukle()||{};
+        cfg.eft = varsayilan;
+        depoyaKaydet(cfg);
+      }
+    }catch(e){}
+  })();
 }
 
 // ─── LOGO & LOGIN ─────────────────────────────────────────────────────────────
@@ -2977,9 +3000,10 @@ async function topluMailGonder(){
 function eftYukle(){
   const cfg = depoyuYukle() || {};
   const e = cfg.eft || {};
-  if(e.banka)  document.getElementById('eft-banka').value = e.banka;
-  if(e.sahip)  document.getElementById('eft-sahip').value = e.sahip;
-  if(e.iban)   document.getElementById('eft-iban').value  = e.iban;
+  // Varsayılan değerler (admin kaydetmemişse göster)
+  document.getElementById('eft-banka').value = e.banka || 'Ziraat Bankası';
+  document.getElementById('eft-sahip').value = e.sahip || 'GÖVDAĞ GIDA TİCARET LİMİTED ŞİRKETİ';
+  document.getElementById('eft-iban').value  = e.iban  || 'TR95 0001 0020 7597 8021 5850 01';
   if(e.ucret)  document.getElementById('eft-ucret').value = e.ucret;
   if(e.para){  const s=document.getElementById('eft-para'); for(let i=0;i<s.options.length;i++) if(s.options[i].value===e.para){s.selectedIndex=i;break;} }
   if(e.sure){  const s=document.getElementById('eft-sure'); for(let i=0;i<s.options.length;i++) if(s.options[i].value===e.sure){s.selectedIndex=i;break;} }
