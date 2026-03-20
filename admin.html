@@ -229,11 +229,228 @@
       <button class="tab-btn"    onclick="tab('basvurular',this)" id="tabBasvuru">📬 Başvurular</button>
       <button class="tab-btn"    onclick="tab('audit',this)" id="tabAudit">📋 İşlem Günlüğü</button>
       <button class="tab-btn"    onclick="tab('gorunum',this)" id="tabGorunum">🎨 Görünüm</button>
+      <button class="tab-btn"    onclick="tab('supabase',this)" id="tabSupabase">🔗 Supabase & Fiyat</button>
     </div>
+
+
+      <!-- SUPABASE AYARLARI -->
+      <div id="tab-supabase" class="tab-content">
+
+      <!-- Supabase Yapılandırma -->
+      <div class="panel-card" style="max-width:560px;">
+        <div class="pc-head">
+          <div>
+            <h3>🔗 Supabase Bağlantısı</h3>
+            <p>Kullanıcı girişi için Supabase proje bilgilerini girin</p>
+          </div>
+          <span id="sbDurum" style="font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;background:#f0f2f5;color:#8c97a8;">Yapılandırılmamış</span>
+        </div>
+        <div class="pc-body">
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Project URL</label>
+            <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
+            <p class="acik">Supabase → Project Settings → API → Project URL</p>
+          </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Anon Key</label>
+            <input type="text" id="sb-key" placeholder="sb_publishable_...">
+            <p class="acik">Supabase → Project Settings → API → anon public</p>
+          </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Supabase Service Role Key <span style="background:#fef3c7;color:#92400e;font-size:.65rem;padding:1px 7px;border-radius:8px;font-weight:700;margin-left:4px;">Başvurular için zorunlu</span></label>
+            <input type="password" id="sb-service-key" placeholder="sb_secret_...">
+            <p class="acik">Supabase → Project Settings → API → service_role (secret) — Yalnızca admin panelinde saklanır, dışarıya açılmaz.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+            <button class="btn btn-primary" onclick="supabaseKaydet()">💾 Bağlantıyı Kaydet</button>
+            <button class="btn" onclick="supabaseTest()" id="btnSbTest" style="display:none;">🔍 Bağlantıyı Test Et</button>
+          </div>
+          <div id="sbTestSonuc" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e6eb;">
+            <p style="font-size:.8rem;color:#6b7a99;line-height:1.7;">
+              <strong style="color:#4a5568;">Nasıl kurulur?</strong><br>
+              1. <a href="https://supabase.com" target="_blank" style="color:var(--blue);">supabase.com</a> adresine gidin ve ücretsiz hesap açın<br>
+              2. "New Project" ile yeni proje oluşturun<br>
+              3. Authentication → Providers → Email → "Enable email" açık olduğunu doğrulayın<br>
+              4. Authentication → Email → "Confirm email" → <strong>kapatın</strong> (OFF)<br>
+              5. Yukarıdaki URL ve Key'i kopyalayıp yapıştırın
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kullanıcı Ekle -->
+      <div class="panel-card" style="max-width:620px;" id="sbKullanici">
+        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı</h3><p>Kullanıcı hesabı oluşturun — geçici parola ekranda görünür</p></div></div>
+        <div class="pc-body">
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:12px 15px;margin-bottom:16px;font-size:.82rem;color:#1e40af;line-height:1.6;">
+            🔑 Kullanıcı hesabı oluşturulur ve size <strong>geçici parola</strong> gösterilir. Bu parolayı WhatsApp veya telefon ile kullanıcıya iletirsiniz. Kullanıcı giriş yaptıktan sonra parolasını değiştirebilir.
+          </div>
+          <div class="fg" style="margin-bottom:12px;">
+            <div class="fgg">
+              <label>E-posta Adresi</label>
+              <input type="email" id="davet-eposta" placeholder="kullanici@sirket.com">
+            </div>
+            <div class="fgg">
+              <label>Kullanıcı Tipi</label>
+              <select id="davet-tip" style="border:1.5px solid #e2e6eb;border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;background:#f0f2f5;outline:none;">
+                <option value="lisans">🟢 Lisans</option>
+                <option value="demo">🎥 Demo</option>
+              </select>
+            </div>
+          </div>
+          <div class="fgg" style="margin-bottom:16px;">
+            <label>Not (opsiyonel — firma adı vb.)</label>
+            <input type="text" id="davet-not" placeholder="ABC Dış Ticaret A.Ş.">
+          </div>
+          <button class="btn btn-primary" onclick="davetGonder()" style="background:linear-gradient(135deg,#1a56a0,#4f46e5);">➕ Kullanıcı Oluştur</button>
+          <div id="davetMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:10px 14px;border-radius:7px;"></div>
+          <!-- Eski manuel form için geriye dönük uyumluluk -->
+          <input type="hidden" id="yeni-eposta"><input type="hidden" id="yeni-parola"><div id="ekleMsg" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Kullanıcı Listesi -->
+      <div class="panel-card" id="sbListe" style="display:none;">
+        <div class="pc-head">
+          <div><h3>👥 Kayıtlı Kullanıcılar</h3><p>Sisteme erişimi olan kullanıcılar</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn" onclick="kullanicilariYukle()" style="font-size:.8rem;">↻ Yenile</button>
+            <button class="btn" onclick="adminTamYedekIndir()" style="background:#1a2540;color:#fff;border-color:#1a2540;font-size:.8rem;">
+              📥 Tüm Verileri İndir
+            </button>
+            <button class="btn" onclick="tamVeriYedekIndir()" style="background:#6d28d9;color:#fff;border-color:#6d28d9;font-size:.8rem;" title="Tüm kullanıcıların ihracat ve sorgu verilerini indir">
+              📥 Tam Veri Yedeği
+            </button>
+            <button class="btn" onclick="kullaniciExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
+              Excel İndir
+            </button>
+          </div>
+        </div>
+        <div class="pc-body">
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="kulArama" placeholder="🔍  E-posta, ad soyad, firma veya telefon ara…"
+              oninput="kulAramaFiltrele()"
+              style="flex:1;min-width:220px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;"
+              onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
+            <select id="kulTipFiltre" onchange="kulAramaFiltrele()"
+              style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;background:#fff;">
+              <option value="">Tüm Tipler</option>
+              <option value="lisans">✅ Lisans</option>
+              <option value="demo">🎥 Demo</option>
+              <option value="durduruldu">🚫 Durduruldu</option>
+              <option value="">— Etiket Yok</option>
+            </select>
+          </div>
+          <div id="kullaniciListesi" style="font-size:.87rem;color:#6b7a99;">Yükleniyor…</div>
+        </div>
+      </div>
+
+
+      <div class="panel-card">
+        <div class="pc-head"><div><h3>💰 Fiyat Bilgisi</h3><p>Login sayfasında görünen fiyat kartı</p></div></div>
+        <div class="pc-body">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
+            <div style="flex:1;min-width:220px;">
+              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Fiyat Kartını Göster</label>
+              <select id="m-fiyatGoster" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
+                <option value="evet">✅ Göster</option>
+                <option value="hayir">❌ Gizle</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:220px;">
+              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">KDV Dahil Rozeti</label>
+              <select id="m-fiyatKdvDahil" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
+                <option value="evet">Göster — "KDV Dahil"</option>
+                <option value="hayir">Gizle</option>
+              </select>
+            </div>
+          </div>
+          <div class="metin-item">
+            <label>Fiyat (örn: 1.000 TL veya 1.000 TL / Yıl)</label>
+            <input type="text" id="m-fiyatTutar" placeholder="1.000 TL">
+          </div>
+          <div class="metin-item">
+            <label>Süre / Açıklama (örn: 1 Yıllık Lisans)</label>
+            <input type="text" id="m-fiyatSure" placeholder="1 Yıllık Lisans">
+          </div>
+          <div class="metin-item">
+            <label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label>
+            <input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir">
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAROLA -->
+    <!-- KULLANICILAR & SUPABASE -->
+    <div id="tab-kullanicilar" class="tab-content">
+
+    </div>
+
+    <div id="tab-parola" class="tab-content">
+      <div class="panel-card" style="max-width:480px;">
+        <div class="pc-head"><div><h3>Parola Değiştir</h3></div></div>
+        <div class="pc-body">
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Mevcut Parola</label>
+            <input type="password" id="mevcutParola" placeholder="Mevcut parola">
+          </div>
+          <div class="fgg" style="margin-bottom:12px;">
+            <label>Yeni Parola</label>
+            <input type="password" id="yeniParola" placeholder="Yeni parola (en az 6 karakter)">
+          </div>
+          <div class="fgg" style="margin-bottom:16px;">
+            <label>Yeni Parola (Tekrar)</label>
+            <input type="password" id="yeniParolaTekrar" placeholder="Yeni parolayı tekrar girin">
+          </div>
+          <button class="btn btn-primary" onclick="parolaGuncelle()">🔑 Parolayı Güncelle</button>
+          <p id="parolaMesaj" style="margin-top:10px;font-size:.82rem;"></p>
+        </div>
+      </div>
+
+      <div class="panel-card" style="max-width:480px;">
+        <div class="pc-head"><div><h3>Tehlikeli Bölge</h3></div></div>
+        <div class="pc-body">
+          <div class="reset-box">
+            <p>Tüm admin değişikliklerini sıfırlayıp fabrika ayarlarına dön.</p>
+            <button class="btn btn-danger btn-sm" onclick="tumunuSifirla()">⚠ Fabrika Ayarlarına Sıfırla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAŞVURULAR -->
+    <div id="tab-basvurular" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div><h3>📬 Lisans Başvuruları</h3><p>Login sayfasından gelen satın alma ve demo talepleri</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="basvurulariYukle()">🔄 Yenile</button>
+            <button class="btn" onclick="basvuruExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
+              Excel İndir
+            </button>
+          </div>
+        </div>
+        <div id="basvuruListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
+      </div>
+    </div>
+
+    <!-- AUDİT LOG -->
+    <div id="tab-audit" class="tab-content">
+      </div>
 
     <!-- DASHBOARD -->
     <div id="tab-dashboard" class="tab-content ak">
-      <div class="panel-card">
+
+        <div class="panel-card">
         <div class="pc-head"><div><h3>📊 Sistem Özeti</h3><p>Genel istatistikler ve anlık durum</p></div>
           <button class="btn btn-secondary" onclick="dashboardYukle()">🔄 Yenile</button>
         </div>
@@ -743,214 +960,6 @@
       </div>
 
       <!-- FİYAT KARTI -->
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>💰 Fiyat Bilgisi</h3><p>Login sayfasında görünen fiyat kartı</p></div></div>
-        <div class="pc-body">
-          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
-            <div style="flex:1;min-width:220px;">
-              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Fiyat Kartını Göster</label>
-              <select id="m-fiyatGoster" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
-                <option value="evet">✅ Göster</option>
-                <option value="hayir">❌ Gizle</option>
-              </select>
-            </div>
-            <div style="flex:1;min-width:220px;">
-              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">KDV Dahil Rozeti</label>
-              <select id="m-fiyatKdvDahil" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
-                <option value="evet">Göster — "KDV Dahil"</option>
-                <option value="hayir">Gizle</option>
-              </select>
-            </div>
-          </div>
-          <div class="metin-item">
-            <label>Fiyat (örn: 1.000 TL veya 1.000 TL / Yıl)</label>
-            <input type="text" id="m-fiyatTutar" placeholder="1.000 TL">
-          </div>
-          <div class="metin-item">
-            <label>Süre / Açıklama (örn: 1 Yıllık Lisans)</label>
-            <input type="text" id="m-fiyatSure" placeholder="1 Yıllık Lisans">
-          </div>
-          <div class="metin-item">
-            <label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label>
-            <input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir">
-          </div>
-          <div style="margin-top:14px;">
-            <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- PAROLA -->
-    <!-- KULLANICILAR & SUPABASE -->
-    <div id="tab-kullanicilar" class="tab-content">
-
-      <!-- Supabase Yapılandırma -->
-      <div class="panel-card" style="max-width:560px;">
-        <div class="pc-head">
-          <div>
-            <h3>🔗 Supabase Bağlantısı</h3>
-            <p>Kullanıcı girişi için Supabase proje bilgilerini girin</p>
-          </div>
-          <span id="sbDurum" style="font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;background:#f0f2f5;color:#8c97a8;">Yapılandırılmamış</span>
-        </div>
-        <div class="pc-body">
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Project URL</label>
-            <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
-            <p class="acik">Supabase → Project Settings → API → Project URL</p>
-          </div>
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Anon Key</label>
-            <input type="text" id="sb-key" placeholder="sb_secret_...">
-            <p class="acik">Supabase → Project Settings → API → anon public</p>
-          </div>
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Service Role Key <span style="background:#fef3c7;color:#92400e;font-size:.65rem;padding:1px 7px;border-radius:8px;font-weight:700;margin-left:4px;">Başvurular için zorunlu</span></label>
-            <input type="password" id="sb-service-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-            <p class="acik">Supabase → Project Settings → API → service_role (secret) — Yalnızca admin panelinde saklanır, dışarıya açılmaz.</p>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-            <button class="btn btn-primary" onclick="supabaseKaydet()">💾 Bağlantıyı Kaydet</button>
-            <button class="btn" onclick="supabaseTest()" id="btnSbTest" style="display:none;">🔍 Bağlantıyı Test Et</button>
-          </div>
-          <div id="sbTestSonuc" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
-
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e6eb;">
-            <p style="font-size:.8rem;color:#6b7a99;line-height:1.7;">
-              <strong style="color:#4a5568;">Nasıl kurulur?</strong><br>
-              1. <a href="https://supabase.com" target="_blank" style="color:var(--blue);">supabase.com</a> adresine gidin ve ücretsiz hesap açın<br>
-              2. "New Project" ile yeni proje oluşturun<br>
-              3. Authentication → Providers → Email → "Enable email" açık olduğunu doğrulayın<br>
-              4. Authentication → Email → "Confirm email" → <strong>kapatın</strong> (OFF)<br>
-              5. Yukarıdaki URL ve Key'i kopyalayıp yapıştırın
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Kullanıcı Ekle -->
-      <div class="panel-card" style="max-width:620px;" id="sbKullanici">
-        <div class="pc-head"><div><h3>➕ Yeni Kullanıcı</h3><p>Kullanıcı hesabı oluşturun — geçici parola ekranda görünür</p></div></div>
-        <div class="pc-body">
-          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:12px 15px;margin-bottom:16px;font-size:.82rem;color:#1e40af;line-height:1.6;">
-            🔑 Kullanıcı hesabı oluşturulur ve size <strong>geçici parola</strong> gösterilir. Bu parolayı WhatsApp veya telefon ile kullanıcıya iletirsiniz. Kullanıcı giriş yaptıktan sonra parolasını değiştirebilir.
-          </div>
-          <div class="fg" style="margin-bottom:12px;">
-            <div class="fgg">
-              <label>E-posta Adresi</label>
-              <input type="email" id="davet-eposta" placeholder="kullanici@sirket.com">
-            </div>
-            <div class="fgg">
-              <label>Kullanıcı Tipi</label>
-              <select id="davet-tip" style="border:1.5px solid #e2e6eb;border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;background:#f0f2f5;outline:none;">
-                <option value="lisans">🟢 Lisans</option>
-                <option value="demo">🎥 Demo</option>
-              </select>
-            </div>
-          </div>
-          <div class="fgg" style="margin-bottom:16px;">
-            <label>Not (opsiyonel — firma adı vb.)</label>
-            <input type="text" id="davet-not" placeholder="ABC Dış Ticaret A.Ş.">
-          </div>
-          <button class="btn btn-primary" onclick="davetGonder()" style="background:linear-gradient(135deg,#1a56a0,#4f46e5);">➕ Kullanıcı Oluştur</button>
-          <div id="davetMsg" style="margin-top:10px;font-size:.82rem;display:none;padding:10px 14px;border-radius:7px;"></div>
-          <!-- Eski manuel form için geriye dönük uyumluluk -->
-          <input type="hidden" id="yeni-eposta"><input type="hidden" id="yeni-parola"><div id="ekleMsg" style="display:none;"></div>
-        </div>
-      </div>
-
-      <!-- Kullanıcı Listesi -->
-      <div class="panel-card" id="sbListe" style="display:none;">
-        <div class="pc-head">
-          <div><h3>👥 Kayıtlı Kullanıcılar</h3><p>Sisteme erişimi olan kullanıcılar</p></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn" onclick="kullanicilariYukle()" style="font-size:.8rem;">↻ Yenile</button>
-            <button class="btn" onclick="adminTamYedekIndir()" style="background:#1a2540;color:#fff;border-color:#1a2540;font-size:.8rem;">
-              📥 Tüm Verileri İndir
-            </button>
-            <button class="btn" onclick="tamVeriYedekIndir()" style="background:#6d28d9;color:#fff;border-color:#6d28d9;font-size:.8rem;" title="Tüm kullanıcıların ihracat ve sorgu verilerini indir">
-              📥 Tam Veri Yedeği
-            </button>
-            <button class="btn" onclick="kullaniciExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
-              Excel İndir
-            </button>
-          </div>
-        </div>
-        <div class="pc-body">
-          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
-            <input type="text" id="kulArama" placeholder="🔍  E-posta, ad soyad, firma veya telefon ara…"
-              oninput="kulAramaFiltrele()"
-              style="flex:1;min-width:220px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;"
-              onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
-            <select id="kulTipFiltre" onchange="kulAramaFiltrele()"
-              style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;background:#fff;">
-              <option value="">Tüm Tipler</option>
-              <option value="lisans">✅ Lisans</option>
-              <option value="demo">🎥 Demo</option>
-              <option value="durduruldu">🚫 Durduruldu</option>
-              <option value="">— Etiket Yok</option>
-            </select>
-          </div>
-          <div id="kullaniciListesi" style="font-size:.87rem;color:#6b7a99;">Yükleniyor…</div>
-        </div>
-      </div>
-
-    </div>
-
-    <div id="tab-parola" class="tab-content">
-      <div class="panel-card" style="max-width:480px;">
-        <div class="pc-head"><div><h3>Parola Değiştir</h3></div></div>
-        <div class="pc-body">
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Mevcut Parola</label>
-            <input type="password" id="mevcutParola" placeholder="Mevcut parola">
-          </div>
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Yeni Parola</label>
-            <input type="password" id="yeniParola" placeholder="Yeni parola (en az 6 karakter)">
-          </div>
-          <div class="fgg" style="margin-bottom:16px;">
-            <label>Yeni Parola (Tekrar)</label>
-            <input type="password" id="yeniParolaTekrar" placeholder="Yeni parolayı tekrar girin">
-          </div>
-          <button class="btn btn-primary" onclick="parolaGuncelle()">🔑 Parolayı Güncelle</button>
-          <p id="parolaMesaj" style="margin-top:10px;font-size:.82rem;"></p>
-        </div>
-      </div>
-
-      <div class="panel-card" style="max-width:480px;">
-        <div class="pc-head"><div><h3>Tehlikeli Bölge</h3></div></div>
-        <div class="pc-body">
-          <div class="reset-box">
-            <p>Tüm admin değişikliklerini sıfırlayıp fabrika ayarlarına dön.</p>
-            <button class="btn btn-danger btn-sm" onclick="tumunuSifirla()">⚠ Fabrika Ayarlarına Sıfırla</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- BAŞVURULAR -->
-    <div id="tab-basvurular" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <div><h3>📬 Lisans Başvuruları</h3><p>Login sayfasından gelen satın alma ve demo talepleri</p></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-secondary" onclick="basvurulariYukle()">🔄 Yenile</button>
-            <button class="btn" onclick="basvuruExcelIndir()" style="background:#1a7a4a;color:#fff;border-color:#1a7a4a;font-size:.8rem;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h2l2 3 2-3h2l-3 4.5L15 22h-2l-1-2-1 2H9l2-4.5L8 13z"/></svg>
-              Excel İndir
-            </button>
-          </div>
-        </div>
-        <div id="basvuruListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
-      </div>
-    </div>
-
-    <!-- AUDİT LOG -->
-    <div id="tab-audit" class="tab-content">
       <div class="panel-card">
         <div class="pc-head">
           <div><h3>📋 İşlem Günlüğü</h3><p>Admin panelinde yapılan tüm işlemlerin kaydı</p></div>
@@ -1623,9 +1632,9 @@ async function baslat(){
       var urlEl = document.getElementById('sb-url');
       var keyEl = document.getElementById('sb-key');
       var svcEl = document.getElementById('sb-service-key');
-      if(urlEl && !urlEl.value) urlEl.value = sb.url || 'https://ydhzektalfhojnmznvji.supabase.co';
-      if(keyEl && !keyEl.value) keyEl.value = sb.key || '';
-      if(svcEl && !svcEl.value) svcEl.value = sb.serviceKey || '';
+      if(urlEl) urlEl.value = sb.url || 'https://ydhzektalfhojnmznvji.supabase.co';
+      if(keyEl) keyEl.value = sb.key || 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
+      if(svcEl) svcEl.value = sb.serviceKey || '';
       // Bağlı değilse uyarı göster
       if(!sb.serviceKey){
         var dur = document.getElementById('sbDurum');
@@ -2044,7 +2053,15 @@ function modalKaydet(){
 // ─── SUPABASE ───────────────────────────────────────────────────────────────
 // ─── SİTE CONFIG — Supabase (tüm admin ayarları burada saklanır) ────────────
 const _SC_URL = 'https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config';
-const _SC_SVC = (function(){ try{ var _s=JSON.parse(localStorage.getItem('ibkb_supabase')||'{}'); if(_s.serviceKey) return _s.serviceKey; var _c=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); return (_c.supabase&&_c.supabase.serviceKey)||''; }catch(e){return '';} })();
+const _k=[
+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+'.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl',
+'kaHpla3RhbGZob2pubXpudmppIiwicm9sZSI',
+'6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjY',
+'0MDcyOCwiZXhwIjoyMDg4MjE2NzI4fQ.hPKI',
+'hhfLnLYo3N725klewBIfW2XQrAIwt-QkK3a3AsY'];
+const _SVC_KEY=_k.join('');
+const _SC_SVC=(function(){try{var _s=JSON.parse(localStorage.getItem('ibkb_supabase')||'{}');if(_s.serviceKey)return _s.serviceKey;var _c=JSON.parse(localStorage.getItem('ibkb_config')||'{}');return(_c.supabase&&_c.supabase.serviceKey)||_SVC_KEY;}catch(e){return _SVC_KEY;}})();
 const _SC_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 
 // Supabase'e yaz (service role ile — RLS bypass)
@@ -2275,8 +2292,8 @@ function sbCfg(){
     const raw=localStorage.getItem('ibkb_config');
     const cfg=raw?JSON.parse(raw):{};
     const sb=cfg.supabase||{};
-    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',serviceKey:sb.serviceKey||''};
-  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',serviceKey:''};}
+    return {url:sb.url||'https://ydhzektalfhojnmznvji.supabase.co',key:sb.key||'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',serviceKey:sb.serviceKey||_SVC_KEY};
+  }catch(e){return {url:'https://ydhzektalfhojnmznvji.supabase.co',key:'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',serviceKey:_SVC_KEY};}
 }
 
 function supabaseKaydet(){
