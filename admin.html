@@ -1404,6 +1404,7 @@ async function parolaSifirlaBaslat(){
     const res = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-reset-code', {
       method: 'POST',
       headers: {
+        'apikey': 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg',
         'Content-Type': 'application/json',
         'Authorization': 'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'
       },
@@ -1494,7 +1495,7 @@ async function girisYap(){
     btn.disabled = true;
     try {
       const _pr = await fetch(_SC_URL + '?id=eq.parola&select=value&limit=1', {
-        headers: { 'Authorization': 'Bearer ' + _SC_SVC }
+        headers: { 'apikey': (_SC_SVC||_SC_KEY), 'Authorization': 'Bearer ' + (_SC_SVC||_SC_KEY) }
       });
       if(_pr.ok) {
         const _pd = await _pr.json();
@@ -1558,8 +1559,9 @@ function cikisYap(){
 async function baslat(){
   // Önce Supabase'den güncel config çek, localStorage'a yaz
   try{
+    const _bKey = _SC_SVC || _SC_KEY;
     const _br = await fetch(_SC_URL + '?select=id,value', {
-      headers: {'Authorization': 'Bearer ' + _SC_SVC}
+      headers: {'apikey': _bKey, 'Authorization': 'Bearer ' + _bKey}
     });
     if(_br.ok){
       const _brows = await _br.json();
@@ -2042,7 +2044,7 @@ function modalKaydet(){
 // ─── SUPABASE ───────────────────────────────────────────────────────────────
 // ─── SİTE CONFIG — Supabase (tüm admin ayarları burada saklanır) ────────────
 const _SC_URL = 'https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config';
-const _SC_SVC = (function(){ try{ var _s=JSON.parse(localStorage.getItem('ibkb_supabase')||'{}'); return _s.serviceKey||''; }catch(e){return '';} })();
+const _SC_SVC = (function(){ try{ var _s=JSON.parse(localStorage.getItem('ibkb_supabase')||'{}'); if(_s.serviceKey) return _s.serviceKey; var _c=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); return (_c.supabase&&_c.supabase.serviceKey)||''; }catch(e){return '';} })();
 const _SC_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 
 // Supabase'e yaz (service role ile — RLS bypass)
@@ -2199,7 +2201,7 @@ async function scKaydet(id, value) {
     const upd = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
       method: 'PATCH',
       headers: {
-        'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC,
+        'apikey': _SC_SVC, 'apikey': (_SC_SVC||_SC_KEY), 'Authorization': 'Bearer ' + (_SC_SVC||_SC_KEY),
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
@@ -2218,7 +2220,7 @@ async function scKaydet(id, value) {
     const ins = await fetch(_SC_URL, {
       method: 'POST',
       headers: {
-        'apikey': _SC_SVC, 'Authorization': 'Bearer ' + _SC_SVC,
+        'apikey': _SC_SVC, 'apikey': (_SC_SVC||_SC_KEY), 'Authorization': 'Bearer ' + (_SC_SVC||_SC_KEY),
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal'
       },
@@ -2242,7 +2244,7 @@ async function scKaydet(id, value) {
 async function scYukle() {
   try {
     const res = await fetch(_SC_URL + '?select=id,value', {
-      headers: { 'Authorization': 'Bearer ' + _SC_KEY }
+      headers: { 'apikey': _SC_KEY, 'Authorization': 'Bearer ' + _SC_KEY }
     });
     if (!res.ok) return null;
     const rows = await res.json();
@@ -2985,7 +2987,7 @@ async function topluMailGonder(){
     try{
       const edgeRes = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'},
+        headers: {'apikey': 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg', 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'},
         body: JSON.stringify({
           to: hedefler,
           subject: konu,
@@ -3098,7 +3100,7 @@ async function eftMailGonder(email, adSoyad){
   try{
     const res = await fetch('https://ydhzektalfhojnmznvji.supabase.co/functions/v1/send-bulk-email', {
       method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'},
+      headers: {'apikey':'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg','Content-Type':'application/json','Authorization':'Bearer sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg'},
       body: JSON.stringify({
         to: [email],
         subject: 'İBKB Sorgulama — EFT / Havale Bilgileri',
@@ -3291,7 +3293,7 @@ async function tumunuSifirla(){
     for(const alan of alanlar){
       await fetch(_SC_URL + '?id=eq.' + alan, {
         method: 'DELETE',
-        headers: {'Authorization': 'Bearer ' + _SC_SVC}
+        headers: {'apikey': (_SC_SVC||_SC_KEY), 'Authorization': 'Bearer ' + (_SC_SVC||_SC_KEY)}
       });
     }
   }catch(e){ console.warn('Supabase silme:', e.message); }
