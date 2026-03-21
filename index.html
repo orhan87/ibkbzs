@@ -14,7 +14,8 @@
   <link rel="apple-touch-icon" href="/favicon.ico">
 
 <style>
-@keyframes _fadeIn{from{opacity:0}to{opacity:1}}body{animation:_fadeIn .18s ease forwards;}body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#1e293b;opacity:0;transition:opacity .3s;}</style>
+@keyframes _fadeIn{from{opacity:0}to{opacity:1}}
+body{opacity:0;}body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#1e293b;opacity:0;transition:opacity .3s;}</style>
 <script>
 function duyuruKapat(){
   var el = document.getElementById('sistemDuyuruBanner');
@@ -30,8 +31,8 @@ function mevzuatKapat(){
 }
 
 function duyuruMevzuatGoster(cfg){
-  // Duyuru banner
-  if(cfg.duyuru && cfg.duyuru.aktif && cfg.duyuru.metin){
+  // Duyuru banner - login seçim ekranında gösteriliyor
+  if(false && cfg.duyuru && cfg.duyuru.aktif && cfg.duyuru.metin){
     var kapandi = sessionStorage.getItem('ibkb_duyuru_kapandi');
     if(!kapandi){
       var el = document.getElementById('sistemDuyuruBanner');
@@ -275,8 +276,8 @@ if(!sessionStorage.getItem('govdag_token')){
               if(_sk) _sk.content = _g.seoKeywords;
             }
           }
-          // Bakim modu
-          if(_cfg.bakim && _cfg.bakim.aktif){
+          // Bakim modu - senkron kontrol body başında yapılıyor
+          if(false && _cfg.bakim && _cfg.bakim.aktif){
             var _bm = (_cfg.bakim && _cfg.bakim.mesaj) || 'Sistem bakimda.';
             var _logo = (JSON.parse(localStorage.getItem('ibkb_config')||'{}').logo||'');
             document.body.innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);font-family:DM Sans,sans-serif;padding:32px;">'
@@ -713,9 +714,33 @@ window.addEventListener('unhandledrejection', function(e){
   <link rel="canonical" href="https://ibkbsorgulama.com">
   <meta name="google-site-verification" content="60ZYbfvQIKxDoLOFRsZaFV6bUodzzOO4qxRE9yzMOwY">
 </head>
-<body>
+<body><script>
+// SENKRON bakım kontrolü - flash önleme
+(function(){
+  try{
+    var _sc = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    if(_sc.bakim && _sc.bakim.aktif){
+      var _bm = _sc.bakim.mesaj || 'Sistem bakımda.';
+      var _logo = _sc.logo || '';
+      document.body.style.opacity='1';
+      document.body.innerHTML =
+        '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);font-family:DM Sans,system-ui,sans-serif;padding:32px;">'
+        +'<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:48px 40px;max-width:440px;width:100%;text-align:center;">'
+        +(_logo ? '<img src="'+_logo+'" style="height:48px;margin-bottom:24px;" alt="Logo">' : '<div style="font-size:2.4rem;margin-bottom:20px;">🔧</div>')
+        +'<h2 style="color:#fff;font-size:1.4rem;font-weight:700;margin-bottom:12px;">Sistem Bakımda</h2>'
+        +'<p style="color:#94a3b8;font-size:.95rem;line-height:1.6;margin-bottom:24px;">'+_bm+'</p>'
+        +'<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 18px;color:#64748b;font-size:.8rem;">⏱ Lütfen kısa süre sonra tekrar deneyin</div>'
+        +'</div>'
+        +'<p style="color:#334155;font-size:.72rem;margin-top:24px;">İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI</p>'
+        +'</div>';
+    } else {
+      document.body.style.animation = '_fadeIn .18s ease forwards';
+    }
+  }catch(e){ document.body.style.animation = '_fadeIn .18s ease forwards'; }
+})();
+</script>
 <!-- DUYURU BANNER -->
-<div id="sistemDuyuruBanner" style="display:none;position:relative;padding:11px 48px 11px 18px;font-size:.85rem;line-height:1.5;z-index:100;">
+<div id="sistemDuyuruBanner" style="display:none !important;position:relative;padding:11px 48px 11px 18px;font-size:.85rem;line-height:1.5;z-index:100;">
   <span id="sistemDuyuruMetin"></span>
   <button onclick="duyuruKapat()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.2rem;cursor:pointer;color:inherit;opacity:.6;padding:4px 8px;line-height:1;" title="Kapat">×</button>
 </div>

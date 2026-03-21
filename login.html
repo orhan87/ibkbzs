@@ -352,6 +352,9 @@ let sbUrl = SUPABASE_URL;
 let sbKey  = SUPABASE_KEY;
 
 window.onload = function(){
+  // Zaten giriş yapılmışsa yönlendir
+  var token = sessionStorage.getItem('govdag_token');
+  if(token){ window.location.replace('./secim.html'); return; }
   // Admin ayarlarını uygula
   // Varsayılan fiyat kartını hemen göster (config yüklenmeden önce)
   (function(){
@@ -513,164 +516,51 @@ window.onload = function(){
     }
   })();
 
-  // Zaten giriş yapılmışsa yönlendir
-  var token = sessionStorage.getItem('govdag_token');
-  if(token) document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo'); if(_sLogo){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); var _ls = (_lc.logo && _lc.logo.length>10) ? _lc.logo : (_LOGO_URI && _LOGO_URI.length>10 ? _LOGO_URI : null); if(_ls) _sLogo.src = _ls; }catch(e){ _sLogo.src = _LOGO_URI||''; } }
-};
-
-function hataGoster(msg){
-  document.getElementById('hataMesaj').textContent = msg;
-  document.getElementById('hataKutu').classList.add('goster');
-}
-function hataGizle(){
-  document.getElementById('hataKutu').classList.remove('goster');
-  document.getElementById('eposta').classList.remove('hata');
-  document.getElementById('parola').classList.remove('hata');
-}
-
-  function gosterBasari(talep) {
-    var metinEl = document.getElementById('basvuruBasariMetin');
-    if(talep === 'demo'){
-      metinEl.innerHTML = '<strong>Demo talebiniz alındı!</strong><br><span style="font-weight:400;">Ekibimiz sizi en kısa sürede arayacak.</span>';
-    } else {
-      metinEl.innerHTML = '<strong>Başvurunuz alındı!</strong><br><span style="font-weight:400;">En kısa sürede sizinle iletişime geçeceğiz.</span>';
-    }
-  }
 
 async function basvuruGonder(){
-  const ad    = document.getElementById('bAd').value.trim();
-  const firma = document.getElementById('bFirma').value.trim();
-  const email = document.getElementById('bEmail').value.trim();
-  const tel   = document.getElementById('bTel').value.trim();
-  const talep = document.getElementById('bTalep').value;
-  const mesaj = document.getElementById('bMesaj').value.trim();
-
-  const hataEl  = document.getElementById('basvuruHata');
-  const basariEl = document.getElementById('basvuruBasari');
-  hataEl.style.display = 'none';
-  basariEl.style.display = 'none';
-
-  if(!ad || !firma || !email){
-    hataEl.textContent = '⚠ Ad Soyad, Firma ve E-posta alanları zorunludur.';
-    hataEl.style.display = 'block';
-    return;
-  }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    hataEl.textContent = '⚠ Geçerli bir e-posta adresi giriniz.';
-    hataEl.style.display = 'block';
-    return;
-  }
-
-  const btn = document.getElementById('basvuruBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Kontrol ediliyor...';
-
-  // ── Duplicate başvuru kontrolü (aynı e-posta + aynı talep türü) ──
-  try {
-    const kontrol = await fetch(sbUrl + '/rest/v1/basvurular?email=eq.' + encodeURIComponent(email) + '&talep=eq.' + encodeURIComponent(talep) + '&select=id&limit=1', {
-      headers: {'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey}
-    });
-    if(kontrol.ok){
-      const kData = await kontrol.json();
-      if(Array.isArray(kData) && kData.length > 0){
-        hataEl.textContent = '⚠ Bu talep türüyle daha önce başvuru yapılmıştır. Ekibimiz sizinle iletişime geçecektir.';
-        hataEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = '📩 Başvuruyu Gönder';
-        return;
-      }
-    }
-  } catch(e){ /* kontrol başarısız olsa bile devam et */ }
-
-  btn.textContent = '⏳ Gönderiliyor...';
-
-  try {
-    const res = await fetch(sbUrl + '/rest/v1/basvurular', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': sbKey,
-        'Authorization': 'Bearer ' + sbKey,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        ad_soyad: ad,
-        firma: firma,
-        email: email,
-        telefon: tel || null,
-        talep: talep || null,
-        mesaj: mesaj || null,
-        tarih: new Date().toISOString()
-      })
-    });
-    if(res.ok || res.status === 201){
-      gosterBasari(talep);
-      basariEl.style.display = 'flex';
-      // EFT bilgisi Supabase'den çek ve göster
-      (async function(){
-        try{
-          var _sbK = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
-          var _r = await fetch('https://ydhzektalfhojnmznvji.supabase.co/rest/v1/site_config?id=eq.eft&select=value',
-            {headers:{'apikey':_sbK,'Authorization':'Bearer '+_sbK}});
-          if(!_r.ok) return;
-          var _rows = await _r.json();
-          if(!_rows.length) return;
-          var _e;
-          try{ _e = JSON.parse(_rows[0].value); }catch(ex){ return; }
-          if(!_e || !_e.iban) return;
-          var _eftDiv = document.getElementById('basvuruEftKutu');
-          if(!_eftDiv) return;
-          var _ucretStr = (_e.ucret&&_e.para) ? '<strong>'+_e.ucret+' '+_e.para+'</strong>' : '';
-          _eftDiv.innerHTML = '<div style="margin-top:14px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:9px;padding:14px 16px;">'
-            + '<div style="font-size:.72rem;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">🏦 Ödeme Bilgileri</div>'
-            + '<table style="width:100%;border-collapse:collapse;font-size:.83rem;">'
-            + (_e.banka  ? '<tr><td style="padding:4px 0;color:#475569;width:40%;">Banka</td><td style="padding:4px 0;font-weight:600;color:#0f172a;">'+_e.banka+'</td></tr>' : '')
-            + (_e.sahip  ? '<tr><td style="padding:4px 0;color:#475569;">Hesap Sahibi</td><td style="padding:4px 0;font-weight:600;color:#0f172a;">'+_e.sahip+'</td></tr>' : '')
-            + (_e.iban   ? '<tr><td style="padding:4px 0;color:#475569;">IBAN</td><td style="padding:4px 0;font-weight:700;color:#0f172a;font-family:monospace;letter-spacing:.04em;">'+_e.iban+'</td></tr>' : '')
-            + (_ucretStr ? '<tr><td style="padding:4px 0;color:#475569;">Lisans Ücreti</td><td style="padding:4px 0;">'+_ucretStr+'</td></tr>' : '')
-            + (_e.sure   ? '<tr><td style="padding:4px 0;color:#475569;">Lisans Süresi</td><td style="padding:4px 0;font-weight:600;color:#0f172a;">'+_e.sure+'</td></tr>' : '')
-            + '</table>'
-            + (_e.not ? '<p style="margin-top:10px;margin-bottom:0;font-size:.78rem;color:#475569;"><strong>Not:</strong> '+_e.not+'</p>' : '')
-            + '</div>';
-          _eftDiv.style.display = 'block';
-        }catch(ex){}
-      })();
-      document.getElementById('bAd').value = '';
-      document.getElementById('bFirma').value = '';
-      document.getElementById('bEmail').value = '';
-      document.getElementById('bTel').value = '';
-      document.getElementById('bTalep').value = '';
-      document.getElementById('bMesaj').value = '';
-    } else {
-      const err = await res.text();
-      // Tablo yoksa yine de başarı say (graceful fallback)
-      if(res.status === 404 || err.includes('relation') || err.includes('does not exist')){
-        gosterBasari(talep);
-        basariEl.style.display = 'block';
-        // E-posta ile bildir (mailto fallback)
-        var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-        var hedefEmail = (cfg.metinler && cfg.metinler.loginEmail) || 'destek@ibkbsorgulama.com';
-        var konu = encodeURIComponent('İBKB Yazılım Lisans Başvurusu - ' + firma);
-        var govde = encodeURIComponent('Ad Soyad: ' + ad + '\nFirma: ' + firma + '\nE-posta: ' + email + (tel?'\nTelefon: '+tel:'') + (mesaj?'\nMesaj: '+mesaj:''));
-        setTimeout(function(){ window.location.href = 'mailto:' + hedefEmail + '?subject=' + konu + '&body=' + govde; }, 800);
-      } else {
-        hataEl.textContent = '⚠ Gönderim sırasında bir hata oluştu. Lütfen doğrudan iletişime geçin.';
-        hataEl.style.display = 'block';
-      }
-    }
-  } catch(e){
-    // Ağ hatası — mailto fallback
-    gosterBasari(talep);
-    basariEl.style.display = 'block';
+  var btn = document.getElementById('basvuruBtn');
+  var hataEl = document.getElementById('basvuruHata');
+  var basariEl = document.getElementById('basvuruBasari');
+  var ad = (document.getElementById('bAd')||{value:''}).value.trim();
+  var firma = (document.getElementById('bFirma')||{value:''}).value.trim();
+  var email = (document.getElementById('bEmail')||{value:''}).value.trim();
+  var tel = (document.getElementById('bTel')||{value:''}).value.trim();
+  var talep = (document.getElementById('bTalep')||{value:''}).value;
+  var mesaj = (document.getElementById('bMesaj')||{value:''}).value.trim();
+  if(!ad||!firma||!email){ if(hataEl){hataEl.textContent='⚠ Ad, firma ve e-posta zorunludur.';hataEl.style.display='block';} return; }
+  if(hataEl) hataEl.style.display='none';
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Gönderiliyor…'; }
+  try{
     var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-    var hedefEmail = (cfg.metinler && cfg.metinler.loginEmail) || 'destek@ibkbsorgulama.com';
-    var konu = encodeURIComponent('İBKB Yazılım Lisans Başvurusu - ' + firma);
-    var govde = encodeURIComponent('Ad Soyad: ' + ad + '\nFirma: ' + firma + '\nE-posta: ' + email + (tel?'\nTelefon: '+tel:'') + (mesaj?'\nMesaj: '+mesaj:''));
-    setTimeout(function(){ window.location.href = 'mailto:' + hedefEmail + '?subject=' + konu + '&body=' + govde; }, 800);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '📩 Başvuruyu Gönder';
+    var res = await fetch(SUPABASE_URL+'/rest/v1/basvurular',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({ad_soyad:ad,firma:firma,email:email,telefon:tel,talep:talep,mesaj:mesaj})
+    });
+    function gosterBasari(t){
+      if(basariEl){ basariEl.style.display='block'; }
+      document.getElementById('bAd').value=''; document.getElementById('bFirma').value='';
+      document.getElementById('bEmail').value=''; document.getElementById('bTel').value='';
+      document.getElementById('bMesaj').value='';
+    }
+    if(res.ok||res.status===201){
+      gosterBasari(talep);
+    } else {
+      var errTxt = await res.text().catch(()=>'');
+      if(res.status===404||errTxt.includes('relation')||errTxt.includes('does not exist')){
+        gosterBasari(talep);
+      } else {
+        if(hataEl){ hataEl.textContent='⚠ Gönderim hatası. Lütfen doğrudan iletişime geçin.'; hataEl.style.display='block'; }
+      }
+    }
+  }catch(e){
+    if(basariEl) basariEl.style.display='block';
+    var hedefEmail=(JSON.parse(localStorage.getItem('ibkb_config')||'{}').metinler||{}).loginEmail||'destek@ibkbsorgulama.com';
+    setTimeout(function(){ window.location.href='mailto:'+hedefEmail+'?subject='+encodeURIComponent('Lisans Başvurusu'); },800);
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent='📩 Başvuruyu Gönder'; }
   }
+}
 }
 
 
@@ -760,7 +650,7 @@ async function davetParolaBelirle(){
           body:JSON.stringify({email:d.email,giris_tarihi:new Date().toISOString()})
         });
       }catch(e){}
-      document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo'); if(_sLogo){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); var _ls = (_lc.logo && _lc.logo.length>10) ? _lc.logo : (_LOGO_URI && _LOGO_URI.length>10 ? _LOGO_URI : null); if(_ls) _sLogo.src = _ls; }catch(e){ _sLogo.src = _LOGO_URI||''; } }
+      window.location.replace('./secim.html');
     } else {
       var msg = d.msg || d.message || d.error_description || 'Bilinmeyen hata';
       hataEl.style.display='flex'; hataMsgEl.textContent='Hata: '+msg;
@@ -1006,7 +896,7 @@ async function girisYap(){
     } catch(e){ /* demo kontrol hatası girişi engellemesin */ }
 
     // Yönlendir
-    document.getElementById('sayfaSecimEkrani').style.display='flex'; // Seçim ekranı logosu  var _sLogo = document.getElementById('secimLogo'); if(_sLogo){ try{ var _lc=JSON.parse(localStorage.getItem('ibkb_config')||'{}'); var _ls = (_lc.logo && _lc.logo.length>10) ? _lc.logo : (_LOGO_URI && _LOGO_URI.length>10 ? _LOGO_URI : null); if(_ls) _sLogo.src = _ls; }catch(e){ _sLogo.src = _LOGO_URI||''; } }
+    window.location.replace('./secim.html');
 
   }catch(err){
     hataGoster('Bağlantı hatası. İnternet bağlantınızı kontrol edin.');
@@ -1115,7 +1005,7 @@ async function girisYap(){
                 + (_fBadge ? '<span class="fiyat-badge">'+_fBadge+'</span>' : '')
                 + '</div>'
                 + '<div class="fiyat-tutar">'+_fTutar+'</div>'
-                + '<div class="fiyat-alt">'+_fSure+(_fKdv ? ' &nbsp;·&nbsp; KDV Dahil' : '')+'</div>'
+                + '<div class="fiyat-alt"><span class="fiyat-sure">'+_fSure+'</span>'+(_fKdv ? '<span class="fiyat-kdv">KDV Dahil</span>' : '')+'</div>'
                 + '</div>';
             }
           }
@@ -1134,38 +1024,7 @@ async function girisYap(){
   })();
 </script>
 
-<!-- SAYFA SEÇİM EKRANI -->
-<div id="sayfaSecimEkrani" style="display:none;position:fixed;inset:0;z-index:999;background:#0f172a;align-items:center;justify-content:center;">
-  <div style="width:100%;max-width:520px;padding:40px 24px;text-align:center;">
 
-    <img id="secimLogo" alt="gövdag" style="height:40px;width:auto;margin-bottom:32px;opacity:.95;">
-
-    <h2 style="color:#fff;font-size:1.25rem;font-weight:600;margin:0 0 6px;">Hoş geldiniz</h2>
-    <p style="color:rgba(255,255,255,.45);font-size:.875rem;margin:0 0 40px;">Devam etmek istediğiniz modülü seçin</p>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-
-      <a href="./index.html" style="display:block;padding:28px 20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;text-decoration:none;transition:background .15s,border-color .15s;"
-         onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.2)'"
-         onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.1)'">
-        <div style="width:44px;height:44px;background:rgba(37,99,235,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.25rem;">🧮</div>
-        <div style="color:#fff;font-size:.9rem;font-weight:600;margin-bottom:5px;">İBKB Hesaplama</div>
-        <div style="color:rgba(255,255,255,.4);font-size:.78rem;line-height:1.5;">İhracat bedeli zorunluluk sorgulama ve hesaplama</div>
-      </a>
-
-      <a href="./takip.html" style="display:block;padding:28px 20px;background:rgba(217,119,6,.06);border:1px solid rgba(245,158,11,.2);border-radius:14px;text-decoration:none;transition:background .15s,border-color .15s;"
-         onmouseover="this.style.background='rgba(245,158,11,.12)';this.style.borderColor='rgba(245,158,11,.4)'"
-         onmouseout="this.style.background='rgba(217,119,6,.06)';this.style.borderColor='rgba(245,158,11,.2)'">
-        <div style="width:44px;height:44px;background:rgba(245,158,11,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.25rem;">📦</div>
-        <div style="color:#f59e0b;font-size:.9rem;font-weight:600;margin-bottom:5px;">İhracat Takip</div>
-        <div style="color:rgba(255,255,255,.4);font-size:.78rem;line-height:1.5;">180 gün süre takibi ve beyanname yönetimi</div>
-      </a>
-
-    </div>
-
-    <p style="color:rgba(255,255,255,.2);font-size:.75rem;margin-top:28px;">Modüller arasında istediğiniz zaman geçiş yapabilirsiniz</p>
-  </div>
-</div>
 
 <footer style="background:#0f172a;padding:18px 32px;text-align:center;margin-top:40px;">
   <p style="font-size:.75rem;color:rgba(255,255,255,.3);">

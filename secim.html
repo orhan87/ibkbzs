@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modül Seçimi — İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="robots" content="noindex,nofollow">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'DM Sans','Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(140deg,#0f172a 0%,#1a2540 60%,#243354 100%);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;
+    animation:_fadeIn .2s ease forwards;
+  }
+  @keyframes _fadeIn{from{opacity:0}to{opacity:1}}
+
+  .kart{width:100%;max-width:520px;text-align:center;}
+
+  .logo{height:44px;width:auto;margin-bottom:36px;opacity:.95;}
+
+  h2{color:#fff;font-size:1.3rem;font-weight:700;margin:0 0 8px;}
+  .alt{color:rgba(255,255,255,.45);font-size:.875rem;margin:0 0 28px;}
+
+  /* Duyuru */
+  .duyuru-kutu{
+    display:none;position:relative;
+    margin-bottom:20px;padding:12px 44px 12px 16px;
+    border-radius:10px;text-align:left;font-size:.82rem;line-height:1.5;
+  }
+  .duyuru-kapat{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;cursor:pointer;color:inherit;
+    opacity:.55;font-size:1.3rem;padding:4px 8px;line-height:1;
+  }
+  .duyuru-kapat:hover{opacity:1;}
+
+  /* Modül kartları */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;}
+  @media(max-width:420px){.grid{grid-template-columns:1fr;}}
+
+  .modul{
+    display:block;padding:28px 20px;
+    border-radius:14px;text-decoration:none;
+    transition:background .15s,border-color .15s,transform .12s;
+  }
+  .modul:hover{transform:translateY(-2px);}
+  .modul-mavi{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .modul-mavi:hover{
+    background:rgba(255,255,255,.09);
+    border-color:rgba(255,255,255,.22);
+  }
+  .modul-altin{
+    background:rgba(217,119,6,.06);
+    border:1px solid rgba(245,158,11,.2);
+  }
+  .modul-altin:hover{
+    background:rgba(245,158,11,.12);
+    border-color:rgba(245,158,11,.4);
+  }
+  .modul-ikon{
+    width:44px;height:44px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 14px;font-size:1.3rem;
+  }
+  .ikon-mavi{background:rgba(37,99,235,.2);}
+  .ikon-altin{background:rgba(245,158,11,.15);}
+  .modul-baslik{font-size:.95rem;font-weight:700;margin-bottom:6px;}
+  .modul-baslik-mavi{color:#fff;}
+  .modul-baslik-altin{color:#f59e0b;}
+  .modul-acik{color:rgba(255,255,255,.4);font-size:.78rem;line-height:1.5;}
+
+  .alt-not{color:rgba(255,255,255,.18);font-size:.72rem;}
+
+  /* Çıkış butonu */
+  .cikis-btn{
+    margin-top:32px;
+    background:none;border:none;
+    color:rgba(255,255,255,.3);font-size:.78rem;
+    cursor:pointer;font-family:inherit;
+    transition:color .15s;
+  }
+  .cikis-btn:hover{color:rgba(255,255,255,.6);}
+</style>
+</head>
+<body>
+<script>
+// SENKRON token kontrolü - flash yok
+(function(){
+  if(!sessionStorage.getItem('govdag_token')){
+    document.location.replace('./login.html');
+  }
+  // Bakım modu senkron kontrolü
+  try{
+    var _sc = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    if(_sc.bakim && _sc.bakim.aktif){
+      var _bm = _sc.bakim.mesaj || 'Sistem bakımda.';
+      var _logo = _sc.logo || '';
+      document.body.style.animation = 'none';
+      document.body.style.opacity = '1';
+      document.body.innerHTML =
+        '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);font-family:DM Sans,system-ui,sans-serif;padding:32px;">'
+        +'<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:48px 40px;max-width:440px;width:100%;text-align:center;">'
+        +(_logo ? '<img src="'+_logo+'" style="height:48px;margin-bottom:24px;" alt="Logo">' : '<div style="font-size:2.4rem;margin-bottom:20px;">🔧</div>')
+        +'<h2 style="color:#fff;font-size:1.4rem;font-weight:700;margin-bottom:12px;">Sistem Bakımda</h2>'
+        +'<p style="color:#94a3b8;font-size:.95rem;line-height:1.6;margin-bottom:24px;">'+_bm+'</p>'
+        +'<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 18px;color:#64748b;font-size:.8rem;">⏱ Lütfen kısa süre sonra tekrar deneyin</div>'
+        +'</div>'
+        +'<p style="color:#334155;font-size:.72rem;margin-top:24px;">İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI</p>'
+        +'</div>';
+    }
+  }catch(e){}
+})();
+</script>
+
+<div class="kart">
+  <img id="secimLogo" class="logo" alt="İBKB">
+
+  <h2>Hoş geldiniz</h2>
+  <p class="alt">Devam etmek istediğiniz modülü seçin</p>
+
+  <!-- DUYURU -->
+  <div id="duyuruKutu" class="duyuru-kutu">
+    <span id="duyuruMetin"></span>
+    <button class="duyuru-kapat" onclick="duyuruKapat()" title="Kapat">×</button>
+  </div>
+
+  <!-- MODÜLLER -->
+  <div class="grid">
+    <a href="./index.html" class="modul modul-mavi">
+      <div class="modul-ikon ikon-mavi">🧮</div>
+      <div class="modul-baslik modul-baslik-mavi">İBKB Hesaplama</div>
+      <div class="modul-acik">İhracat bedeli zorunluluk sorgulama ve hesaplama</div>
+    </a>
+    <a href="./takip.html" class="modul modul-altin">
+      <div class="modul-ikon ikon-altin">📦</div>
+      <div class="modul-baslik modul-baslik-altin">İhracat Takip</div>
+      <div class="modul-acik">180 gün süre takibi ve beyanname yönetimi</div>
+    </a>
+  </div>
+
+  <p class="alt-not">Modüller arasında istediğiniz zaman geçiş yapabilirsiniz</p>
+
+  <button class="cikis-btn" onclick="cikisYap()">↩ Çıkış Yap</button>
+</div>
+
+<script>
+function cikisYap(){
+  sessionStorage.removeItem('govdag_token');
+  sessionStorage.removeItem('govdag_email');
+  sessionStorage.removeItem('govdag_refresh');
+  window.location.replace('./login.html');
+}
+
+function duyuruKapat(){
+  var el = document.getElementById('duyuruKutu');
+  if(el) el.style.display = 'none';
+  sessionStorage.setItem('ibkb_duyuru_kapandi','1');
+}
+
+// Logo ve duyuru yükle
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    var cfg = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+
+    // Logo
+    var logoEl = document.getElementById('secimLogo');
+    if(logoEl && cfg.logo && cfg.logo.length > 10) logoEl.src = cfg.logo;
+    else if(logoEl) logoEl.style.display = 'none';
+
+    // Duyuru
+    var d = cfg.duyuru;
+    if(d && d.aktif && d.metin && !sessionStorage.getItem('ibkb_duyuru_kapandi')){
+      var tipRenk = {
+        bilgi:  {bg:'rgba(37,99,235,.18)',  border:'rgba(147,197,253,.35)', color:'#93c5fd'},
+        uyari:  {bg:'rgba(217,119,6,.18)',  border:'rgba(253,211,77,.35)',  color:'#fde047'},
+        hata:   {bg:'rgba(185,28,28,.18)',  border:'rgba(252,165,165,.35)', color:'#fca5a5'},
+        basari: {bg:'rgba(22,163,74,.18)',  border:'rgba(134,239,172,.35)', color:'#86efac'}
+      };
+      var r = tipRenk[d.tip||'bilgi'] || tipRenk.bilgi;
+      var kutu = document.getElementById('duyuruKutu');
+      var metin = document.getElementById('duyuruMetin');
+      if(kutu && metin){
+        kutu.style.background = r.bg;
+        kutu.style.border = '1px solid '+r.border;
+        kutu.style.color = r.color;
+        metin.textContent = d.metin;
+        kutu.style.display = 'block';
+      }
+    }
+
+    // Görünüm (renk teması)
+    if(cfg.gorunum){
+      var g = cfg.gorunum;
+      var st = document.createElement('style');
+      var css = ':root{';
+      if(g.blue)   css += '--blue:'+g.blue+';';
+      if(g.gold)   css += '--gold:'+g.gold+';';
+      if(g.navy)   css += '--navy:'+g.navy+';';
+      if(g.radius) css += '--radius:'+g.radius+';';
+      css += '}';
+      st.textContent = css;
+      document.head.appendChild(st);
+    }
+  }catch(e){}
+});
+</script>
+</body>
+</html>
