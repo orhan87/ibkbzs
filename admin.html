@@ -2148,7 +2148,8 @@ async function bakimKaydet(){
     durumEl.style.color      = aktif ? '#b91c1c' : '#166534';
     durumEl.textContent = aktif ? '🔴 Bakım Modu AKTİF' : '🟢 Bakım Modu Kapalı';
   }
-  toast(aktif ? '🔴 Bakım modu aktif edildi' : '✅ Bakım modu kapatıldı');
+  const _bOk = await scKaydet('bakim', cfg.bakim);
+  toast(aktif ? '🔴 Bakım modu aktif edildi' : ('✅ Bakım modu kapatıldı' + (_bOk ? '' : ' — Supabase sync başarısız')));
 }
 
 function degisiklikleriIptal(){
@@ -2166,8 +2167,8 @@ async function duyuruKaydet(){
   const cfg = depoyuYukle()||{};
   cfg.duyuru = { aktif:true, metin, tip:(tipEl?tipEl.value:'bilgi') };
   depoyaKaydet(cfg);
-  try{ await scKaydet('duyuru', cfg.duyuru); }catch(e){}
-  toast('✅ Duyuru kaydedildi ve yayınlandı');
+  const _dOk = await scKaydet('duyuru', cfg.duyuru);
+  toast(_dOk ? '✅ Duyuru kaydedildi ve yayınlandı' : '⚠ Yerel kaydedildi, Supabase sync başarısız');
 }
 
 async function duyuruKaldir(){
@@ -2481,44 +2482,52 @@ function gorununuSifirla(){
 
 async function scKaydet(id, value) {
   try {
+    const _key = _SC_SVC || _SC_KEY;
     const valueStr = (typeof value === 'string') ? value : JSON.stringify(value);
-    // PATCH dene
-    const upd = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
-      method: 'PATCH',
-      headers: {
-        'apikey': _SC_SVC, 'apikey': (_SC_SVC||_SC_KEY), 'Authorization': 'Bearer ' + (_SC_SVC||_SC_KEY),
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({ value: valueStr, updated_at: new Date().toISOString(), updated_by: localStorage.getItem('ibkb_admin_email')||'admin' })
+    const payload = JSON.stringify({
+      value: valueStr,
+      updated_at: new Date().toISOString(),
+      updated_by: localStorage.getItem('ibkb_admin_email') || 'admin'
     });
-    if(upd.ok) {
-      const updText = await upd.text().catch(()=>'[]');
-      try {
-        const updData = JSON.parse(updText);
-        if(Array.isArray(updData) && updData.length > 0) {
-          return true;
-        }
-      } catch(e) {}
-    }
-    // INSERT
-    const ins = await fetch(_SC_URL, {
+    const headers = {
+      'apikey': _key,
+      'Authorization': 'Bearer ' + _key,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    };
+
+    // UPSERT — tek istekte hem INSERT hem UPDATE yapar, duplicate sorun olmaz
+    const r = await fetch(_SC_URL + '?on_conflict=id', {
       method: 'POST',
-      headers: {
-        'apikey': _SC_SVC, 'apikey': (_SC_SVC||_SC_KEY), 'Authorization': 'Bearer ' + (_SC_SVC||_SC_KEY),
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
+      headers: Object.assign({}, headers, { 'Prefer': 'return=minimal,resolution=merge-duplicates' }),
       body: JSON.stringify({ id: id, value: valueStr, updated_at: new Date().toISOString(), updated_by: localStorage.getItem('ibkb_admin_email')||'admin' })
     });
-    const insText = await ins.text().catch(()=>'');
-    if(!ins.ok) {
-      if(ins.status === 409 || insText.includes('duplicate')) {
-        return true;
-      }
-      return false;
+
+    if(r.ok || r.status === 204 || r.status === 201) return true;
+
+    // UPSERT çalışmadıysa PATCH dene
+    const upd = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: headers,
+      body: payload
+    });
+    if(upd.ok || upd.status === 204) return true;
+
+    // PATCH da başarısız — INSERT dene
+    const ins = await fetch(_SC_URL, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ id: id, value: valueStr, updated_at: new Date().toISOString(), updated_by: localStorage.getItem('ibkb_admin_email')||'admin' })
+    });
+    if(ins.ok || ins.status === 201 || ins.status === 204) return true;
+    if(ins.status === 409) {
+      // Duplicate — kayıt var, PATCH ile güncelle
+      const retry = await fetch(_SC_URL + '?id=eq.' + encodeURIComponent(id), {
+        method: 'PATCH', headers: headers, body: payload
+      });
+      return retry.ok || retry.status === 204;
     }
-    return true;
+    return false;
   } catch(e) {
     console.error('[scKaydet hata]', id, e.message);
     return false;
@@ -3168,19 +3177,18 @@ function kurlariKaydet(){
   toast('✅ Kurlar kaydedildi');
 }
 
-function metinleriKaydet(){
+async function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatSure','fiyatBadge','fiyatKdvNot'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
   depoyaKaydet(cfg);
-  // Supabase sync
-  scKaydet('metinler', cfg.metinler);
-
+  toast('⏳ Kaydediliyor…');
+  const ok = await scKaydet('metinler', cfg.metinler);
   auditKaydet('Metin Güncellendi', 'Sayfa metinleri güncellendi');
-  toast('✅ Metinler kaydedildi');
+  toast(ok ? '✅ Metinler kaydedildi ve sisteme yansıtıldı' : '⚠ Yerel kaydedildi, Supabase bağlantısı kurulamadı');
 }
 
 function mevzuatBildirimYayinla(){
