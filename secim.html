@@ -93,16 +93,13 @@
 <script>var _LOGO_URI="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+";
 
 function _bakimSayfasiGoster(mesaj, logo) {
-  var logoHtml = logo && logo.length > 10
-    ? '<img src="' + logo + '" style="height:52px;width:auto;max-width:200px;object-fit:contain;margin-bottom:28px;filter:brightness(0) invert(1);opacity:.92;" alt="Logo">'
-    : '<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+" style="height:52px;width:auto;max-width:200px;object-fit:contain;margin-bottom:28px;filter:brightness(0) invert(1);opacity:.92;" alt="Logo">';
   var html = '<!DOCTYPE html><html lang="tr"><head>'
     + '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    + '<title>Sistem Bakimda</title>'
+    + '<title>Sistem Bakimda<\/title>'
     + '<link rel="icon" type="image/png" href="/favicon.ico">'
     + '<style>'
     + '*{box-sizing:border-box;margin:0;padding:0;}'
-    + 'body{font-family:"DM Sans",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1a2f55 50%,#0f172a 100%);padding:24px;position:relative;overflow:hidden;}'
+    + 'body{font-family:"DM Sans",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1a2f55 50%,#0f172a 100%);padding:24px;position:relative;overflow:hidden;}'
     + 'body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(37,99,235,.15) 0%,transparent 70%);pointer-events:none;}'
     + '.kart{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:52px 44px;max-width:460px;width:100%;text-align:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 25px 60px rgba(0,0,0,.4);}'
     + '.ikon{width:64px;height:64px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.8rem;}'
@@ -111,17 +108,14 @@ function _bakimSayfasiGoster(mesaj, logo) {
     + '.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.25);border-radius:100px;padding:8px 20px;color:#93c5fd;font-size:.82rem;font-weight:500;}'
     + '.badge span{width:8px;height:8px;background:#3b82f6;border-radius:50%;animation:blink 1.4s ease-in-out infinite;display:inline-block;}'
     + '@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}'
-    + '.alt{color:#334155;font-size:.72rem;margin-top:28px;}'
-    + '<\/style></head><body>'
+    + '<\/style><\/head><body>'
     + '<div class="kart">'
-    + logoHtml
-    + '<div class="ikon">\uD83D\uDD27</div>'
-    + '<h1>Sistem Bak\u0131mda</h1>'
-    + '<p class="mesaj">' + (mesaj||'') + '</p>'
-    + '<div class="badge"><span></span>K\u0131sa s\u00fcre sonra tekrar deneyin</div>'
-    + '</div>'
-    + '<p class="alt">\u0130BKB SORGULAMA VE \u0130HRACAT TAK\u0130P YAZILIMI</p>'
-    + '<\/body></html>';
+    + '<div class="ikon">\uD83D\uDD27<\/div>'
+    + '<h1>Sistem Bak\u0131mda<\/h1>'
+    + '<p class="mesaj">' + (mesaj||'') + '<\/p>'
+    + '<div class="badge"><span><\/span>K\u0131sa s\u00fcre sonra tekrar deneyin<\/div>'
+    + '<\/div>'
+    + '<\/body><\/html>';
   document.body.style.animation = 'none';
   document.body.style.opacity = '1';
   document.open();
@@ -158,8 +152,25 @@ function _bakimSayfasiGoster(mesaj, logo) {
 
   <!-- DUYURU -->
   <div id="duyuruKutu" class="duyuru-kutu">
-    <span id="duyuruMetin"></span>
+    <div style="display:flex;align-items:flex-start;gap:8px;">
+      <span id="duyuruIkon" style="font-size:1rem;flex-shrink:0;margin-top:1px;"></span>
+      <div>
+        <div id="duyuruBaslik" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:3px;"></div>
+        <span id="duyuruMetin"></span>
+      </div>
+    </div>
     <button class="duyuru-kapat" onclick="duyuruKapat()" title="Kapat">×</button>
+  </div>
+  <!-- MEVZUAT -->
+  <div id="mevzuatKutu" class="duyuru-kutu" style="display:none;">
+    <div style="display:flex;align-items:flex-start;gap:8px;">
+      <span style="font-size:1rem;flex-shrink:0;margin-top:1px;">📋</span>
+      <div>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:3px;">Mevzuat Değişikliği</div>
+        <span id="mevzuatMetinGoster"></span>
+      </div>
+    </div>
+    <button class="duyuru-kapat" onclick="mevzuatKutuKapat()" title="Kapat">×</button>
   </div>
 
   <!-- MODÜLLER -->
@@ -189,6 +200,13 @@ function cikisYap(){
   window.location.replace('./login.html');
 }
 
+function mevzuatKutuKapat(){
+  var el = document.getElementById('mevzuatKutu');
+  if(el) el.style.display='none';
+  var mv = JSON.parse(localStorage.getItem('ibkb_config')||'{}').mevzuat||{};
+  sessionStorage.setItem('ibkb_mv_kapandi', mv.guncelleme||'kapandi');
+}
+
 function duyuruKapat(){
   var el = document.getElementById('duyuruKutu');
   if(el) el.style.display = 'none';
@@ -206,24 +224,46 @@ document.addEventListener('DOMContentLoaded', function(){
     else if(logoEl && typeof _LOGO_URI !== 'undefined' && _LOGO_URI) logoEl.src = _LOGO_URI;
     else if(logoEl) logoEl.style.display = 'none';
 
-    // Duyuru
+    // Duyuru - tip bazlı ikon ve başlık
     var d = cfg.duyuru;
     if(d && d.aktif && d.metin && !sessionStorage.getItem('ibkb_duyuru_kapandi')){
       var tipRenk = {
-        bilgi:  {bg:'rgba(37,99,235,.18)',  border:'rgba(147,197,253,.35)', color:'#93c5fd'},
-        uyari:  {bg:'rgba(217,119,6,.18)',  border:'rgba(253,211,77,.35)',  color:'#fde047'},
-        hata:   {bg:'rgba(185,28,28,.18)',  border:'rgba(252,165,165,.35)', color:'#fca5a5'},
-        basari: {bg:'rgba(22,163,74,.18)',  border:'rgba(134,239,172,.35)', color:'#86efac'}
+        bilgi:  {bg:'rgba(37,99,235,.18)',  border:'rgba(147,197,253,.35)', color:'#93c5fd', ikon:'📢', baslik:'Duyuru'},
+        uyari:  {bg:'rgba(217,119,6,.18)',  border:'rgba(253,211,77,.35)',  color:'#fde047', ikon:'⚠️', baslik:'Uyarı'},
+        hata:   {bg:'rgba(185,28,28,.18)',  border:'rgba(252,165,165,.35)', color:'#fca5a5', ikon:'🚫', baslik:'Önemli Uyarı'},
+        basari: {bg:'rgba(22,163,74,.18)',  border:'rgba(134,239,172,.35)', color:'#86efac', ikon:'✅', baslik:'Bilgilendirme'}
       };
       var r = tipRenk[d.tip||'bilgi'] || tipRenk.bilgi;
       var kutu = document.getElementById('duyuruKutu');
       var metin = document.getElementById('duyuruMetin');
+      var ikon  = document.getElementById('duyuruIkon');
+      var basl  = document.getElementById('duyuruBaslik');
       if(kutu && metin){
         kutu.style.background = r.bg;
         kutu.style.border = '1px solid '+r.border;
         kutu.style.color = r.color;
         metin.textContent = d.metin;
+        if(ikon) ikon.textContent = r.ikon;
+        if(basl) basl.textContent = r.baslik;
         kutu.style.display = 'block';
+      }
+    }
+
+    // Mevzuat bildirimi - ayrı kutu
+    var mv = cfg.mevzuat;
+    if(mv && mv.aktif && mv.metin){
+      var mvKapandi = sessionStorage.getItem('ibkb_mv_kapandi');
+      var mvGuncelleme = mv.guncelleme||'';
+      if(!mvKapandi || (mvGuncelleme && mvKapandi !== mvGuncelleme)){
+        var mvKutu = document.getElementById('mevzuatKutu');
+        var mvMetin = document.getElementById('mevzuatMetinGoster');
+        if(mvKutu && mvMetin){
+          mvKutu.style.background = 'rgba(217,119,6,.18)';
+          mvKutu.style.border = '1px solid rgba(253,211,77,.35)';
+          mvKutu.style.color = '#fde047';
+          mvMetin.textContent = mv.metin;
+          mvKutu.style.display = 'block';
+        }
       }
     }
 

@@ -164,7 +164,7 @@
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>var _LOGO_URI="/logo.svg";</script>
+<script>var _LOGO_URI="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+";</script>
 </head>
 <body>
 
@@ -960,6 +960,10 @@ Sorgulama Yazılımı">
           <div class="metin-item">
             <label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label>
             <input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">KDV Dahil Rozeti Notu</label>
+            <input type="text" id="m-fiyatKdvNot" placeholder="Örn: Yıllık ödeme · %20 indirim" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
           </div>
           <div style="margin-top:14px;">
             <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
@@ -1810,7 +1814,7 @@ function logoTabYukle(){
 function fiyatKaydet(){
   const cfg = depoyuYukle() || {};
   if(!cfg.metinler) cfg.metinler = {};
-  ['fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge'].forEach(k=>{
+  ['fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge','fiyatKdvNot'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
