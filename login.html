@@ -354,7 +354,13 @@ let sbKey  = SUPABASE_KEY;
 window.onload = function(){
   // Zaten giriş yapılmışsa yönlendir
   var token = sessionStorage.getItem('govdag_token');
-  if(token){ window.location.replace('./secim.html'); return; }
+  if(token){ (async function(){
+      try{
+        var _r = await fetch('./secim.html',{method:'HEAD'});
+        if(_r.ok){ window.location.replace('./secim.html'); }
+        else { window.location.replace('./index.html'); }
+      }catch(e){ window.location.replace('./index.html'); }
+    })(); return; }
   // Admin ayarlarını uygula
   // Varsayılan fiyat kartını hemen göster (config yüklenmeden önce)
   (function(){
@@ -650,7 +656,13 @@ async function davetParolaBelirle(){
           body:JSON.stringify({email:d.email,giris_tarihi:new Date().toISOString()})
         });
       }catch(e){}
-      window.location.replace('./secim.html');
+      (async function(){
+      try{
+        var _r = await fetch('./secim.html',{method:'HEAD'});
+        if(_r.ok){ window.location.replace('./secim.html'); }
+        else { window.location.replace('./index.html'); }
+      }catch(e){ window.location.replace('./index.html'); }
+    })();
     } else {
       var msg = d.msg || d.message || d.error_description || 'Bilinmeyen hata';
       hataEl.style.display='flex'; hataMsgEl.textContent='Hata: '+msg;
@@ -896,7 +908,13 @@ async function girisYap(){
     } catch(e){ /* demo kontrol hatası girişi engellemesin */ }
 
     // Yönlendir
-    window.location.replace('./secim.html');
+    (async function(){
+      try{
+        var _r = await fetch('./secim.html',{method:'HEAD'});
+        if(_r.ok){ window.location.replace('./secim.html'); }
+        else { window.location.replace('./index.html'); }
+      }catch(e){ window.location.replace('./index.html'); }
+    })();
 
   }catch(err){
     hataGoster('Bağlantı hatası. İnternet bağlantınızı kontrol edin.');
