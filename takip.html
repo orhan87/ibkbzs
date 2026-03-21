@@ -474,6 +474,16 @@ function _bakimSayfasiGoster(mesaj, logo) {
         <div style="font-size:.72rem;color:var(--g600);font-weight:600;margin-bottom:4px;">Aktif Takip (TL)</div>
         <div style="font-size:1.3rem;font-weight:700;color:var(--ok);" id="ozTutarTlAktif">—</div>
       </div>
+      <div style="padding:14px;background:#fef2f2;border-radius:8px;border-left:3px solid #f87171;">
+        <div style="font-size:.72rem;color:#b91c1c;font-weight:600;margin-bottom:4px;">📋 Bekleyen İBKB (USD)</div>
+        <div style="font-size:1.3rem;font-weight:700;color:#b91c1c;" id="ozIbkbUsd">—</div>
+        <div style="font-size:.7rem;color:#9f1239;margin-top:2px;">Muaf dilim düşülmüş, aktif kayıtlar</div>
+      </div>
+      <div style="padding:14px;background:#fff7ed;border-radius:8px;border-left:3px solid #f97316;">
+        <div style="font-size:.72rem;color:#c2410c;font-weight:600;margin-bottom:4px;">⏰ Bu Ay Dolacak (adet)</div>
+        <div style="font-size:1.3rem;font-weight:700;color:#c2410c;" id="ozBuAyDolacak">—</div>
+        <div style="font-size:.7rem;color:#9a3412;margin-top:2px;">Son 30 gün içinde kapanacak</div>
+      </div>
     </div>
   </div>
 
@@ -492,7 +502,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
       <div style="background:var(--blue3);border:1px solid #bfdbfe;border-radius:8px;padding:14px 16px;margin-bottom:16px;">
         <div style="font-size:.82rem;font-weight:700;color:#1e3a8a;margin-bottom:8px;">📋 Desteklenen Format (CSV veya Excel)</div>
         <div style="font-size:.78rem;color:#1e40af;font-family:monospace;background:#fff;padding:8px 12px;border-radius:6px;border:1px solid #bfdbfe;white-space:nowrap;overflow-x:auto;">
-          beyanname_no | ihracat_tarihi | ulke | alici_firma | tutar_usd | tutar_tl | notlar
+          beyanname_no | ihracat_tarihi | ulke | alici_firma | tutar_usd | tutar_tl | onceki_ibkb | ihtarname_tarihi | notlar
         </div>
         <div style="font-size:.75rem;color:#3b82f6;margin-top:8px;">
           ⚠ ihracat_tarihi formatı: YYYY-MM-DD (örn: 2025-01-15) &nbsp;·&nbsp; tutar_usd veya tutar_tl'den en az biri zorunlu &nbsp;·&nbsp; ilk satır başlık olabilir
@@ -524,7 +534,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
       <!-- Manuel giriş -->
       <div style="margin-bottom:12px;">
         <div style="font-size:.78rem;font-weight:600;color:var(--g600);margin-bottom:6px;">veya CSV içeriğini doğrudan yapıştırın:</div>
-        <textarea id="topluMetinAlani" rows="6" placeholder="beyanname_no,ihracat_tarihi,ulke,alici_firma,tutar_usd,tutar_tl,notlar&#10;23EX001,2025-01-15,Almanya,ABC GmbH,50000,,&#10;23EX002,2025-02-10,Fransa,XYZ SA,,800000," style="width:100%;font-size:.8rem;font-family:monospace;padding:10px;border:1.5px solid var(--g200);border-radius:8px;resize:vertical;box-sizing:border-box;"></textarea>
+        <textarea id="topluMetinAlani" rows="6" placeholder="beyanname_no,ihracat_tarihi,ulke,alici_firma,tutar_usd,tutar_tl,onceki_ibkb,ihtarname_tarihi,notlar&#10;23000001EX001234,2025-01-15,Almanya,ABC GmbH,50000,,,, &#10;23000001EX005678,2025-02-10,Fransa,XYZ SA,,800000,,," style="width:100%;font-size:.8rem;font-family:monospace;padding:10px;border:1.5px solid var(--g200);border-radius:8px;resize:vertical;box-sizing:border-box;"></textarea>
       </div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -578,7 +588,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
           </div>
           <div class="fg">
             <label>İhracat Tarihi *</label>
-            <input type="date" id="f-tarih" required>
+            <input type="date" id="f-tarih" required onchange="sonTarihGoster('f-tarih','f-son-tarih-hint')">
+            <span id="f-son-tarih-hint" style="font-size:.75rem;color:var(--g500);margin-top:2px;display:none;"></span>
           </div>
           <div class="fg">
             <label>İhracat Ülkesi *</label>
@@ -689,7 +700,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
       </div>
       <div class="fg">
         <label>İhracat Tarihi *</label>
-        <input type="date" id="d-tarih" required>
+        <input type="date" id="d-tarih" required onchange="sonTarihGoster('d-tarih','d-son-tarih-hint')">
+        <span id="d-son-tarih-hint" style="font-size:.75rem;color:var(--g500);margin-top:2px;display:none;"></span>
       </div>
       <div class="fg">
         <label>İhracat Ülkesi *</label>
@@ -958,6 +970,15 @@ document.addEventListener('DOMContentLoaded', function() {
   _ulkeleriDoldur('d-ulke');
 });
 
+
+// ── BEYANNAME FORMAT KONTROLÜ ──────────────────────────────────────────────
+function beyannoKontrol(no){
+  if(!no) return null; // boş — opsiyonel alan
+  return /^\d{8}[A-Z]{2}\d{6}$/.test(no.trim().toUpperCase())
+    ? null  // geçerli
+    : 'Beyanname numarası geçersiz. Beklenen format: 23000001EX001234 (8 rakam + 2 harf + 6 rakam)';
+}
+
 // ── SAYI FORMATLAMA (Türk sistemi) ─────────────────────────────────────────
 function sayiFormatla(el){
   let v = el.value.replace(/[^0-9,]/g, '');
@@ -1014,7 +1035,37 @@ const SB_URL = 'https://ydhzektalfhojnmznvji.supabase.co';
 const SB_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 const TOKEN  = sessionStorage.getItem('govdag_token');
 const EMAIL  = sessionStorage.getItem('govdag_email') || '';
-const GUN_180 = 180;
+// GUN_180: admin paneli Hesaplama sekmesindeki 'gun' sabitinden okunur (varsayılan 180)
+const GUN_180 = (function(){
+  try{
+    var _c = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    return (_c.sabitler && _c.sabitler.gun) ? Number(_c.sabitler.gun) : 180;
+  }catch(e){ return 180; }
+})();
+
+// ── SON TARİH GÖSTER ───────────────────────────────────────────────────────
+function sonTarihGoster(inputId, hintId){
+  var v = document.getElementById(inputId).value;
+  var hint = document.getElementById(hintId);
+  if(!hint) return;
+  if(!v){ hint.style.display='none'; return; }
+  var d = new Date(v + 'T00:00:00');
+  var son = new Date(d.getTime() + GUN_180 * 86400000);
+  var simdi = new Date(); simdi.setHours(0,0,0,0);
+  var kalan = Math.round((son - simdi) / 86400000);
+  var sonStr = son.toLocaleDateString('tr-TR', {day:'2-digit', month:'long', year:'numeric'});
+  hint.style.display = 'block';
+  if(kalan < 0){
+    hint.style.color = '#dc2626';
+    hint.textContent = '\u26a0 Son tarih: ' + sonStr + ' (üzerinden ' + Math.abs(kalan) + ' gün geçti)';
+  } else if(kalan <= 30){
+    hint.style.color = '#d97706';
+    hint.textContent = '\u26a0 Son tarih: ' + sonStr + ' (' + kalan + ' gün kaldı)';
+  } else {
+    hint.style.color = '#059669';
+    hint.textContent = '\u2713 Son tarih: ' + sonStr + ' (' + kalan + ' gün)';
+  }
+}
 
 // ── YARDIMCI ────────────────────────────────────────────────────────────────
 function toast(msg, sure=2800){
@@ -1429,13 +1480,17 @@ function topluCsvParse(text){
   for(var i=startIdx; i<lines.length; i++){
     var cols = lines[i].split(/[,;\t]/);
     // Kolonlar: beyanname_no, ihracat_tarihi, ulke, alici_firma, tutar_usd, tutar_tl, notlar
-    var byn   = (cols[0]||'').trim();
-    var tarih = (cols[1]||'').trim();
-    var ulke  = (cols[2]||'').trim();
-    var firma = (cols[3]||'').trim();
-    var usd   = parseFloat((cols[4]||'').replace(/[^0-9.,]/g,'').replace(',','.')) || null;
-    var tl    = parseFloat((cols[5]||'').replace(/[^0-9.,]/g,'').replace(',','.')) || null;
-    var notlar= (cols[6]||'').trim();
+    var byn      = (cols[0]||'').trim();
+    var tarih    = (cols[1]||'').trim();
+    var ulke     = (cols[2]||'').trim();
+    var firma    = (cols[3]||'').trim();
+    var usd      = parseFloat((cols[4]||'').replace(/[^0-9.,]/g,'').replace(',','.')) || null;
+    var tl       = parseFloat((cols[5]||'').replace(/[^0-9.,]/g,'').replace(',','.')) || null;
+    var onceki   = parseFloat((cols[6]||'').replace(/[^0-9.,]/g,'').replace(',','.')) || null;
+    var ihtarname= (cols[7]||'').trim() || null;
+    var notlar   = (cols[8]||'').trim();
+    // ihtarname_tarihi format kontrolü
+    if(ihtarname && !/^\d{4}-\d{2}-\d{2}$/.test(ihtarname)) ihtarname = null;
 
     // Validasyon
     var satirHata = [];
@@ -1446,7 +1501,7 @@ function topluCsvParse(text){
     if(!usd && !tl) satirHata.push('USD veya TL gerekli');
 
     veriler.push({
-      satir: i+1, byn, tarih, ulke, firma, usd, tl, notlar,
+      satir: i+1, byn, tarih, ulke, firma, usd, tl, onceki, ihtarname, notlar,
       hata: satirHata
     });
     if(satirHata.length) hatalar.push(i+1);
@@ -1484,6 +1539,8 @@ function topluOnizlemeGoster(hatalar){
       +'<td style="padding:6px 8px;color:#64748b;">'+(v.firma||'—')+'</td>'
       +'<td style="padding:6px 8px;text-align:right;">'+(v.usd?'$'+v.usd:'—')+'</td>'
       +'<td style="padding:6px 8px;text-align:right;">'+(v.tl?'₺'+v.tl:'—')+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;color:#64748b;">'+(v.onceki?'$'+v.onceki:'—')+'</td>'
+      +'<td style="padding:6px 8px;color:#64748b;">'+(v.ihtarname||'—')+'</td>'
       +'<td style="padding:6px 8px;">'
         +(hasHata
           ? '<span style="color:#dc2626;font-size:.72rem;">'+v.hata.join(', ')+'</span>'
@@ -1526,6 +1583,8 @@ async function topluKaydet(){
         alici_firma: v.firma||null,
         tutar_usd: v.usd,
         tutar_tl: v.tl,
+        onceki_ibkb: v.onceki||null,
+        ihtarname_tarihi: v.ihtarname||null,
         notlar: v.notlar||null,
       });
       basarili++;
@@ -1546,10 +1605,10 @@ async function topluKaydet(){
 }
 
 function topluSablonIndir(){
-  var csv = 'beyanname_no,ihracat_tarihi,ulke,alici_firma,tutar_usd,tutar_tl,notlar\n'
-    + '23000001EX001234,2025-01-15,Almanya,ABC GmbH,50000,,\n'
-    + '23000001EX005678,2025-02-10,Fransa,XYZ SA,,800000,\n'
-    + '23000001EX009012,2025-03-01,Amerika Birleşik Devletleri,DEF Inc,125000,4000000,İlk ödeme alındı\n';
+  var csv = 'beyanname_no,ihracat_tarihi,ulke,alici_firma,tutar_usd,tutar_tl,onceki_ibkb,ihtarname_tarihi,notlar\n'
+    + '23000001EX001234,2025-01-15,Almanya,ABC GmbH,50000,,,, \n'
+    + '23000001EX005678,2025-02-10,Fransa,XYZ SA,,800000,,,\n'
+    + '23000001EX009012,2025-03-01,Amerika Birleşik Devletleri,DEF Inc,125000,4000000,5000,,İlk ödeme alındı\n';
   var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1564,7 +1623,7 @@ function topluExcelSablonIndir(){
     + '<Styles><Style ss:ID="h"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0F172A" ss:Pattern="Solid"/></Style></Styles>'
     + '<Worksheet ss:Name="İhracat Takip"><Table>'
     + '<Row ss:StyleID="h">'
-    + ['beyanname_no','ihracat_tarihi','ulke','alici_firma','tutar_usd','tutar_tl','notlar']
+    + ['beyanname_no','ihracat_tarihi','ulke','alici_firma','tutar_usd','tutar_tl','onceki_ibkb','ihtarname_tarihi','notlar']
         .map(function(b){ return '<Cell><Data ss:Type="String">'+b+'</Data></Cell>'; }).join('')
     + '</Row>'
     + '<Row><Cell><Data ss:Type="String">23000001EX001234</Data></Cell>'
@@ -1751,6 +1810,24 @@ function ozetGuncelle(){
   _el = document.getElementById('ozTutarTlTum');    if(_el) _el.textContent = _fmtPara(_tutarTlTum,'₺');
   _el = document.getElementById('ozTutarUsdAktif'); if(_el) _el.textContent = _fmtPara(_tutarUsdAktif,'$');
   _el = document.getElementById('ozTutarTlAktif');  if(_el) _el.textContent = _fmtPara(_tutarTlAktif,'₺');
+
+  // Bekleyen İBKB tutarı — aktif kayıtlar, eşik üstü, muaf dilim düşülmüş
+  var _ibkbUsd = 0;
+  var _buAyDolacak = 0;
+  var _simdi = new Date(); _simdi.setHours(0,0,0,0);
+  _kayitlar.forEach(function(k){
+    if(k.kapatildi || k.durum==='kapali' || k.durum==='ceza') return;
+    var _usd = parseFloat(k.tutar_usd)||0;
+    var _mat = Math.max(0, _usd - 15000);  // 15.000 USD muaf dilim
+    _ibkbUsd += _mat;
+    // Bu ay dolacak: 0-30 gün arası
+    var _gun = kalanGun(k.ihracat_tarihi);
+    if(_gun !== null && _gun >= 0 && _gun <= 30) _buAyDolacak++;
+  });
+  _el = document.getElementById('ozIbkbUsd');
+  if(_el) _el.textContent = _ibkbUsd > 0 ? '$'+_ibkbUsd.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+  _el = document.getElementById('ozBuAyDolacak');
+  if(_el) _el.textContent = _buAyDolacak > 0 ? _buAyDolacak : '—';
 }
 
 // ── LİSTELE ────────────────────────────────────────────────────────────────────
@@ -1962,6 +2039,8 @@ async function kaydetIhracat(e){
   if(!userId){ cikisYap(); return; }
   const beyanname = document.getElementById('f-beyanname').value.trim();
   if(!beyanname){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ Beyanname numarası zorunludur.'; return; }
+  const _beyanErr = beyannoKontrol(beyanname);
+  if(_beyanErr){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ '+_beyanErr; return; }
   const tarih = document.getElementById('f-tarih').value;
   if(!tarih){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ İhracat tarihi zorunludur.'; return; }
   const ulke  = document.getElementById('f-ulke').value.trim();
@@ -2050,6 +2129,7 @@ function duzenle(id){
   document.getElementById('d-onceki-ibkb').value  = k.onceki_ibkb||'';
   document.getElementById('d-ihtarname').value    = k.ihtarname_tarihi||'';
   document.getElementById('duzenleModal').classList.add('ac');
+  sonTarihGoster('d-tarih','d-son-tarih-hint');
 }
 
 async function duzenleKaydet(){
@@ -2057,6 +2137,8 @@ async function duzenleKaydet(){
   const tarih = document.getElementById('d-tarih').value;
   const ulke  = document.getElementById('d-ulke').value.trim();
   if(!tarih||!ulke){ toast('⚠ Tarih ve ülke zorunludur'); return; }
+  const _dBeyanErr = beyannoKontrol(document.getElementById('d-beyanname').value.trim());
+  if(_dBeyanErr){ toast('⚠ '+_dBeyanErr); return; }
   try{
     await sbPatch(id, {
       beyanname_no: document.getElementById('d-beyanname').value.trim()||null,

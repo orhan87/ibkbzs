@@ -817,7 +817,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
 
           <div class="fgg">
             <label>Beyanname Numarası</label>
-            <input type="text" id="beyanname" placeholder="Örn: 24010100EX123456" oninput="beyannameLinkGuncelle()">
+            <input type="text" id="beyanname" placeholder="Örn: 24010100EX123456" oninput="beyannoGuncelle()">
+            <span id="beyannoHint" style="display:none;font-size:.75rem;margin-top:3px;font-weight:600;"></span>
             <span class="fnot" id="beyannameLinkWrap" style="display:none;">
               🔍 <a id="beyannameLinkEl" href="#" target="_blank" rel="noopener">GTB Beyanname Sorgulama</a> sayfasında kapanma tarihini sorgulayabilirsiniz.
             </span>
@@ -1564,6 +1565,25 @@ function muafiyetGoster(k){
 
 // ─── TARİH FORMAT ────────────────────────────────────────────────────────────
 // ─── SAYI FORMAT (Türkçe: 1.234.567,89) ─────────────────────────────────────
+// ── BEYANNAME FORMAT KONTROLÜ ────────────────────────────────────────────
+function beyannoKontrol(no){
+  if(!no) return null;
+  return /^\d{8}[A-Z]{2}\d{6}$/.test(no.trim().toUpperCase()) ? null
+    : 'Beklenen format: 23000001EX001234 (8 rakam + 2 harf + 6 rakam)';
+}
+function beyannoGuncelle(){
+  beyannameLinkGuncelle();
+  var el = document.getElementById('beyanname');
+  var hint = document.getElementById('beyannoHint');
+  if(!el || !hint) return;
+  var v = el.value.trim();
+  if(!v){ hint.style.display='none'; return; }
+  var err = beyannoKontrol(v);
+  hint.style.display = 'block';
+  hint.style.color = err ? '#dc2626' : '#059669';
+  hint.textContent = err ? '\u26a0 ' + err : '\u2713 Format ge\u00e7erli';
+}
+
 function sayiFormatla(el){
   // Ham değeri al: sadece rakam ve virgül kalsın
   let v = el.value.replace(/[^0-9,]/g, '');
@@ -2028,6 +2048,7 @@ function hesaplaCore(){
         <div class="pdf-btn-row" style="gap:10px;flex-wrap:wrap;">
           <button class="pdf-dl-btn" style="background:#1a2540;color:#fff;" onclick="sonucKopyala()" title="Hesaplama özetini panoya kopyala"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Kopyala</button>
           <button class="pdf-dl-btn" onclick="sayfaPdfIndir()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 17h8v1.5H8V17zm0-3h8v1.5H8V14zm0-3h3v1.5H8V11z"/></svg>Hesaplamayı PDF Olarak Kaydet</button>
+          <button class="pdf-dl-btn" id="takibeEkleBtn" onclick="takibeEkle()" style="background:#14532d;border-color:rgba(255,255,255,.08);order:-1;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>📦 Takibe Ekle</button>
           <button class="pdf-dl-btn" id="hataBildirBtn" onclick="hataBildir()" style="background:#7f1d1d;border-color:rgba(255,255,255,.08);"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Hata Bildir</button>
         </div>
       </div>
@@ -2055,6 +2076,16 @@ function hesaplaCore(){
     bar.appendChild(btn);
     rEl.insertBefore(bar, rEl.firstChild);
   })();
+
+  // Son hesap verisini takibeEkle için sakla
+  _sonHesap = {
+    beyanname:     byn || null,
+    tarihIso:      tarih,
+    ulke:          ulke || '',
+    bedelUsd:      para !== 'TRY' ? bedel * (KUR[para]||1) : 0,
+    bedelTl:       para === 'TRY' ? bedel : 0,
+    oncekiIbkbUsd: oncekiIbkbUSD > 0 ? oncekiIbkbUSD : 0,
+  };
 
   // Geçmişe kaydet
   try {
@@ -2203,6 +2234,43 @@ async function veriYedekIndir(){
     URL.revokeObjectURL(a.href);
   }catch(e){ alert('İndirme hatası: '+e.message); }
 }
+
+// ── TAKİBE EKLE ─────────────────────────────────────────────────────────────
+var _sonHesap = null;  // Son hesaplama verisi — takibeEkle için
+
+async function takibeEkle(){
+  if(!_sonHesap){ alert('Önce hesaplama yapın.'); return; }
+  var token = sessionStorage.getItem('govdag_token');
+  if(!token){ alert('Oturum bulunamadı. Lütfen tekrar giriş yapın.'); return; }
+  var userId = jwtUserId(token);
+  if(!userId){ alert('Oturum geçersiz.'); return; }
+  var btn = document.getElementById('takibeEkleBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Ekleniyor…'; }
+  try{
+    var body = {
+      user_id:       userId,
+      beyanname_no:  _sonHesap.beyanname || null,
+      ihracat_tarihi:_sonHesap.tarihIso,
+      ulke:          _sonHesap.ulke,
+      tutar_usd:     _sonHesap.bedelUsd > 0 ? _sonHesap.bedelUsd : null,
+      tutar_tl:      _sonHesap.bedelTl  > 0 ? _sonHesap.bedelTl  : null,
+      onceki_ibkb:   _sonHesap.oncekiIbkbUsd > 0 ? _sonHesap.oncekiIbkbUsd : null,
+    };
+    var r = await fetch(SB_URL + '/rest/v1/ihracatlar', {
+      method: 'POST',
+      headers: {'apikey':SB_KEY,'Authorization':'Bearer '+token,
+                'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify(body)
+    });
+    if(!r.ok){ var t = await r.text(); throw new Error(t); }
+    if(btn){ btn.textContent = '✅ Takibe Eklendi'; btn.style.background='#166534'; btn.style.borderColor='#166534'; }
+    setTimeout(function(){ if(btn){ btn.disabled=false; btn.textContent='📦 Takibe Ekle'; btn.style.background=''; btn.style.borderColor=''; } }, 3000);
+  }catch(e){
+    if(btn){ btn.disabled=false; btn.textContent='📦 Takibe Ekle'; }
+    alert('Hata: ' + e.message);
+  }
+}
+
 
 function gecmiseKaydet(kayit){
   sorguGecmisi.unshift(kayit); // en yenisi başa
