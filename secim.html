@@ -158,8 +158,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
 <div class="kart">
   <img id="secimLogo" class="logo" alt="İBKB">
 
-  <h2>Hoş geldiniz</h2>
-  <p class="alt">Devam etmek istediğiniz modülü seçin</p>
+  <h2 id="secimBaslik">Hoş geldiniz</h2>
+  <p class="alt" id="secimAlt">Devam etmek istediğiniz modülü seçin</p>
 
   <!-- DUYURU -->
   <div id="duyuruKutu" class="duyuru-kutu">
@@ -187,18 +187,18 @@ function _bakimSayfasiGoster(mesaj, logo) {
   <!-- MODÜLLER -->
   <div class="grid">
     <a href="./index.html" class="modul modul-mavi">
-      <div class="modul-ikon ikon-mavi">🧮</div>
-      <div class="modul-baslik modul-baslik-mavi">İBKB Hesaplama</div>
-      <div class="modul-acik">İhracat bedeli zorunluluk sorgulama ve hesaplama</div>
+      <div class="modul-ikon ikon-mavi" id="secimMod1Ikon">🧮</div>
+      <div class="modul-baslik modul-baslik-mavi" id="secimMod1Baslik">İBKB Hesaplama</div>
+      <div class="modul-acik" id="secimMod1Acik">İhracat bedeli zorunluluk sorgulama ve hesaplama</div>
     </a>
     <a href="./takip.html" class="modul modul-altin">
-      <div class="modul-ikon ikon-altin">📦</div>
-      <div class="modul-baslik modul-baslik-altin">İhracat Takip</div>
-      <div class="modul-acik">180 gün süre takibi ve beyanname yönetimi</div>
+      <div class="modul-ikon ikon-altin" id="secimMod2Ikon">📦</div>
+      <div class="modul-baslik modul-baslik-altin" id="secimMod2Baslik">İhracat Takip</div>
+      <div class="modul-acik" id="secimMod2Acik">180 gün süre takibi ve beyanname yönetimi</div>
     </a>
   </div>
 
-  <p class="alt-not">Modüller arasında istediğiniz zaman geçiş yapabilirsiniz</p>
+  <p class="alt-not" id="secimAltNot">Modüller arasında istediğiniz zaman geçiş yapabilirsiniz</p>
 
   <button class="cikis-btn" onclick="cikisYap()">↩ Çıkış Yap</button>
 </div>
@@ -234,6 +234,19 @@ document.addEventListener('DOMContentLoaded', function(){
     if(logoEl && cfg.logo && cfg.logo.length > 10) logoEl.src = cfg.logo;
     else if(logoEl && typeof _LOGO_URI !== 'undefined' && _LOGO_URI) logoEl.src = _LOGO_URI;
     else if(logoEl) logoEl.style.display = 'none';
+
+    // Yönetilebilir metinler
+    var _sm = (cfg.metinler) || {};
+    var _sat = function(id, val){ var el=document.getElementById(id); if(el && val) el.textContent=val; };
+    _sat('secimBaslik',    _sm.secimBaslik);
+    _sat('secimAlt',       _sm.secimAlt);
+    _sat('secimAltNot',    _sm.secimAltNot);
+    _sat('secimMod1Ikon',  _sm.secimMod1Ikon);
+    _sat('secimMod1Baslik',_sm.secimMod1Baslik);
+    _sat('secimMod1Acik',  _sm.secimMod1Acik);
+    _sat('secimMod2Ikon',  _sm.secimMod2Ikon);
+    _sat('secimMod2Baslik',_sm.secimMod2Baslik);
+    _sat('secimMod2Acik',  _sm.secimMod2Acik);
 
     // Duyuru - tip bazlı ikon ve başlık
     var d = cfg.duyuru;

@@ -234,6 +234,20 @@ if(!sessionStorage.getItem('govdag_token')){
               var _telR = _tel.replace(/[^+0-9]/g,'');
               _il.innerHTML = '<a href="mailto:'+_ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;">📧 '+_ep+'</a>'
             }
+            // Yeni form alan etiketleri
+            var _lblMap = {
+              lblBeyanname:'lblBeyanname', lblTarih:'lblTarih', lblBedel:'lblBedel',
+              lblPara:'lblPara', lblKur:'lblKur', lblOnceki:'lblOnceki', lblUlke:'lblUlke'
+            };
+            Object.keys(_lblMap).forEach(function(k){
+              var _le = document.getElementById(_lblMap[k]);
+              if(_le && _m[k]) _le.childNodes[0] && (_le.childNodes[0].textContent = _m[k]);
+            });
+            // Form yardım notları
+            var _kurNEl = document.getElementById('kurNotEl');
+            if(_kurNEl && _m.kurNot) _kurNEl.textContent = _m.kurNot;
+            var _oncNEl = document.getElementById('oncekiIbkbNot');
+            if(_oncNEl && _m.oncekiNot) _oncNEl.textContent = _m.oncekiNot;
           }
           // Duyuru
           duyuruMevzuatGoster(_cfg);
@@ -816,8 +830,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
         <div class="fg">
 
           <div class="fgg">
-            <label>Beyanname Numarası</label>
-            <input type="text" id="beyanname" placeholder="Örn: 24010100EX123456" oninput="beyannoGuncelle()">
+            <label id="lblBeyanname">Beyanname Numarası</label>
+            <input type="text" id="beyanname" placeholder="Örn: 24010100EX123456" id="phBeyanname" oninput="beyannoGuncelle()">
             <span id="beyannoHint" style="display:none;font-size:.75rem;margin-top:3px;font-weight:600;"></span>
             <span class="fnot" id="beyannameLinkWrap" style="display:none;">
               🔍 <a id="beyannameLinkEl" href="#" target="_blank" rel="noopener">GTB Beyanname Sorgulama</a> sayfasında kapanma tarihini sorgulayabilirsiniz.
@@ -828,7 +842,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
           </div>
 
           <div class="fgg">
-            <label>İhracat Tarihi<span class="rs">*</span></label>
+            <label id="lblTarih">İhracat Tarihi<span class="rs">*</span></label>
             <div style="position:relative;display:flex;">
               <input type="text" id="tarih" required placeholder="GG.AA.YYYY" maxlength="10" autocomplete="off" style="width:100%;letter-spacing:.05em;padding-right:38px;" oninput="tarihFormatla(this)">
               <input type="date" id="tarihPicker" tabindex="-1" style="position:absolute;opacity:0;width:1px;height:1px;top:0;right:0;pointer-events:none;" onchange="tarihPickerSecildi(this.value)">
@@ -840,7 +854,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
           </div>
 
           <div class="fgg">
-            <label>İhracat Bedeli<span class="rs">*</span></label>
+            <label id="lblBedel">İhracat Bedeli<span class="rs">*</span></label>
             <input type="text" id="bedel" placeholder="0,00" inputmode="decimal" autocomplete="off" required oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
             <span class="fnot" id="bedelNotEl">📋 Beyannamenin <strong>22. hanesi</strong>nden alınız
               <button onclick="madde10Goster(event)" type="button" title="Madde 10 - Detay" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;vertical-align:middle;line-height:1;font-size:.8rem;color:#2563eb;font-weight:700;text-decoration:underline;font-family:inherit;">ℹ</button>
@@ -848,7 +862,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
           </div>
 
           <div class="fgg">
-            <label>Para Birimi</label>
+            <label id="lblPara">Para Birimi</label>
             <select id="para" onchange="paraSec(this.value)" style="width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:7px;font-size:.95rem;background:#fff;color:var(--g700);cursor:pointer;">
               <option value="USD">USD — Amerikan Doları</option>
               <option value="TRY">TRY — Türk Lirası</option>
@@ -856,19 +870,19 @@ function _bakimSayfasiGoster(mesaj, logo) {
           </div>
 
           <div class="fgg" id="kurAlani" style="display:none;">
-            <label>USD/TRY Kuru <span class="rs">*</span></label>
+            <label id="lblKur">USD/TRY Kuru <span class="rs">*</span></label>
             <input type="text" id="kurInput" placeholder="Örn: 38,50" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
-            <span class="fnot">💱 TL bedeli USD'ye çevirmek için güncel kuru giriniz (TCMB döviz satış kuru)</span>
+            <span class="fnot" id="kurNotEl">💱 TL bedeli USD'ye çevirmek için güncel kuru giriniz (TCMB döviz satış kuru)</span>
           </div>
 
           <div class="fgg full">
-            <label>Daha Önce Düzenlenen İBKB Tutarı</label>
+            <label id="lblOnceki">Daha Önce Düzenlenen İBKB Tutarı</label>
             <input type="text" id="oncekiIbkb" placeholder="0,00 — Yoksa boş bırakın" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onblur="sayiFormatlaBlur(this)">
             <span class="fnot" id="oncekiIbkbNot">💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz <strong>(USD cinsinden)</strong>. TL modunda girilen kur ile TL'ye çevrilerek matrahtan düşülür.</span>
           </div>
 
           <div class="fgg full">
-            <label>Hedef Ülke<span class="rs">*</span></label>
+            <label id="lblUlke">Hedef Ülke<span class="rs">*</span></label>
 
             <!-- Seçici paneli -->
             <div id="ulkePaneli" class="ulke-secici">

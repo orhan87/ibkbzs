@@ -223,7 +223,10 @@
       <button class="tab-btn" onclick="tab('ulkeler',this)">🌍 Ülkeler</button>
       <button class="tab-btn" onclick="tab('sabitler',this)">⚙ Hesaplama</button>
       <button class="tab-btn" onclick="tab('gorunum',this)" id="tabGorunum">🎨 Görünüm</button>
-      <button class="tab-btn" onclick="tab('icerik',this)">📝 İçerik</button>
+      <button class="tab-btn" onclick="tab('login',this)">🔐 Login</button>
+      <button class="tab-btn" onclick="tab('hesaplama',this)">🔢 Hesaplama</button>
+      <button class="tab-btn" onclick="tab('takip',this)">📦 Takip</button>
+      <button class="tab-btn" onclick="tab('secim',this)">🔀 Modül Seçim</button>
       <button class="tab-btn" onclick="tab('yayin',this)">📢 Yayın</button>
       <button class="tab-btn" onclick="tab('ticari',this)">💰 Ticari</button>
       <button class="tab-btn" onclick="tab('raporlar',this)" id="tabIstatistik">📋 Raporlar</button>
@@ -688,171 +691,227 @@
         <!-- FOOTER -->
 
     </div>
-    <div id="tab-icerik" class="tab-content">
+    <div id="tab-login" class="tab-content">
 
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>🖊 Sayfa Başlık & Hero Metinleri</h3><p>Ana sayfanın üst bölümündeki başlık ve açıklamalar</p></div></div>
-        <div class="pc-body">
-          <div class="metin-item">
-            <label>Tarayıcı Sekme Başlığı</label>
-            <input type="text" id="m-siteBaslik" placeholder="İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI">
-          </div>
-          <div class="metin-item">
-            <label>Hero Ana Başlık</label>
-            <input type="text" id="m-heroBaslik" placeholder="TCMB İBKB Zorunluluğu
-Sorgulama Yazılımı">
-          </div>
-          <div class="metin-item">
-            <label>Footer Yazısı</label>
-            <input type="text" id="m-footerYazi" placeholder="© 2026 İBKB Sorgulama">
-          </div>
-          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
-        </div>
-      </div>
-
-      <!-- İLETİŞİM & LİNKLER -->
-
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>📋 Form Uyarı Notları</h3><p>Form alanlarının altında görünen yardım metinleri</p></div></div>
-        <div class="pc-body">
-          <div class="metin-item">
-            <label>İhracat Tarihi Notu</label>
-            <textarea id="m-tarihNot" rows="2" placeholder="Lütfen ihracat tarihinizi doğru giriniz."></textarea>
-          </div>
-          <div class="metin-item">
-            <label>İhracat Bedeli Notu</label>
-            <textarea id="m-bedelNot" rows="2" placeholder="Bedel, Döviz Alım Belgesi tutarı ile uyumlu olmalıdır."></textarea>
-          </div>
-          <div class="metin-item">
-            <label>Hedef Ülke Notu</label>
-            <textarea id="m-ulkeNot" rows="2" placeholder="İBKB yükümlülüğü ülkeye göre değişiklik gösterebilir."></textarea>
-          </div>
-          <div class="metin-item">
-            <label>Disclaimer (Alt Bilgi Uyarısı)</label>
-            <textarea id="m-disclaimer" rows="3" placeholder="Bu araç yalnızca bilgilendirme amaçlıdır."></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
-        </div>
-      </div>
-
-      <!-- MUAFİYET METİNLERİ -->
-
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>🏷 Muafiyet Açıklama Metinleri</h3><p>Her kategori için sonuç ekranında gösterilen açıklamalar</p></div></div>
-        <div class="pc-body">
-          <div class="metin-item">
-            <label>EK-2 Muafiyet Açıklaması</label>
-            <textarea id="m-ek2" rows="2" placeholder="EK-2 formu açıklama metni..."></textarea>
-          </div>
-          <div class="metin-item">
-            <label>EK-3 Açıklaması</label>
-            <textarea id="m-ek3" rows="2" placeholder="EK-3 formu açıklama metni..."></textarea>
-          </div>
-          <div class="metin-item">
-            <label>Özel Ülke (Md.4/4) Açıklaması</label>
-            <textarea id="m-ozel" rows="3" placeholder="Özel not veya açıklama..."></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
-        </div>
-      </div>
-
-      <!-- SAYFA METİNLERİ -->
-
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>🔗 İletişim & Bağlantılar</h3><p>Footer iletişim bilgileri ve dış bağlantılar</p></div></div>
-        <div class="pc-body">
-          <div class="fg" style="margin-bottom:14px;">
-            <div class="fgg">
-              <label>İletişim E-postası</label>
-              <input type="email" id="m-iletisimEmail">
-            </div>
-            <div class="fgg">
-              <label>İletişim Telefonu</label>
-              <input type="text" id="m-iletisimTel">
-            </div>
-          </div>
-          <div class="metin-item">
-            <label>Döviz Dönüşüm Desteği Uygulama Talimatı URL</label>
-            <input type="url" id="m-destekUygulamaTalimat">
-            <p class="acik">Sonuç ekranındaki "Uygulama Talimatı (TCMB)" butonu</p>
-          </div>
-          <div class="metin-item">
-            <label>İhracat Genelgesi PDF URL</label>
-            <input type="url" id="m-genelgePdf">
-            <p class="acik">Disclaimer kutusundaki "İhracat Genelgesi ↗" bağlantısı</p>
-          </div>
-          <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
-        </div>
-      </div>
-
-      <!-- MEVZUAT DEĞİŞİKLİK BİLDİRİMİ -->
-
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>🔐 Giriş Sayfası Metinleri</h3><p>Login ekranında görünen yazılar</p></div></div>
-        <div class="pc-body">
-          <div class="metin-item">
-            <label>Tarayıcı Sekme Başlığı (Login)</label>
-            <input type="text" id="m-loginBaslik" placeholder="gövdağ — Giriş">
-          </div>
-          <div class="metin-item">
-            <label>Kart Üst Yazısı (Marka Alt Metni)</label>
-            <input type="text" id="m-loginAlt" placeholder="İBKB Zorunluluğu Sorgulama Yazılımı">
-          </div>
-          <div class="metin-item">
-            <label>🏷 Tanıtım Kutusu Metni</label>
-            <textarea id="m-tanitimMetin" rows="3" placeholder="Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak..."></textarea>
-            <p class="acik">Giriş sayfasındaki koyu tanıtım kutusunda görünür. Boş bırakılırsa varsayılan metin kullanılır.</p>
-          </div>
-          <div class="metin-item">
-            <label>Tanıtım Kutusunu Göster</label>
-            <select id="m-tanitimGoster">
-              <option value="evet">✅ Göster</option>
-              <option value="hayir">❌ Gizle</option>
-            </select>
-          </div>
-          <div class="metin-item">
-            <label>E-posta Alan Etiketi</label>
-            <input type="text" id="m-loginEpostaLabel" placeholder="E-posta Adresi">
-          </div>
-          <div class="metin-item">
-            <label>E-posta Placeholder</label>
-            <input type="text" id="m-loginEpostaPlaceholder" placeholder="ornek@sirket.com">
-          </div>
-          <div class="metin-item">
-            <label>Parola Alan Etiketi</label>
-            <input type="text" id="m-loginParolaLabel" placeholder="Parola">
-          </div>
-          <div class="metin-item">
-            <label>Giriş Butonu Yazısı</label>
-            <input type="text" id="m-loginBtnYazi" placeholder="Giriş Yap">
-          </div>
-          <div class="fg" style="margin-top:14px;">
-            <div class="fgg">
-              <label>İletişim E-posta (Login)</label>
-              <input type="email" id="m-loginEmail" placeholder="ornek@sirket.com">
-            </div>
-            <div class="fgg">
-              <label>İletişim Telefon (Login)</label>
-              <input type="text" id="m-loginTel" placeholder="+90 5xx xxx xx xx">
-            </div>
-          </div>
-          <div class="metin-item">
-            <label>Footer Yazısı (Login)</label>
-            <input type="text" id="m-loginFooter" placeholder="© 2026 gövdağ — Tüm hakları saklıdır.">
-          </div>
-          <div style="margin-top:14px;">
-            <button class="btn btn-primary" onclick="loginMetinleriKaydet()">💾 Kaydet</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- FİYAT KARTI -->
-      
-
-    <!-- İSTATİSTİK -->
-
+  <!-- ─── GİRİŞ SAYFASI METİNLERİ ─────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🔐 Giriş Formu Metinleri</h3><p>login.html üzerindeki yazılar</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Tarayıcı Sekme Başlığı (Login)</label><input type="text" id="m-loginBaslik" placeholder="gövdağ — Giriş"></div>
+      <div class="metin-item"><label>Kart Üst Yazısı (Marka Alt Metni)</label><input type="text" id="m-loginAlt" placeholder="İhracat bedeli zorunluluk sorgulama"></div>
+      <div class="metin-item"><label>E-posta Alan Etiketi</label><input type="text" id="m-loginEpostaLabel" placeholder="E-posta Adresi"></div>
+      <div class="metin-item"><label>E-posta Placeholder</label><input type="text" id="m-loginEpostaPlaceholder" placeholder="ornek@sirket.com"></div>
+      <div class="metin-item"><label>Parola Alan Etiketi</label><input type="text" id="m-loginParolaLabel" placeholder="Parola"></div>
+      <div class="metin-item"><label>Giriş Butonu Yazısı</label><input type="text" id="m-loginBtnYazi" placeholder="Giriş Yap"></div>
+      <div class="metin-item"><label>Footer Yazısı (Login)</label><input type="text" id="m-loginFooter" placeholder="© 2026 gövdağ"></div>
+      <div class="metin-item"><label>İletişim E-posta (Login)</label><input type="text" id="m-loginEmail" placeholder="destek@ibkbsorgulama.com"></div>
+      <div class="metin-item"><label>İletişim Telefon (Login)</label><input type="text" id="m-loginTel" placeholder="+90 5xx xxx xx xx"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
     </div>
-    <div id="tab-yayin" class="tab-content">
+  </div>
+
+  <!-- ─── TANITIM KUTUSU ───────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🏷 Tanıtım Kutusu</h3><p>Giriş sayfası sol panel içeriği</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Tanıtım Kutusu Metni</label><textarea id="m-tanitimMetin" rows="4" placeholder="Yazılımımız hakkında kısa tanıtım metni"></textarea></div>
+      <div class="metin-item">
+        <label>Tanıtım Kutusunu Göster</label>
+        <select id="m-tanitimGoster">
+          <option value="evet">✅ Göster</option>
+          <option value="hayir">❌ Gizle</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── FİYAT KARTI ──────────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>💰 Fiyat Bilgisi</h3><p>Login sayfasında görünen fiyat kartı</p></div></div>
+    <div class="pc-body">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+        <div style="flex:1;min-width:200px;">
+          <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Fiyat Kartını Göster</label>
+          <select id="m-fiyatGoster" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
+            <option value="evet">✅ Göster</option>
+            <option value="hayir">❌ Gizle</option>
+          </select>
+        </div>
+      </div>
+      <div class="metin-item"><label>Fiyat (örn: 1.000 TL veya 1.000 TL / Yıl)</label><input type="text" id="m-fiyatTutar" placeholder="1.000 TL"></div>
+      <div class="metin-item"><label>Süre / Açıklama (örn: 1 Yıllık Lisans)</label><input type="text" id="m-fiyatSure" placeholder="1 Yıllık Lisans"></div>
+      <div class="metin-item"><label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label><input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir"></div>
+      <div class="metin-item"><label>Alt Metin (opsiyonel — fiyat kartında fiyatın altında görünür)</label><input type="text" id="m-fiyatKdvNot" placeholder="Örn: KDV Dahil · Yıllık ödeme"></div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="tab-hesaplama" class="tab-content">
+
+  <!-- ─── SAYFA BAŞLIĞI ────────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🖊 Sayfa Başlık & Hero Metinleri</h3><p>index.html ana başlık ve site bilgileri</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Tarayıcı Sekme Başlığı</label><input type="text" id="m-siteBaslik" placeholder="İBKB Zorunluluğu Sorgulama"></div>
+      <div class="metin-item"><label>Hero Ana Başlık</label><input type="text" id="m-heroBaslik" placeholder="İhracat Bedeli Kabul Belgesi"></div>
+      <div class="metin-item"><label>Footer Yazısı</label><input type="text" id="m-footerYazi" placeholder="© 2026 gövdağ"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── FORM ALAN ETİKETLERİ ─────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>📋 Form Alan Etiketleri</h3><p>Hesaplama formundaki alan adları</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Beyanname Numarası Etiketi</label><input type="text" id="m-lblBeyanname" placeholder="Beyanname Numarası"></div>
+      <div class="metin-item"><label>İhracat Tarihi Etiketi</label><input type="text" id="m-lblTarih" placeholder="İhracat Tarihi*"></div>
+      <div class="metin-item"><label>İhracat Bedeli Etiketi</label><input type="text" id="m-lblBedel" placeholder="İhracat Bedeli*"></div>
+      <div class="metin-item"><label>Para Birimi Etiketi</label><input type="text" id="m-lblPara" placeholder="Para Birimi"></div>
+      <div class="metin-item"><label>USD/TRY Kuru Etiketi</label><input type="text" id="m-lblKur" placeholder="USD/TRY Kuru *"></div>
+      <div class="metin-item"><label>Önceki İBKB Tutarı Etiketi</label><input type="text" id="m-lblOnceki" placeholder="Daha Önce Düzenlenen İBKB Tutarı"></div>
+      <div class="metin-item"><label>Hedef Ülke Etiketi</label><input type="text" id="m-lblUlke" placeholder="Hedef Ülke*"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── FORM YARDIM NOTLARI ───────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>💬 Form Yardım Notları</h3><p>Alan altında görünen açıklama metinleri</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Tarih Notu</label><input type="text" id="m-tarihNot" placeholder="⚠ Beyannamenin kapanma tarihini giriniz"></div>
+      <div class="metin-item"><label>Bedel Notu</label><input type="text" id="m-bedelNot" placeholder="📋 Beyannamenin 22. hanesinden alınız"></div>
+      <div class="metin-item"><label>Kur Notu</label><input type="text" id="m-kurNot" placeholder="💱 TL bedeli USD'ye çevirmek için güncel kuru giriniz"></div>
+      <div class="metin-item"><label>Önceki İBKB Notu</label><input type="text" id="m-oncekiNot" placeholder="💡 Daha önce kısmi İBKB düzenlendiyse tutarı giriniz"></div>
+      <div class="metin-item"><label>Ülke Notu</label><input type="text" id="m-ulkeNot" placeholder="📋 Beyannamenin 17. hanesinden alınız"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── MUAFİYET AÇIKLAMALARI ─────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🏷 Muafiyet Açıklama Metinleri</h3><p>Hesaplama sonucu açıklama metinleri</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Disclaimer (Alt Bilgi Uyarısı)</label><textarea id="m-disclaimer" rows="3"></textarea></div>
+      <div class="metin-item"><label>EK-2 Muafiyet Açıklaması</label><textarea id="m-ek2" rows="2"></textarea></div>
+      <div class="metin-item"><label>EK-3 Açıklaması</label><textarea id="m-ek3" rows="2"></textarea></div>
+      <div class="metin-item"><label>Özel Ülke (Md.4/4) Açıklaması</label><textarea id="m-ozel" rows="2"></textarea></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── BAĞLANTILAR ───────────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🔗 İletişim & Bağlantılar</h3><p>Hesaplama sayfasındaki bağlantılar</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>İletişim E-postası</label><input type="text" id="m-iletisimEmail" placeholder="destek@ibkbsorgulama.com"></div>
+      <div class="metin-item"><label>İletişim Telefonu</label><input type="text" id="m-iletisimTel" placeholder="+90 5xx xxx xx xx"></div>
+      <div class="metin-item"><label>Döviz Dönüşüm Desteği Uygulama Talimatı URL</label><input type="text" id="m-destekUygulamaTalimat" placeholder="https://..."></div>
+      <div class="metin-item"><label>İhracat Genelgesi PDF URL</label><input type="text" id="m-genelgePdf" placeholder="https://..."></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="tab-takip" class="tab-content">
+
+  <!-- ─── HEADER ────────────────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🏷 Header Bilgileri</h3><p>takip.html üst başlık ve badge</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Sayfa Başlığı (Header)</label><input type="text" id="m-takipBaslik" placeholder="İhracat Takip Defteri"></div>
+      <div class="metin-item"><label>Badge Yazısı (örn: BETA)</label><input type="text" id="m-takipBadge" placeholder="BETA"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── PANEL BAŞLIKLARI ──────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>📋 Panel Başlıkları</h3><p>Takip sayfası bölüm başlıkları</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Toplu Veri Girişi Başlığı</label><input type="text" id="m-takipTopluBaslik" placeholder="📥 Toplu Veri Girişi"></div>
+      <div class="metin-item"><label>Yeni Kayıt Paneli Başlığı</label><input type="text" id="m-takipYeniBaslik" placeholder="➕ Yeni İhracat Kaydı"></div>
+      <div class="metin-item"><label>Liste Panel Başlığı</label><input type="text" id="m-takipListeBaslik" placeholder="📋 İhracat Takip Listesi"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── FORM ETİKETLERİ ───────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>📝 Form Alan Etiketleri</h3><p>Yeni kayıt ve düzenleme formundaki alan adları</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Beyanname No Etiketi</label><input type="text" id="m-takipLblBeyanname" placeholder="Beyanname No *"></div>
+      <div class="metin-item"><label>İhracat Tarihi Etiketi</label><input type="text" id="m-takipLblTarih" placeholder="İhracat Tarihi *"></div>
+      <div class="metin-item"><label>İhracat Ülkesi Etiketi</label><input type="text" id="m-takipLblUlke" placeholder="İhracat Ülkesi *"></div>
+      <div class="metin-item"><label>Alıcı Firma Etiketi</label><input type="text" id="m-takipLblFirma" placeholder="Alıcı Firma"></div>
+      <div class="metin-item"><label>Tutar USD Etiketi</label><input type="text" id="m-takipLblTutarUsd" placeholder="İhracat Tutarı (USD) *"></div>
+      <div class="metin-item"><label>Tutar TL Etiketi</label><input type="text" id="m-takipLblTutarTl" placeholder="İhracat Tutarı (TL) *"></div>
+      <div class="metin-item"><label>Önceki İBKB Etiketi</label><input type="text" id="m-takipLblOnceki" placeholder="Daha Önce Düzenlenen İBKB Tutarı (USD)"></div>
+      <div class="metin-item"><label>İhtarname Tarihi Etiketi</label><input type="text" id="m-takipLblIhtarname" placeholder="İhtarname Tebliğ Tarihi"></div>
+      <div class="metin-item"><label>İhtarname Notu</label><input type="text" id="m-takipIhtarNot" placeholder="📬 Girilirse 90 gün ek süre başlar"></div>
+      <div class="metin-item"><label>Notlar Etiketi</label><input type="text" id="m-takipLblNotlar" placeholder="Notlar"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── ÖZET KART ETİKETLERİ ──────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>📊 Özet Kart Etiketleri</h3><p>Üst kısımdaki istatistik kart yazıları</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Toplam İhracat Etiketi</label><input type="text" id="m-takipOzToplamLabel" placeholder="Toplam İhracat"></div>
+      <div class="metin-item"><label>Aktif Takip Etiketi</label><input type="text" id="m-takipOzAktifLabel" placeholder="Aktif Takip"></div>
+      <div class="metin-item"><label>30 Günde Dolacak Etiketi</label><input type="text" id="m-takipOzUyariLabel" placeholder="30 Günde Dolacak"></div>
+      <div class="metin-item"><label>Süresi Dolmuş Etiketi</label><input type="text" id="m-takipOzKritLabel" placeholder="Süresi Dolmuş"></div>
+      <div class="metin-item"><label>Kapatılan Etiketi</label><input type="text" id="m-takipOzKapaliLabel" placeholder="Kapatılan"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="tab-secim" class="tab-content">
+
+  <!-- ─── SAYFA METİNLERİ ───────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🔀 Modül Seçim Sayfası Metinleri</h3><p>secim.html üzerindeki yazılar</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>Hoşgeldiniz Başlığı</label><input type="text" id="m-secimBaslik" placeholder="Hoş geldiniz"></div>
+      <div class="metin-item"><label>Alt Metin</label><input type="text" id="m-secimAlt" placeholder="Devam etmek istediğiniz modülü seçin"></div>
+      <div class="metin-item"><label>Alt Not (altta küçük yazı)</label><input type="text" id="m-secimAltNot" placeholder="Modüller arasında istediğiniz zaman geçiş yapabilirsiniz"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── MODÜL KART 1 ─────────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>🧮 Modül Kart 1 — Hesaplama</h3><p>Sol modül kartı</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>İkon (emoji)</label><input type="text" id="m-secimMod1Ikon" placeholder="🧮"></div>
+      <div class="metin-item"><label>Başlık</label><input type="text" id="m-secimMod1Baslik" placeholder="İBKB Hesaplama"></div>
+      <div class="metin-item"><label>Açıklama</label><input type="text" id="m-secimMod1Acik" placeholder="İhracat bedeli zorunluluk sorgulama ve hesaplama"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ─── MODÜL KART 2 ─────────────────────────────────────────────────────── -->
+  <div class="panel-card">
+    <div class="pc-head"><div><h3>📦 Modül Kart 2 — Takip</h3><p>Sağ modül kartı</p></div></div>
+    <div class="pc-body">
+      <div class="metin-item"><label>İkon (emoji)</label><input type="text" id="m-secimMod2Ikon" placeholder="📦"></div>
+      <div class="metin-item"><label>Başlık</label><input type="text" id="m-secimMod2Baslik" placeholder="İhracat Takip"></div>
+      <div class="metin-item"><label>Açıklama</label><input type="text" id="m-secimMod2Acik" placeholder="180 gün süre takibi ve beyanname yönetimi"></div>
+      <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="tab-yayin" class="tab-content">
 
       <div class="panel-card" style="margin-top:16px;">
         <div class="pc-head"><div><h3>📢 Sistem Duyurusu</h3><p>Giriş yapan tüm kullanıcılara gösterilecek banner mesajı</p></div></div>
@@ -930,39 +989,6 @@ Sorgulama Yazılımı">
     </div>
     <div id="tab-ticari" class="tab-content">
 
-      <div class="panel-card">
-        <div class="pc-head"><div><h3>💰 Fiyat Bilgisi</h3><p>Login sayfasında görünen fiyat kartı</p></div></div>
-        <div class="pc-body">
-          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
-            <div style="flex:1;min-width:220px;">
-              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Fiyat Kartını Göster</label>
-              <select id="m-fiyatGoster" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
-                <option value="evet">✅ Göster</option>
-                <option value="hayir">❌ Gizle</option>
-              </select>
-            </div>
-          </div>
-          <div class="metin-item">
-            <label>Fiyat (örn: 1.000 TL veya 1.000 TL / Yıl)</label>
-            <input type="text" id="m-fiyatTutar" placeholder="1.000 TL">
-          </div>
-          <div class="metin-item">
-            <label>Süre / Açıklama (örn: 1 Yıllık Lisans)</label>
-            <input type="text" id="m-fiyatSure" placeholder="1 Yıllık Lisans">
-          </div>
-          <div class="metin-item">
-            <label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label>
-            <input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir">
-          </div>
-          <div class="metin-item">
-            <label>Alt Metin (opsiyonel — fiyat kartında fiyatın altında görünür)</label>
-            <input type="text" id="m-fiyatKdvNot" placeholder="Örn: KDV Dahil · Yıllık ödeme · %20 indirim">
-          </div>
-          <div style="margin-top:14px;">
-            <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
-          </div>
-        </div>
-      </div>
 
 <!-- EFT PANELİ -->
       <div class="panel-card">
@@ -1852,7 +1878,7 @@ function logoTabYukle(){
 function fiyatKaydet(){
   const cfg = depoyuYukle() || {};
   if(!cfg.metinler) cfg.metinler = {};
-  ['fiyatGoster','fiyatTutar','fiyatKdvDahil','fiyatSure','fiyatBadge','fiyatKdvNot'].forEach(k=>{
+  ['fiyatGoster','fiyatTutar','fiyatSure','fiyatBadge','fiyatKdvNot'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });
@@ -2044,7 +2070,21 @@ function icerikYukle(){
   // Görünüm yükleme (select'ler için)
   var _tg=document.getElementById('m-tanitimGoster'); if(_tg&&met.tanitimGoster) _tg.value=met.tanitimGoster;
   var _fg=document.getElementById('m-fiyatGoster'); if(_fg&&met.fiyatGoster) _fg.value=met.fiyatGoster;
-  var _fk=document.getElementById('m-fiyatKdvDahil'); if(_fk&&met.fiyatKdvDahil) _fk.value=met.fiyatKdvDahil;
+  // fiyatKdvDahil kaldırıldı — fiyatKdvNot kullanılıyor
+  // Yeni alanlar
+  var _nk=['kurNot','oncekiNot','lblBeyanname','lblTarih','lblBedel','lblPara','lblKur','lblOnceki','lblUlke',
+    'takipBaslik','takipBadge','takipTopluBaslik','takipYeniBaslik','takipListeBaslik',
+    'takipLblBeyanname','takipLblTarih','takipLblUlke','takipLblFirma',
+    'takipLblTutarUsd','takipLblTutarTl','takipLblOnceki','takipLblIhtarname',
+    'takipIhtarNot','takipLblNotlar',
+    'takipOzToplamLabel','takipOzAktifLabel','takipOzUyariLabel','takipOzKritLabel','takipOzKapaliLabel',
+    'secimBaslik','secimAlt','secimAltNot',
+    'secimMod1Ikon','secimMod1Baslik','secimMod1Acik',
+    'secimMod2Ikon','secimMod2Baslik','secimMod2Acik'];
+  _nk.forEach(function(k){
+    var _e = document.getElementById('m-'+k);
+    if(_e) _e.value = met[k] || '';
+  });
 }
 
 function yayinYukle(){
@@ -2188,7 +2228,10 @@ function degisiklikleriKaydet(){
   var id = aktifTab.id;
   if(id==='tab-sabitler')  { sabitleriKaydet(); kurlariKaydet(); }
   else if(id==='tab-gorunum') gorununuKaydet();
-  else if(id==='tab-icerik')  metinleriKaydet();
+  else if(id==='tab-login')     { metinleriKaydet(); fiyatKaydet(); }
+  else if(id==='tab-hesaplama') { metinleriKaydet(); }
+  else if(id==='tab-takip')     { metinleriKaydet(); }
+  else if(id==='tab-secim')     { metinleriKaydet(); }
   else if(id==='tab-yayin')   { duyuruKaydet(); bakimKaydet(); }
   else if(id==='tab-ticari')  { fiyatKaydet(); eftKaydet(); }
   else toast('Bu sekmede otomatik kayıt desteklenmiyor.');
@@ -2211,7 +2254,10 @@ function tab(id, btn){
   }
   if(id==='raporlar')     { girisLogYukle(); istatistikYukle(); degisiklikLoguYukle(); }
   if(id==='gorunum')      { gorununuYukle(); logoTabYukle(); }
-  if(id==='icerik')       { icerikYukle(); }
+  if(id==='login')        { icerikYukle(); }
+  if(id==='hesaplama')    { icerikYukle(); }
+  if(id==='takip')        { icerikYukle(); }
+  if(id==='secim')        { icerikYukle(); }
   if(id==='yayin')        { yayinYukle(); }
   if(id==='ticari')       { eftYukle(); }
   if(id==='sistem')       { try{ var sb=sbCfg(); if(sb){ var u=document.getElementById('sb-url'); var k=document.getElementById('sb-key'); var s=document.getElementById('sb-service-key'); if(u&&!u.value)u.value=sb.url||''; if(k&&!k.value)k.value=sb.key||''; if(s&&!s.value)s.value=sb.serviceKey||''; }}catch(e){} }
@@ -3180,7 +3226,7 @@ function kurlariKaydet(){
 async function metinleriKaydet(){
   const cfg = depoyuYukle() || {};
   cfg.metinler = {};
-  ['tarihNot','bedelNot','ulkeNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatSure','fiyatBadge','fiyatKdvNot'].forEach(k=>{
+  ['tarihNot','bedelNot','ulkeNot','kurNot','oncekiNot','disclaimer','ek2','ek3','ozel','heroBaslik','siteBaslik','footerYazi','iletisimEmail','iletisimTel','destekUygulamaTalimat','genelgePdf','loginBaslik','loginAlt','tanitimMetin','tanitimGoster','loginEpostaLabel','loginEpostaPlaceholder','loginParolaLabel','loginBtnYazi','loginEmail','loginTel','loginFooter','fiyatGoster','fiyatTutar','fiyatSure','fiyatBadge','fiyatKdvNot','lblBeyanname','lblTarih','lblBedel','lblPara','lblKur','lblOnceki','lblUlke','takipBaslik','takipBadge','takipTopluBaslik','takipYeniBaslik','takipListeBaslik','takipLblBeyanname','takipLblTarih','takipLblUlke','takipLblFirma','takipLblTutarUsd','takipLblTutarTl','takipLblOnceki','takipLblIhtarname','takipIhtarNot','takipLblNotlar','takipOzToplamLabel','takipOzAktifLabel','takipOzUyariLabel','takipOzKritLabel','takipOzKapaliLabel','secimBaslik','secimAlt','secimAltNot','secimMod1Ikon','secimMod1Baslik','secimMod1Acik','secimMod2Ikon','secimMod2Baslik','secimMod2Acik'].forEach(k=>{
     const el = document.getElementById('m-'+k);
     if(el) cfg.metinler[k] = el.value;
   });

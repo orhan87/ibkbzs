@@ -113,6 +113,37 @@ if(!sessionStorage.getItem('govdag_token')){
         _gS.textContent=_gC;
         if(_gG.seoBaslik) document.title=_gG.seoBaslik+' — İhracat Takip';
       }
+      // Yönetilebilir metinler
+      var _met = _gcfg.metinler || {};
+      var _applyText = function(id, val){ var el=document.getElementById(id); if(el&&val) el.textContent=val; };
+      _applyText('takipBaslik',    _met.takipBaslik);
+      _applyText('takipBadge',     _met.takipBadge);
+      _applyText('takipTopluBaslik', _met.takipTopluBaslik);
+      _applyText('takipYeniBaslik',  _met.takipYeniBaslik);
+      _applyText('takipListeBaslik', _met.takipListeBaslik);
+      _applyText('takipIhtarNot',    _met.takipIhtarNot);
+      // Form label'ları
+      var _lblTak = {
+        'takipLblBeyanname':'f-beyanname-label','takipLblTarih':'f-tarih-label',
+        'takipLblUlke':'f-ulke-label','takipLblFirma':'f-firma-label',
+        'takipLblTutarUsd':'f-tutar-usd-label','takipLblTutarTl':'f-tutar-tl-label',
+        'takipLblOnceki':'f-onceki-ibkb-label','takipLblIhtarname':'f-ihtarname-label',
+        'takipLblNotlar':'f-notlar-label'
+      };
+      Object.keys(_lblTak).forEach(function(k){
+        var _le = document.getElementById(_lblTak[k]);
+        if(_le && _met[k]) _le.childNodes[0] && (_le.childNodes[0].textContent = _met[k]);
+      });
+      // Özet kart etiketleri
+      var _ozMap = {
+        'takipOzToplamLabel':'ozToplamLabel','takipOzAktifLabel':'ozAktifLabel',
+        'takipOzUyariLabel':'ozUyariLabel','takipOzKritLabel':'ozKritLabel',
+        'takipOzKapaliLabel':'ozKapaliLabel'
+      };
+      Object.keys(_ozMap).forEach(function(k){
+        var _le = document.getElementById(_ozMap[k]);
+        if(_le && _met[k]) _le.textContent = _met[k];
+      });
       duyuruMevzuatGoster(_gcfg);
     }catch(e){}
   });
@@ -396,8 +427,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
     <div class="hlogo">
       <img id="hdrLogo" alt="gövdag" style="height:30px;width:auto;"><script>(function(){var e=document.getElementById("hdrLogo");if(e&&typeof _LOGO_URI!=="undefined")e.src=_LOGO_URI;})();</script>
       <span class="hlogo-sep">|</span>
-      <span class="hlogo-title">İhracat Takip Defteri</span>
-      <span class="hlogo-badge">BETA</span>
+      <span class="hlogo-title" id="takipBaslik">İhracat Takip Defteri</span>
+      <span class="hlogo-badge" id="takipBadge">BETA</span>
     </div>
     <div class="hnav">
       <a href="./index.html" class="hnav-btn"><span class="nb-ikon">🧮</span> Hesaplama</a>
@@ -413,27 +444,27 @@ function _bakimSayfasiGoster(mesaj, logo) {
   <!-- ÖZET KARTLAR -->
   <div class="ozet-grid" id="ozetGrid">
     <div class="ozet-kart">
-      <span class="label">Toplam İhracat</span>
+      <span class="label" id="ozToplamLabel">Toplam İhracat</span>
       <span class="deger" id="ozToplamAdet">—</span>
       <span class="alt">kayıt</span>
     </div>
     <div class="ozet-kart ok">
-      <span class="label">Aktif Takip</span>
+      <span class="label" id="ozAktifLabel">Aktif Takip</span>
       <span class="deger" id="ozAktif">—</span>
       <span class="alt">açık ihracat</span>
     </div>
     <div class="ozet-kart uyari">
-      <span class="label">30 Günde Dolacak</span>
+      <span class="label" id="ozUyariLabel">30 Günde Dolacak</span>
       <span class="deger" id="ozUyari">—</span>
       <span class="alt">dikkat gerektiriyor</span>
     </div>
     <div class="ozet-kart krit">
-      <span class="label">Süresi Dolmuş</span>
+      <span class="label" id="ozKritLabel">Süresi Dolmuş</span>
       <span class="deger" id="ozKrit">—</span>
       <span class="alt">acil işlem gerekli</span>
     </div>
     <div class="ozet-kart">
-      <span class="label">Kapatılan</span>
+      <span class="label" id="ozKapaliLabel">Kapatılan</span>
       <span class="deger" id="ozKapali">—</span>
       <span class="alt">tamamlanan</span>
     </div>
@@ -491,7 +522,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
   <div class="panel" style="margin-bottom:24px;">
     <div class="panel-head" onclick="topluFormToggle()" style="cursor:pointer;user-select:none;">
       <div>
-        <h2>📥 Toplu Veri Girişi</h2>
+        <h2 id="takipTopluBaslik">📥 Toplu Veri Girişi</h2>
         <p>CSV veya Excel formatında birden fazla ihracat kaydı yükleyin</p>
       </div>
       <span id="topluToggleIkon" style="font-size:1.1rem;color:rgba(255,255,255,.7);">▼</span>
@@ -574,7 +605,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
   <div class="panel">
     <div class="panel-head" onclick="formToggle()" style="cursor:pointer;user-select:none;">
       <div>
-        <h2>➕ Yeni İhracat Kaydı</h2>
+        <h2 id="takipYeniBaslik">➕ Yeni İhracat Kaydı</h2>
         <p>İhracat bilgilerini girerek 180 günlük takip başlatın</p>
       </div>
       <span id="formToggleIkon" style="font-size:1.1rem;color:rgba(255,255,255,.7);">▼</span>
@@ -583,43 +614,43 @@ function _bakimSayfasiGoster(mesaj, logo) {
       <form onsubmit="kaydetIhracat(event)">
         <div class="form-grid">
           <div class="fg">
-            <label>Beyanname No <span style="color:var(--err);">*</span></label>
+            <label id="f-beyanname-label">Beyanname No <span style="color:var(--err);">*</span></label>
             <input type="text" id="f-beyanname" placeholder="23000000EX123456" required autocomplete="off">
           </div>
           <div class="fg">
-            <label>İhracat Tarihi *</label>
+            <label id="f-tarih-label">İhracat Tarihi *</label>
             <input type="date" id="f-tarih" required onchange="sonTarihGoster('f-tarih','f-son-tarih-hint')">
             <span id="f-son-tarih-hint" style="font-size:.75rem;color:var(--g500);margin-top:2px;display:none;"></span>
           </div>
           <div class="fg">
-            <label>İhracat Ülkesi *</label>
+            <label id="f-ulke-label">İhracat Ülkesi *</label>
             <select id="f-ulke" required>
               <option value="">— Ülke seçin —</option>
             </select>
           </div>
           <div class="fg">
-            <label>Alıcı Firma</label>
+            <label id="f-firma-label">Alıcı Firma</label>
             <input type="text" id="f-firma" placeholder="Firma adı">
           </div>
           <div class="fg">
-            <label>İhracat Tutarı (USD) <span style="color:var(--err);">*</span></label>
+            <label id="f-tutar-usd-label">İhracat Tutarı (USD) <span style="color:var(--err);">*</span></label>
             <input type="text" id="f-tutar-usd" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
           </div>
           <div class="fg">
-            <label>İhracat Tutarı (TL) <span style="color:var(--err);">*</span></label>
+            <label id="f-tutar-tl-label">İhracat Tutarı (TL) <span style="color:var(--err);">*</span></label>
             <input type="text" id="f-tutar-tl" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" onchange="tutarZorunluKontrol()">
           </div>
           <div class="fg">
-            <label>Daha Önce Düzenlenen İBKB Tutarı (USD)</label>
+            <label id="f-onceki-ibkb-label">Daha Önce Düzenlenen İBKB Tutarı (USD)</label>
             <input type="text" id="f-onceki-ibkb" placeholder="0,00" inputmode="decimal" autocomplete="off" oninput="sayiFormatla(this)" title="Varsa daha önce düzenlenen İBKB tutarını girin">
           </div>
           <div class="fg">
-            <label>İhtarname Tebliğ Tarihi</label>
+            <label id="f-ihtarname-label">İhtarname Tebliğ Tarihi</label>
             <input type="date" id="f-ihtarname" title="Vergi dairesinden ihtarname alındıysa tebliğ tarihini girin. Bu tarihten itibaren 90 gün ek süre başlar.">
-            <span style="font-size:.72rem;color:var(--g500);margin-top:2px;">📬 Girilirse 90 gün ek süre başlar</span>
+            <span style="font-size:.72rem;color:var(--g500);margin-top:2px;" id="takipIhtarNot">📬 Girilirse 90 gün ek süre başlar</span>
           </div>
           <div class="fg" style="grid-column:1/-1;">
-            <label>Notlar</label>
+            <label id="f-notlar-label">Notlar</label>
             <textarea id="f-notlar" placeholder="Opsiyonel not..."></textarea>
           </div>
         </div>
@@ -638,7 +669,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
   <div class="panel">
     <div class="panel-head">
       <div>
-        <h2>📋 İhracat Takip Listesi</h2>
+        <h2 id="takipListeBaslik">📋 İhracat Takip Listesi</h2>
         <p id="listeAlt">Yükleniyor…</p>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
@@ -2039,8 +2070,7 @@ async function kaydetIhracat(e){
   if(!userId){ cikisYap(); return; }
   const beyanname = document.getElementById('f-beyanname').value.trim();
   if(!beyanname){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ Beyanname numarası zorunludur.'; return; }
-  const _beyanErr = beyannoKontrol(beyanname);
-  if(_beyanErr){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ '+_beyanErr; return; }
+
   const tarih = document.getElementById('f-tarih').value;
   if(!tarih){ msg.style.display='block';msg.style.color='var(--err)';msg.textContent='⚠ İhracat tarihi zorunludur.'; return; }
   const ulke  = document.getElementById('f-ulke').value.trim();
@@ -2137,8 +2167,7 @@ async function duzenleKaydet(){
   const tarih = document.getElementById('d-tarih').value;
   const ulke  = document.getElementById('d-ulke').value.trim();
   if(!tarih||!ulke){ toast('⚠ Tarih ve ülke zorunludur'); return; }
-  const _dBeyanErr = beyannoKontrol(document.getElementById('d-beyanname').value.trim());
-  if(_dBeyanErr){ toast('⚠ '+_dBeyanErr); return; }
+
   try{
     await sbPatch(id, {
       beyanname_no: document.getElementById('d-beyanname').value.trim()||null,
