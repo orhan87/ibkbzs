@@ -351,6 +351,26 @@ const SUPABASE_KEY = 'sb_publishable_UQ0Cp8R_d4BrKS1z4ZX0DA_eb6sBbOg';
 let sbUrl = SUPABASE_URL;
 let sbKey  = SUPABASE_KEY;
 
+
+function hataGoster(msg){
+  var el = document.getElementById('hataKutu');
+  var ml = document.getElementById('hataMesaj');
+  if(ml) ml.textContent = msg;
+  if(el) el.style.display = 'flex';
+}
+
+function hataGizle(){
+  var el = document.getElementById('hataKutu');
+  if(el) el.style.display = 'none';
+  var ml = document.getElementById('hataMesaj');
+  if(ml) ml.textContent = '';
+  // Input hata sınıflarını kaldır
+  ['eposta','parola'].forEach(function(id){
+    var inp = document.getElementById(id);
+    if(inp) inp.classList.remove('hata');
+  });
+}
+
 window.onload = function(){
   // Zaten giriş yapılmışsa yönlendir
   var token = sessionStorage.getItem('govdag_token');
