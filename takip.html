@@ -124,12 +124,12 @@ if(!sessionStorage.getItem('govdag_token')){
 @keyframes _fadeIn{from{opacity:0}to{opacity:1}}
 body{opacity:0;}
 :root{
-  --navy:#0f172a;--navy2:var(--navy2);--navy3:var(--navy3);
+  --navy:#0f172a;--navy2:#1e293b;--navy3:#334155;
   --blue:#2563eb;--blue2:#3b82f6;--blue3:#eff6ff;
   --gold:#d97706;--gold2:#f59e0b;
   --bg:#f0f4f8;--white:#fff;
-  --g50:var(--g50);--g100:var(--g100);--g200:var(--g200);--g300:#cbd5e1;
-  --g400:var(--g400);--g500:var(--g500);--g600:var(--g600);--g700:var(--navy3);
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
+  --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;
   --ok:#059669;--ok-bg:#ecfdf5;--ok2:#d1fae5;
   --err:#dc2626;--err-bg:#fef2f2;--err2:#fee2e2;
   --warn:#d97706;--warn-bg:#fffbeb;--warn2:#fef3c7;
@@ -140,8 +140,8 @@ body{opacity:0;}
   --border:#e2e8f0;
   --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
   --radius:12px;
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-*{box-sizing:border-box;margin:0;padding:0;}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{
   font-family:'DM Sans',sans-serif;
   background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);
@@ -149,6 +149,7 @@ body{
   color:var(--navy2);
   opacity:0;
   transition:opacity .3s;
+}
 /* HEADER */
 header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 .hi{max-width:1160px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;}
@@ -209,9 +210,7 @@ header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
 .fg input,.fg select,.fg textarea{
   padding:10px 14px;border:1.5px solid var(--g300);border-radius:8px;
   font-size:.85rem;font-family:inherit;color:var(--navy);background:#fff;
-  transition:.15s;outline:none;
-.fg input:focus,.fg select:focus,.fg textarea:focus{
-  border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);
+  transition:.15s;outline:none;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
 .fg textarea{resize:vertical;min-height:60px;}
 
@@ -226,7 +225,7 @@ thead th{
   font-weight:700;font-size:.71rem;
   text-transform:uppercase;letter-spacing:.05em;
   white-space:nowrap;
-  border-right:1px solid rgba(255,255,255,.08);
+  border-right:1px solid rgba(255,255,255,.08);}
 tbody tr{border-bottom:1px solid var(--g100);transition:background .1s;}
 tbody tr:hover{background:var(--g50);}
 tbody td{padding:4px 8px;vertical-align:middle;font-size:.78rem;white-space:nowrap;}
@@ -234,7 +233,7 @@ tbody td{padding:4px 8px;vertical-align:middle;font-size:.78rem;white-space:nowr
 /* SÜRE BADGE */
 .sure-badge{
   display:inline-flex;align-items:center;gap:5px;
-  padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap;
+  padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap;}
 .sure-ok{background:#dcfce7;color:#15803d;}
 .sure-uyari{background:#fef9c3;color:#854d0e;}
 .sure-krit{background:#fee2e2;color:#b91c1c;}
@@ -262,7 +261,7 @@ tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
 /* MODAL */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;
-  display:none;align-items:center;justify-content:center;padding:20px;
+  display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.ac{display:flex;}
 .modal{background:#fff;border-radius:var(--radius);max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.18);padding:28px;max-height:90vh;overflow-y:auto;}
 .modal h3{font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:20px;
@@ -274,7 +273,7 @@ tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
 .filtre-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .filtre-bar input,.filtre-bar select{
   padding:7px 12px;border:1.5px solid var(--g200);border-radius:7px;
-  font-size:.82rem;font-family:inherit;outline:none;
+  font-size:.82rem;font-family:inherit;outline:none;}
 .filtre-bar input:focus,.filtre-bar select:focus{border-color:var(--blue);}
 
 /* TOAST */
@@ -282,7 +281,7 @@ tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
   position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
   background:var(--navy2);color:#fff;padding:10px 22px;border-radius:10px;
   font-size:.84rem;font-weight:600;z-index:9999;transition:.3s;opacity:0;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(0,0,0,.3);
+  box-shadow:0 4px 20px rgba(0,0,0,.3);}
 #toast.goster{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* RESPONSIVE */
@@ -292,6 +291,7 @@ tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
   .panel-head{flex-direction:column;align-items:flex-start;}
   thead th:nth-child(n+7){display:none;}
   tbody td:nth-child(n+7){display:none;}
+}
 /* ─── ORTAK BUTON SİSTEMİ ──────────────────────────────────────────────── */
 .ob{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;white-space:nowrap;transition:opacity .15s;}
 .ob:hover{opacity:.82;}
@@ -309,7 +309,6 @@ tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
 </style>
 <script>
 var _LOGO_URI="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+";
-</script>
 </script>
 
 <script>
@@ -335,15 +334,6 @@ function _bakimSayfasiGoster(mesaj, logo) {
 </script>
 </head>
 <body>
-<script>
-(function(){
-  try{
-    var _b=JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-    if(_b.bakim&&_b.bakim.aktif) _bakimSayfasiGoster(_b.bakim.mesaj||'',_b.logo||'');
-  }catch(e){}
-})();
-</script>
-
 <script>
 // SENKRON bakım kontrolü - flash önleme
 (function(){
@@ -2186,9 +2176,8 @@ function duzenle(id){
   document.getElementById('d-tutar-usd').value    = k.tutar_usd||'';
   document.getElementById('d-tutar-tl').value     = k.tutar_tl||'';
   document.getElementById('d-notlar').value       = k.notlar||'';
-  document.getElementById('d-ihtarname').value   = k.ihtarname_tarihi||'';
   document.getElementById('d-onceki-ibkb').value  = k.onceki_ibkb||'';
-  document.getElementById('d-ihtarname').value   = k.ihtarname_tarihi||'';
+  document.getElementById('d-ihtarname').value    = k.ihtarname_tarihi||'';
   document.getElementById('duzenleModal').classList.add('ac');
 }
 
