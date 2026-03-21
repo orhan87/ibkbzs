@@ -90,42 +90,83 @@
   }
   .cikis-btn:hover{color:rgba(255,255,255,.6);}
 </style>
-<script>var _LOGO_URI="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+";
+<script>
+var _LOGO_URI="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+";
+</script>
 
-function _bakimSayfasiGoster(mesaj, logo) {
-  var html = '<!DOCTYPE html><html lang="tr"><head>'
-    + '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    + '<title>Sistem Bakimda<\/title>'
-    + '<link rel="icon" type="image/png" href="/favicon.ico">'
-    + '<style>'
-    + '*{box-sizing:border-box;margin:0;padding:0;}'
-    + 'body{font-family:"DM Sans",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1a2f55 50%,#0f172a 100%);padding:24px;position:relative;overflow:hidden;}'
-    + 'body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(37,99,235,.15) 0%,transparent 70%);pointer-events:none;}'
-    + '.kart{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:52px 44px;max-width:460px;width:100%;text-align:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 25px 60px rgba(0,0,0,.4);}'
-    + '.ikon{width:64px;height:64px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.8rem;}'
-    + 'h1{color:#fff;font-size:1.5rem;font-weight:700;margin-bottom:12px;letter-spacing:-.02em;}'
-    + '.mesaj{color:#94a3b8;font-size:.95rem;line-height:1.7;margin-bottom:32px;white-space:pre-line;}'
-    + '.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.25);border-radius:100px;padding:8px 20px;color:#93c5fd;font-size:.82rem;font-weight:500;}'
-    + '.badge span{width:8px;height:8px;background:#3b82f6;border-radius:50%;animation:blink 1.4s ease-in-out infinite;display:inline-block;}'
-    + '@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}'
-    + '<\/style><\/head><body>'
-    + '<div class="kart">'
-    + '<div class="ikon">\uD83D\uDD27<\/div>'
-    + '<h1>Sistem Bak\u0131mda<\/h1>'
-    + '<p class="mesaj">' + (mesaj||'') + '<\/p>'
-    + '<div class="badge"><span><\/span>K\u0131sa s\u00fcre sonra tekrar deneyin<\/div>'
-    + '<\/div>'
-    + '<\/body><\/html>';
-  document.body.style.animation = 'none';
-  document.body.style.opacity = '1';
+
+<script>
+fu
+</script>
   document.open();
   document.write(html);
   document.close();
 }
 </script>
+<script>
+</script>
+<script>
+f
+</script>
+'
+    + '<div class="kart">'
+    + '<div class="ikon">\uD83D\uDD27</div>'
+    + '<h1>Sistem Bak\u0131mda</h1>'
+    + '<p class="mesaj">' + (mesaj || '') + '</p>'
+    + '<div class="badge"><span class="dot"></span>K\u0131sa s\u00fcre sonra tekrar deneyin</div>'
+    + '</div>'
+    + '<\/body><\/html>';
+  document.open(); document.write(html); document.close();
+}
+</script>
 
+<script>
+function _bakimSayfasiGoster(mesaj, logo) {
+  var s = document.createElement('style');
+  s.textContent = [
+    'body{overflow:hidden!important}',
+    '#_bm{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;',
+    'background:linear-gradient(135deg,#0f172a 0%,#1a2f55 50%,#0f172a 100%);font-family:"DM Sans",system-ui,sans-serif;padding:24px}',
+    '#_bk{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;',
+    'padding:52px 44px;max-width:460px;width:100%;text-align:center;',
+    'backdrop-filter:blur(12px);box-shadow:0 25px 60px rgba(0,0,0,.4)}',
+    '#_bi{width:64px;height:64px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);',
+    'border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.8rem}',
+    '#_bh{color:#fff;font-size:1.5rem;font-weight:700;margin-bottom:12px;letter-spacing:-.02em}',
+    '#_bp{color:#94a3b8;font-size:.95rem;line-height:1.7;margin-bottom:32px}',
+    '#_bb{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,.12);',
+    'border:1px solid rgba(37,99,235,.25);border-radius:100px;padding:8px 20px;color:#93c5fd;font-size:.82rem}',
+    '.dot{width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block;',
+    'animation:bl 1.4s ease-in-out infinite}',
+    '@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}'
+  ].join('');
+  document.head.appendChild(s);
+  var d = document.createElement('div'); d.id = '_bm';
+  var k = document.createElement('div'); k.id = '_bk';
+  var i = document.createElement('div'); i.id = '_bi'; i.textContent = '\uD83D\uDD27';
+  var h = document.createElement('h1'); h.id = '_bh'; h.textContent = 'Sistem Bak\u0131mda';
+  var p = document.createElement('p'); p.id = '_bp'; p.textContent = mesaj || '';
+  var b = document.createElement('div'); b.id = '_bb';
+  var dot = document.createElement('span'); dot.className = 'dot';
+  b.appendChild(dot);
+  b.appendChild(document.createTextNode(' K\u0131sa s\u00fcre sonra tekrar deneyin'));
+  k.appendChild(i); k.appendChild(h); k.appendChild(p); k.appendChild(b);
+  d.appendChild(k); document.body.appendChild(d);
+  document.title = 'Sistem Bakimda';
+}
+</script>
 </head>
 <body>
+<script>
+(function(){
+  try{
+    var _b=JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    if(_b.bakim&&_b.bakim.aktif) _bakimSayfasiGoster(_b.bakim.mesaj||'',_b.logo||'');
+  }catch(e){}
+})();
+</script>
+
+
 <script>
 // SENKRON token kontrolü - flash yok
 (function(){
