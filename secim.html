@@ -301,6 +301,12 @@ document.addEventListener('DOMContentLoaded', function(){
       if(g.navy)   css += '--navy:'+g.navy+';';
       if(g.radius) css += '--radius:'+g.radius+';';
       css += '}';
+      // Sayfa özel
+      if(g.secimBg)          css += 'body{background:'+g.secimBg+'!important;}';
+      if(g.secimMod1Bg)      css += '.modul-mavi{background:'+g.secimMod1Bg+'!important;}';
+      if(g.secimMod2Bg)      css += '.modul-altin{background:'+g.secimMod2Bg+'!important;}';
+      if(g.secimBaslikColor) css += 'h2{color:'+g.secimBaslikColor+'!important;}';
+      if(g.secimAltColor)    css += '.alt,.alt-not{color:'+g.secimAltColor+'!important;}';
       st.textContent = css;
       document.head.appendChild(st);
     }

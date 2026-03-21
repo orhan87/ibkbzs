@@ -1095,6 +1095,21 @@ async function girisYap(){
             }
           }
         }
+        // Sayfa özel tasarım (gorunum)
+        if(_lcfg.gorunum){
+          var _gg = _lcfg.gorunum;
+          var _lcs = document.getElementById('_gorununStyle');
+          if(!_lcs){ _lcs=document.createElement('style'); _lcs.id='_gorununStyle'; document.head.appendChild(_lcs); }
+          var _lc = '';
+          if(_gg.loginBg)          _lc += 'body{background:'+_gg.loginBg+'!important;}';
+          if(_gg.loginKartBg)      _lc += '.kart{background:'+_gg.loginKartBg+'!important;}';
+          if(_gg.loginBtnBg)       _lc += '#btnGiris{background:'+_gg.loginBtnBg+'!important;}';
+          if(_gg.loginBtnColor)    _lc += '#btnGiris{color:'+_gg.loginBtnColor+'!important;}';
+          if(_gg.loginKartRadius)  _lc += '.kart{border-radius:'+_gg.loginKartRadius+'px!important;}';
+          if(_gg.loginInputRadius) _lc += '.giris-input,#eposta,#parola{border-radius:'+_gg.loginInputRadius+'px!important;}';
+          if(_gg.loginFontAile)    _lc += 'body{font-family:'+_gg.loginFontAile+'!important;}';
+          _lcs.textContent = _lc;
+        }
         // Bakım modu
         if(_lcfg.bakim && _lcfg.bakim.aktif){
           var _bm = (_lcfg.bakim && _lcfg.bakim.mesaj) || 'Sistem bakimda.';

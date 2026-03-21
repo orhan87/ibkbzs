@@ -749,6 +749,58 @@
     </div>
   </div>
 
+
+  <div class="panel-card">
+    <div class="pc-head" style="cursor:pointer;user-select:none;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <div><h3>🎨 Login Sayfası Tasarımı</h3><p>Renk, köşe yarıçapı, yazı tipi</p></div>
+      <span style="font-size:.9rem;color:rgba(255,255,255,.5);">▼</span>
+    </div>
+    <div class="pc-body" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+        <div class="metin-item"><label>Arka Plan Rengi</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-loginBg" value="#0f172a" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#0f172a" oninput="document.getElementById('ds-loginBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Kart Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-loginKartBg" value="#ffffff" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#ffffff" oninput="document.getElementById('ds-loginKartBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Giriş Butonu Rengi</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-loginBtnBg" value="#2563eb" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#2563eb" oninput="document.getElementById('ds-loginBtnBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Buton Yazı Rengi</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-loginBtnColor" value="#ffffff" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#ffffff" oninput="document.getElementById('ds-loginBtnColor').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Kart Köşe Yarıçapı (px)</label>
+          <input type="range" id="ds-loginKartRadius" min="0" max="32" value="16" oninput="this.nextElementSibling.textContent=this.value+'px'" style="width:100%;">
+          <span style="font-size:.75rem;color:var(--g500);">16px</span></div>
+        <div class="metin-item"><label>Input Köşe Yarıçapı (px)</label>
+          <input type="range" id="ds-loginInputRadius" min="0" max="20" value="8" oninput="this.nextElementSibling.textContent=this.value+'px'" style="width:100%;">
+          <span style="font-size:.75rem;color:var(--g500);">8px</span></div>
+        <div class="metin-item"><label>Yazı Tipi</label>
+          <select id="ds-loginFontAile" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-family:inherit;font-size:.85rem;">
+            <option value="">Varsayılan (DM Sans)</option>
+            <option value="'Inter',sans-serif">Inter</option>
+            <option value="'Roboto',sans-serif">Roboto</option>
+            <option value="'Open Sans',sans-serif">Open Sans</option>
+            <option value="'Poppins',sans-serif">Poppins</option>
+            <option value="'Montserrat',sans-serif">Montserrat</option>
+            <option value="system-ui,sans-serif">System UI</option>
+          </select></div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="gorununuKaydet()">💾 Tasarımı Kaydet</button>
+        <button class="btn btn-secondary" style="margin-left:8px;" onclick="gorununuOnizle()">👁 Önizle</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="tab-hesaplama" class="tab-content">
@@ -816,6 +868,63 @@
     </div>
   </div>
 
+
+  <div class="panel-card">
+    <div class="pc-head" style="cursor:pointer;user-select:none;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <div><h3>🎨 Hesaplama Sayfası Tasarımı</h3><p>Form, hero, buton renk ve boyutları</p></div>
+      <span style="font-size:.9rem;color:rgba(255,255,255,.5);">▼</span>
+    </div>
+    <div class="pc-body" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+        <div class="metin-item"><label>Hero Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-idxHeroBg" value="#1e3a5f" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#1e3a5f" oninput="document.getElementById('ds-idxHeroBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Form Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-idxFormBg" value="#ffffff" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#ffffff" oninput="document.getElementById('ds-idxFormBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Hesapla Butonu Rengi</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-idxBtnBg" value="#2563eb" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#2563eb" oninput="document.getElementById('ds-idxBtnBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Form Köşe Yarıçapı (px)</label>
+          <input type="range" id="ds-idxFormRadius" min="0" max="32" value="16" oninput="this.nextElementSibling.textContent=this.value+'px'" style="width:100%;">
+          <span style="font-size:.75rem;color:var(--g500);">16px</span></div>
+        <div class="metin-item"><label>Input Köşe Yarıçapı (px)</label>
+          <input type="range" id="ds-idxInputRadius" min="0" max="16" value="8" oninput="this.nextElementSibling.textContent=this.value+'px'" style="width:100%;">
+          <span style="font-size:.75rem;color:var(--g500);">8px</span></div>
+        <div class="metin-item"><label>Buton Köşe Yarıçapı (px)</label>
+          <input type="range" id="ds-idxBtnRadius" min="0" max="32" value="10" oninput="this.nextElementSibling.textContent=this.value+'px'" style="width:100%;">
+          <span style="font-size:.75rem;color:var(--g500);">10px</span></div>
+        <div class="metin-item"><label>Etiket Kalınlığı</label>
+          <select id="ds-idxLabelWeight" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-family:inherit;font-size:.85rem;">
+            <option value="">Varsayılan</option>
+            <option value="400">Normal (400)</option>
+            <option value="500">Orta (500)</option>
+            <option value="600">Yarı Kalın (600)</option>
+            <option value="700">Kalın (700)</option>
+          </select></div>
+        <div class="metin-item"><label>Etiket Boyutu</label>
+          <select id="ds-idxLabelSize" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-family:inherit;font-size:.85rem;">
+            <option value="">Varsayılan (.68rem)</option>
+            <option value=".7rem">.7rem (küçük)</option>
+            <option value=".75rem">.75rem</option>
+            <option value=".8rem">.8rem</option>
+            <option value=".85rem">.85rem</option>
+            <option value=".9rem">.9rem (büyük)</option>
+          </select></div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="gorununuKaydet()">💾 Tasarımı Kaydet</button>
+        <button class="btn btn-secondary" style="margin-left:8px;" onclick="gorununuOnizle()">👁 Önizle</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="tab-takip" class="tab-content">
@@ -872,6 +981,40 @@
     </div>
   </div>
 
+
+  <div class="panel-card">
+    <div class="pc-head" style="cursor:pointer;user-select:none;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <div><h3>🎨 Takip Sayfası Tasarımı</h3><p>Header, panel, kart renkleri</p></div>
+      <span style="font-size:.9rem;color:rgba(255,255,255,.5);">▼</span>
+    </div>
+    <div class="pc-body" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+        <div class="metin-item"><label>Sayfa Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-takipBodyBg" value="#0f172a" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#0f172a" oninput="document.getElementById('ds-takipBodyBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Header Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-takipHeaderBg" value="#0f172a" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#0f172a" oninput="document.getElementById('ds-takipHeaderBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Panel/Kart Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-takipKartBg" value="#ffffff" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#ffffff" oninput="document.getElementById('ds-takipKartBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Panel Köşe Yarıçapı (px)</label>
+          <input type="range" id="ds-takipPanelRadius" min="0" max="24" value="12" oninput="this.nextElementSibling.textContent=this.value+'px'" style="width:100%;">
+          <span style="font-size:.75rem;color:var(--g500);">12px</span></div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="gorununuKaydet()">💾 Tasarımı Kaydet</button>
+        <button class="btn btn-secondary" style="margin-left:8px;" onclick="gorununuOnizle()">👁 Önizle</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="tab-secim" class="tab-content">
@@ -906,6 +1049,47 @@
       <div class="metin-item"><label>Başlık</label><input type="text" id="m-secimMod2Baslik" placeholder="İhracat Takip"></div>
       <div class="metin-item"><label>Açıklama</label><input type="text" id="m-secimMod2Acik" placeholder="180 gün süre takibi ve beyanname yönetimi"></div>
       <button class="btn btn-primary" onclick="metinleriKaydet()">💾 Kaydet</button>
+    </div>
+  </div>
+
+
+  <div class="panel-card">
+    <div class="pc-head" style="cursor:pointer;user-select:none;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <div><h3>🎨 Modül Seçim Sayfası Tasarımı</h3><p>Arka plan, kart ve metin renkleri</p></div>
+      <span style="font-size:.9rem;color:rgba(255,255,255,.5);">▼</span>
+    </div>
+    <div class="pc-body" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+        <div class="metin-item"><label>Sayfa Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-secimBg" value="#0f172a" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#0f172a" oninput="document.getElementById('ds-secimBg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Kart 1 (Hesaplama) Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-secimMod1Bg" value="#1e293b" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#1e293b" oninput="document.getElementById('ds-secimMod1Bg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Kart 2 (Takip) Arka Planı</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-secimMod2Bg" value="#1c2f1a" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#1c2f1a" oninput="document.getElementById('ds-secimMod2Bg').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Başlık Rengi</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-secimBaslikColor" value="#ffffff" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#ffffff" oninput="document.getElementById('ds-secimBaslikColor').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+        <div class="metin-item"><label>Alt Metin Rengi</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="ds-secimAltColor" value="#94a3b8" style="width:44px;height:36px;border:1.5px solid var(--g200);border-radius:6px;cursor:pointer;padding:2px;">
+            <input type="text" placeholder="#94a3b8" oninput="document.getElementById('ds-secimAltColor').value=this.value" style="flex:1;padding:8px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:.82rem;font-family:monospace;">
+          </div></div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="gorununuKaydet()">💾 Tasarımı Kaydet</button>
+        <button class="btn btn-secondary" style="margin-left:8px;" onclick="gorununuOnizle()">👁 Önizle</button>
+      </div>
     </div>
   </div>
 
@@ -2459,6 +2643,27 @@ function gorununuYukle(){
   if(g.footerEk) document.getElementById('footer-ek').value = g.footerEk;
   // Önizleme güncelle
   gorununuOnizle();
+
+  // Sayfa özel tasarım alanları
+  var _dsMap = {
+    'loginBg':'ds-loginBg', 'loginKartBg':'ds-loginKartBg',
+    'loginKartRadius':'ds-loginKartRadius', 'loginInputRadius':'ds-loginInputRadius',
+    'loginBtnBg':'ds-loginBtnBg', 'loginBtnColor':'ds-loginBtnColor',
+    'loginFontAile':'ds-loginFontAile',
+    'idxFormBg':'ds-idxFormBg', 'idxFormRadius':'ds-idxFormRadius',
+    'idxHeroBg':'ds-idxHeroBg', 'idxInputRadius':'ds-idxInputRadius',
+    'idxLabelWeight':'ds-idxLabelWeight', 'idxLabelSize':'ds-idxLabelSize',
+    'idxBtnBg':'ds-idxBtnBg', 'idxBtnRadius':'ds-idxBtnRadius',
+    'takipHeaderBg':'ds-takipHeaderBg', 'takipPanelRadius':'ds-takipPanelRadius',
+    'takipKartBg':'ds-takipKartBg', 'takipBodyBg':'ds-takipBodyBg',
+    'secimBg':'ds-secimBg', 'secimMod1Bg':'ds-secimMod1Bg',
+    'secimMod2Bg':'ds-secimMod2Bg',
+    'secimBaslikColor':'ds-secimBaslikColor', 'secimAltColor':'ds-secimAltColor'
+  };
+  Object.keys(_dsMap).forEach(function(k){
+    var _el = document.getElementById(_dsMap[k]);
+    if(_el && g[k] !== undefined && g[k] !== '') _el.value = g[k];
+  });
 }
 
 function gorununuOnizle(){
@@ -2489,6 +2694,31 @@ function gorununuKaydet(){
     seoKeywords: document.getElementById('seo-keywords').value,
     footerSol:   document.getElementById('footer-sol').value,
     footerEk:    document.getElementById('footer-ek').value,
+    // Sayfa özel tasarım
+    loginBg:          document.getElementById('ds-loginBg')?document.getElementById('ds-loginBg').value:'',
+    loginKartBg:      document.getElementById('ds-loginKartBg')?document.getElementById('ds-loginKartBg').value:'',
+    loginKartRadius:  document.getElementById('ds-loginKartRadius')?document.getElementById('ds-loginKartRadius').value:'',
+    loginInputRadius: document.getElementById('ds-loginInputRadius')?document.getElementById('ds-loginInputRadius').value:'',
+    loginBtnBg:       document.getElementById('ds-loginBtnBg')?document.getElementById('ds-loginBtnBg').value:'',
+    loginBtnColor:    document.getElementById('ds-loginBtnColor')?document.getElementById('ds-loginBtnColor').value:'',
+    loginFontAile:    document.getElementById('ds-loginFontAile')?document.getElementById('ds-loginFontAile').value:'',
+    idxFormBg:        document.getElementById('ds-idxFormBg')?document.getElementById('ds-idxFormBg').value:'',
+    idxFormRadius:    document.getElementById('ds-idxFormRadius')?document.getElementById('ds-idxFormRadius').value:'',
+    idxHeroBg:        document.getElementById('ds-idxHeroBg')?document.getElementById('ds-idxHeroBg').value:'',
+    idxInputRadius:   document.getElementById('ds-idxInputRadius')?document.getElementById('ds-idxInputRadius').value:'',
+    idxLabelWeight:   document.getElementById('ds-idxLabelWeight')?document.getElementById('ds-idxLabelWeight').value:'',
+    idxLabelSize:     document.getElementById('ds-idxLabelSize')?document.getElementById('ds-idxLabelSize').value:'',
+    idxBtnBg:         document.getElementById('ds-idxBtnBg')?document.getElementById('ds-idxBtnBg').value:'',
+    idxBtnRadius:     document.getElementById('ds-idxBtnRadius')?document.getElementById('ds-idxBtnRadius').value:'',
+    takipHeaderBg:    document.getElementById('ds-takipHeaderBg')?document.getElementById('ds-takipHeaderBg').value:'',
+    takipPanelRadius: document.getElementById('ds-takipPanelRadius')?document.getElementById('ds-takipPanelRadius').value:'',
+    takipKartBg:      document.getElementById('ds-takipKartBg')?document.getElementById('ds-takipKartBg').value:'',
+    takipBodyBg:      document.getElementById('ds-takipBodyBg')?document.getElementById('ds-takipBodyBg').value:'',
+    secimBg:          document.getElementById('ds-secimBg')?document.getElementById('ds-secimBg').value:'',
+    secimMod1Bg:      document.getElementById('ds-secimMod1Bg')?document.getElementById('ds-secimMod1Bg').value:'',
+    secimMod2Bg:      document.getElementById('ds-secimMod2Bg')?document.getElementById('ds-secimMod2Bg').value:'',
+    secimBaslikColor: document.getElementById('ds-secimBaslikColor')?document.getElementById('ds-secimBaslikColor').value:'',
+    secimAltColor:    document.getElementById('ds-secimAltColor')?document.getElementById('ds-secimAltColor').value:'',
   };
   depoyaKaydet(cfg);
   scKaydet('gorunum', cfg.gorunum);

@@ -264,6 +264,14 @@ if(!sessionStorage.getItem('govdag_token')){
             if(_g.radius) _css += '--radius:'+_g.radius+';';
             _css += '}';
             if(_g.fontAile) _css += 'body{font-family:'+_g.fontAile+'!important;}';
+            if(_g.idxHeroBg)      _css += '.hero{background:'+_g.idxHeroBg+'!important;}';
+            if(_g.idxFormBg)      _css += '.form-kart,.main-kart,.hesaplama-form,#hesaplamaForm{background:'+_g.idxFormBg+'!important;}';
+            if(_g.idxBtnBg)       _css += '.btn-hesapla{background:'+_g.idxBtnBg+'!important;border-color:'+_g.idxBtnBg+'!important;}';
+            if(_g.idxBtnRadius)   _css += '.btn-hesapla{border-radius:'+_g.idxBtnRadius+'px!important;}';
+            if(_g.idxFormRadius)  _css += '.form-kart,#hesaplamaForm{border-radius:'+_g.idxFormRadius+'px!important;}';
+            if(_g.idxInputRadius) _css += '.input,input:not([type=color]):not([type=range]),select{border-radius:'+_g.idxInputRadius+'px!important;}';
+            if(_g.idxLabelWeight) _css += '.label,label{font-weight:'+_g.idxLabelWeight+'!important;}';
+            if(_g.idxLabelSize)   _css += '.label,label{font-size:'+_g.idxLabelSize+'!important;}';
             if(_g.tabloBoyut){
               _css += 'table td,table th,.gt td,.gt th,tbody td,thead th{font-size:'+_g.tabloBoyut+'px!important;}';
             }
