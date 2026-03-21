@@ -15,6 +15,61 @@
 
 <style>body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#1e293b;opacity:0;transition:opacity .3s;}</style>
 <script>
+function duyuruKapat(){
+  var el = document.getElementById('sistemDuyuruBanner');
+  if(el) el.style.display='none';
+  sessionStorage.setItem('ibkb_duyuru_kapandi','1');
+}
+
+function mevzuatKapat(){
+  var el = document.getElementById('mevzuatModal');
+  if(el){ el.style.display='none'; el.style.alignItems=''; }
+  var mv = JSON.parse(localStorage.getItem('ibkb_config')||'{}').mevzuat||{};
+  sessionStorage.setItem('ibkb_mv_kapandi', mv.guncelleme||'kapandi');
+}
+
+function duyuruMevzuatGoster(cfg){
+  // Duyuru banner
+  if(cfg.duyuru && cfg.duyuru.aktif && cfg.duyuru.metin){
+    var kapandi = sessionStorage.getItem('ibkb_duyuru_kapandi');
+    if(!kapandi){
+      var el = document.getElementById('sistemDuyuruBanner');
+      var metinEl = document.getElementById('sistemDuyuruMetin');
+      if(el && metinEl){
+        var tip = cfg.duyuru.tip||'bilgi';
+        var tipRenk = {
+          bilgi:  {bg:'#eff6ff',border:'#bfdbfe',color:'#1e40af'},
+          uyari:  {bg:'#fffbeb',border:'#fde68a',color:'#92400e'},
+          hata:   {bg:'#fef2f2',border:'#fca5a5',color:'#991b1b'},
+          basari: {bg:'#f0fdf4',border:'#86efac',color:'#166534'}
+        };
+        var r = tipRenk[tip]||tipRenk.bilgi;
+        el.style.background = r.bg;
+        el.style.borderBottom = '2px solid '+r.border;
+        el.style.color = r.color;
+        metinEl.textContent = cfg.duyuru.metin;
+        el.style.display = 'block';
+      }
+    }
+  }
+  // Mevzuat modal
+  if(cfg.mevzuat && cfg.mevzuat.aktif && cfg.mevzuat.metin){
+    var mvKapandi = sessionStorage.getItem('ibkb_mv_kapandi');
+    var mvGuncelleme = cfg.mevzuat.guncelleme||'';
+    if(!mvKapandi || (mvGuncelleme && mvKapandi !== mvGuncelleme)){
+      var mvEl = document.getElementById('mevzuatModal');
+      var mvMetin = document.getElementById('mevzuatModalMetin');
+      if(mvEl && mvMetin){
+        mvMetin.innerHTML = cfg.mevzuat.metin.replace(/\n/g,'<br>');
+        mvEl.style.display = 'flex';
+        mvEl.style.alignItems = 'center';
+      }
+    }
+  }
+}
+
+</script>
+<script>
 // Supabase recovery/invite token gelirse login.html'e yönlendir
 (function(){
   var h = window.location.hash;
@@ -26,6 +81,7 @@
 if(!sessionStorage.getItem('govdag_token')){
   document.location.replace('./login.html');
 } else {
+  document.body.style.visibility='visible';
   document.addEventListener('DOMContentLoaded',function(){
     document.body.style.opacity='1';
     oturumSayacBaslat(); // Oturum sayacını başlat
@@ -172,18 +228,7 @@ if(!sessionStorage.getItem('govdag_token')){
             }
           }
           // Duyuru
-          if(_cfg.duyuru && _cfg.duyuru.aktif && _cfg.duyuru.metin){
-            var _db = document.getElementById('sistemDuyuruBanner');
-            if(_db){ _db.textContent = _cfg.duyuru.metin; _db.style.display = 'block'; }
-          } else {
-            var _db2 = document.getElementById('sistemDuyuruBanner');
-            if(_db2) _db2.style.display = 'none';
-          }
-          // Mevzuat bildirimi
-          if(_cfg.mevzuat && _cfg.mevzuat.aktif && _cfg.mevzuat.metin){
-            var _mv = document.getElementById('sistemDuyuruBanner');
-            if(_mv && !_cfg.duyuru?.aktif){ _mv.textContent = _cfg.mevzuat.metin; _mv.style.display = 'block'; }
-          }
+          duyuruMevzuatGoster(_cfg);
 
           // Görünüm (renk/font/SEO ayarları)
           if(_cfg.gorunum){
@@ -229,11 +274,18 @@ if(!sessionStorage.getItem('govdag_token')){
           // Bakim modu
           if(_cfg.bakim && _cfg.bakim.aktif){
             var _bm = (_cfg.bakim && _cfg.bakim.mesaj) || 'Sistem bakimda.';
-            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;'
-              + 'height:100vh;font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:20px;">'
-              + '<div><div style="font-size:2.5rem;margin-bottom:16px;">\uD83D\uDD27</div>'
-              + '<h2 style="margin-bottom:8px;">Sistem Bak\u0131mda</h2>'
-              + '<p style="color:#94a3b8;">' + _bm + '</p></div></div>';
+            var _logo = (JSON.parse(localStorage.getItem('ibkb_config')||'{}').logo||'');
+            document.body.style.visibility='visible';
+            document.body.innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);font-family:DM Sans,sans-serif;padding:32px;">'
+              + '<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:48px 40px;max-width:440px;width:100%;text-align:center;">'
+              + (_logo ? '<img src="'+_logo+'" style="height:48px;margin-bottom:24px;" alt="Logo">' : '<div style="font-size:2.4rem;margin-bottom:20px;">🔧</div>')
+              + '<h2 style="color:#fff;font-size:1.4rem;font-weight:700;margin-bottom:12px;">Sistem Bakımda</h2>'
+              + '<p style="color:#94a3b8;font-size:.95rem;line-height:1.6;margin-bottom:24px;">' + _bm + '</p>'
+              + '<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 18px;color:#64748b;font-size:.8rem;">'
+              + '⏱ Lütfen kısa süre sonra tekrar deneyin</div>'
+              + '</div>'
+              + '<p style="color:#334155;font-size:.72rem;margin-top:24px;">İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI</p>'
+              + '</div>';
           }
         }catch(e){ /* cfg sync hatası sessiz */; }
       })();
@@ -303,9 +355,9 @@ if(!sessionStorage.getItem('govdag_token')){
 }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="İhracat Bedeli Kabul Belgesi (İBKB) düzenleme zorunluluğunu hesaplayın. EK-2, EK-3, KKTC, serbest bölge ve tüm özel senaryolar dahil otomatik hesaplama — gövdağ İBKB Sorgulama Yazılımı.">
+<meta name="description" content="İhracat Bedeli Kabul Belgesi (İBKB) düzenleme zorunluluğunu hesaplayın. EK-2, EK-3, KKTC, serbest bölge ve tüm özel senaryolar dahil otomatik hesaplama — İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI Yazılımı.">
 <meta name="robots" content="index, follow">
-<title>gövdağ | İBKB Sorgulama — İhracat Bedeli Kabul Belgesi</title>
+<title>gövdağ | İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI — İhracat Bedeli Kabul Belgesi</title>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
@@ -648,17 +700,42 @@ window.addEventListener('unhandledrejection', function(e){
 </script>
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://ibkbsorgulama.com">
-  <meta property="og:title" content="gövdağ | İBKB Sorgulama — İhracat Bedeli Kabul Belgesi">
+  <meta property="og:title" content="gövdağ | İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI — İhracat Bedeli Kabul Belgesi">
   <meta property="og:description" content="İhracat Bedeli Kabul Belgesi (İBKB) düzenleme zorunluluğunu hesaplayın. EK-2, EK-3, KKTC, serbest bölge ve tüm özel senaryolar dahil otomatik hesaplama.">
-  <meta property="og:site_name" content="gövdağ İBKB Sorgulama">
+  <meta property="og:site_name" content="İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="gövdağ | İBKB Sorgulama">
+  <meta name="twitter:title" content="gövdağ | İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI">
   <meta name="twitter:description" content="İBKB zorunluluğunu saniyeler içinde hesaplayın. Ücretsiz, hızlı, güvenilir.">
   <meta name="keywords" content="İBKB, ihracat bedeli kabul belgesi, TCMB, döviz satışı, ihracat zorunluluk, EK-2, EK-3, serbest bölge, KKTC, ihracat mevzuat">
   <link rel="canonical" href="https://ibkbsorgulama.com">
   <meta name="google-site-verification" content="60ZYbfvQIKxDoLOFRsZaFV6bUodzzOO4qxRE9yzMOwY">
 </head>
-<body>
+<body style="visibility:hidden">
+<!-- DUYURU BANNER -->
+<div id="sistemDuyuruBanner" style="display:none;position:relative;padding:11px 48px 11px 18px;font-size:.85rem;line-height:1.5;z-index:100;">
+  <span id="sistemDuyuruMetin"></span>
+  <button onclick="duyuruKapat()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.2rem;cursor:pointer;color:inherit;opacity:.6;padding:4px 8px;line-height:1;" title="Kapat">×</button>
+</div>
+
+<!-- MEVZUAT MODALİ -->
+<div id="mevzuatModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;">
+    <div style="background:#1a2540;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.3rem;">📋</span>
+        <span style="color:#fff;font-weight:700;font-size:.95rem;">Mevzuat Değişiklik Bildirimi</span>
+      </div>
+      <button onclick="mevzuatKapat()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+    <div style="padding:22px 24px;">
+      <div id="mevzuatModalMetin" style="font-size:.88rem;color:#374162;line-height:1.7;margin-bottom:20px;"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="mevzuatKapat()" style="padding:9px 22px;background:#1a56a0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:600;">✓ Anladım, Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <header>
   <div class="hi">
@@ -1035,7 +1112,7 @@ function sonucKopyala(){
 
   const sep = '─'.repeat(40);
   const satirlar = [
-    '✦ gövdağ İBKB Sorgulama — Hesaplama Sonucu',
+    '✦ İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI — Hesaplama Sonucu',
     sep,
   ];
 
@@ -1162,7 +1239,7 @@ const VARSAYILAN_METINLER = {
   ozel:"Bankacılık sistemiyle doğrudan Türkiye'ye transfer mümkün olmadığından bedel kabulü alternatif yollarla yapılabilir.",
   heroBaslik:'İBKB Zorunluluğu Sorgulama Yazılımı',
   heroAlt:"Ülke muafiyeti ve 15.000 USD eşiğini dikkate alarak ihracat bedelinizin asgari ne kadarını TCMB'ye satmak zorunda olduğunuzu hesaplayın.",
-  siteBaslik:'gövdağ | İBKB Sorgulama',
+  siteBaslik:'gövdağ | İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI',
   footerYazi:'<span id="footerYaziEl">© 2026 gövdağ — Tüm hakları saklıdır.</span>',
   iletisimEmail:'destek@ibkbsorgulama.com',
   iletisimTel:'+90 533 198 70 33',
@@ -2427,7 +2504,7 @@ function hataBildir(){
   if(onceki)  satirlar.push(encodeURIComponent('Önceki İBKB')   + tab + encodeURIComponent(onceki));
   if(email)   satirlar.push(encodeURIComponent('Kullanıcı')      + tab + encodeURIComponent(email));
 
-  var konu = encodeURIComponent('Hata Bildirimi - İBKB Sorgulama');
+  var konu = encodeURIComponent('Hata Bildirimi - İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI');
   var body = encodeURIComponent('Merhaba,') + nl + nl
     + encodeURIComponent('Aşağıdaki hesaplamada hata olduğunu düşünüyorum:') + nl + nl
     + satirlar.join(nl) + nl + nl
@@ -2852,13 +2929,9 @@ function xlsxIndir(){
 
 <footer style="background:#0f172a;padding:18px 32px;text-align:center;margin-top:40px;">
   <p style="font-size:.75rem;color:rgba(255,255,255,.3);">
-    © 2026 gövdağ İBKB Sorgulama &nbsp;·&nbsp;
+    © 2026 İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI &nbsp;·&nbsp;
     <a href="./kvkk.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">KVKK Aydınlatma Metni</a>
     &nbsp;·&nbsp;
     <a href="./kullanim-kosullari.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">Kullanım Koşulları</a>
     &nbsp;·&nbsp;
-    <a href="mailto:destek@ibkbsorgulama.com" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">destek@ibkbsorgulama.com</a>
-  </p>
-</footer>
-</body>
-</html>
+    <a href="/cdn-cgi/l/email-protection#7410110700111f341d161f16071b061301181519155a171b19" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="_
