@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta charset="UTF-8">
 
 
@@ -645,6 +647,10 @@ if(!sessionStorage.getItem('govdag_token')){
   .hlogo-title{color:rgba(255,255,255,.85);font-size:.85rem;font-weight:600;white-space:nowrap;letter-spacing:-.01em;}
   .hlogo-badge{background:rgba(245,158,11,.2);color:#f59e0b;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
   .hnav{display:flex;align-items:center;gap:10px;}
+  .hnav-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:6px;color:rgba(255,255,255,.75);font-size:.82rem;font-weight:600;text-decoration:none;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;letter-spacing:.01em;font-family:inherit;cursor:pointer;}
+.hnav-btn:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.28);color:#fff;}
+.hnav-btn .nb-ikon{font-size:.9rem;}
+
   .hdr-email{font-size:.75rem;color:rgba(255,255,255,.5);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .btn-cikis{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:6px 14px;border-radius:6px;font-size:.8rem;cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap;}
   .btn-cikis:hover{background:rgba(255,255,255,.12);color:#fff;}
@@ -781,7 +787,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
       <span class="hlogo-title">İBKB Zorunluluğu Sorgulama Yazılımı</span>
     </div>
     <div class="hnav">
-      <a href="./takip.html" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:6px;color:rgba(255,255,255,.75);font-size:.8rem;font-weight:500;text-decoration:none;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;letter-spacing:.01em;" onmouseover="this.style.background='rgba(255,255,255,.13)';this.style.borderColor='rgba(255,255,255,.25)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,.07)';this.style.borderColor='rgba(255,255,255,.14)';this.style.color='rgba(255,255,255,.75)'"><span style="font-size:.85rem;opacity:.8;">📦</span> İhracat Takip</a>
+      <a href="./takip.html" class="hnav-btn"><span class="nb-ikon">📦</span> İhracat Takip</a>
       <span id="kullanicEmail" class="hdr-email"></span>
       <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
     </div>
@@ -896,8 +902,8 @@ function _bakimSayfasiGoster(mesaj, logo) {
         <div class="muk-kutu" id="mukKutu">
           <span id="mukMesaj">⚠ Bu sorgu daha önce yapıldı. Tekrar hesaplamak istiyor musunuz?</span>
           <div class="muk-btn">
-            <button class="muk-devam" onclick="hesaplaDevam()">Evet, devam et</button>
-            <button class="muk-iptal" onclick="mukKapat()">İptal</button>
+            <button type="button" class="muk-devam" onclick="hesaplaDevam()">Evet, devam et</button>
+            <button type="button" class="muk-iptal" onclick="mukKapat()">İptal</button>
           </div>
         </div>
         <button type="submit" id="btnHesapla" class="btn-calc">
