@@ -941,13 +941,6 @@ Sorgulama Yazılımı">
                 <option value="hayir">❌ Gizle</option>
               </select>
             </div>
-            <div style="flex:1;min-width:220px;">
-              <label style="font-size:.72rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">KDV Dahil Rozeti</label>
-              <select id="m-fiyatKdvDahil" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">
-                <option value="evet">Göster — "KDV Dahil"</option>
-                <option value="hayir">Gizle</option>
-              </select>
-            </div>
           </div>
           <div class="metin-item">
             <label>Fiyat (örn: 1.000 TL veya 1.000 TL / Yıl)</label>
@@ -961,9 +954,9 @@ Sorgulama Yazılımı">
             <label>Rozet Yazısı (opsiyonel — örn: 🔥 Özel Fiyat)</label>
             <input type="text" id="m-fiyatBadge" placeholder="Boş bırakılabilir">
           </div>
-          <div style="margin-bottom:12px;">
-            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">KDV Dahil Rozeti Notu</label>
-            <input type="text" id="m-fiyatKdvNot" placeholder="Örn: Yıllık ödeme · %20 indirim" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+          <div class="metin-item">
+            <label>Alt Metin (opsiyonel — fiyat kartında fiyatın altında görünür)</label>
+            <input type="text" id="m-fiyatKdvNot" placeholder="Örn: KDV Dahil · Yıllık ödeme · %20 indirim">
           </div>
           <div style="margin-top:14px;">
             <button class="btn btn-primary" onclick="fiyatKaydet()">💾 Fiyatı Kaydet</button>
@@ -1098,21 +1091,11 @@ Sorgulama Yazılımı">
           </div>
         </div>
         <div style="padding:0 0 12px;">
-          <input type="text" id="girisLogArama" oninput="girisLogFiltrele()" placeholder="E-posta ile filtrele…" style="width:100%;max-width:320px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.83rem;font-family:inherit;">
+          <input type="search" id="girisLogArama" oninput="girisLogFiltrele()" placeholder="E-posta ile filtrele…" autocomplete="new-password" name="giris_log_arama" style="width:100%;max-width:320px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.83rem;font-family:inherit;">
         </div>
         <div id="girisLogListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
       </div>
 
-      <!-- Silinmiş İhracat Kayıtları -->
-      <div class="card" style="margin-top:20px;">
-        <div class="card-header">
-          <div><h3>🗑 Silinmiş İhracat Kayıtları</h3><p>Soft delete ile silinen kayıtlar — geri yüklenebilir</p></div>
-          <button class="btn btn-secondary" onclick="silinmisKayitlariYukle()">🔄 Yenile</button>
-        </div>
-        <div id="silinmisKayitlarIcerik" style="padding:16px;">
-          <p style="color:#6b7a99;font-size:.85rem;">Sekmeye tıklayınca yüklenir…</p>
-        </div>
-      </div>
     </div>
 
 
@@ -2225,7 +2208,7 @@ function tab(id, btn){
     }
     kullanicilariYukle(); basvurulariYukle();
   }
-  if(id==='raporlar')     { girisLogYukle(); istatistikYukle(); degisiklikLoguYukle(); silinmisKayitlariYukle(); }
+  if(id==='raporlar')     { girisLogYukle(); istatistikYukle(); degisiklikLoguYukle(); }
   if(id==='gorunum')      { gorununuYukle(); logoTabYukle(); }
   if(id==='icerik')       { icerikYukle(); }
   if(id==='yayin')        { yayinYukle(); }
@@ -3561,71 +3544,6 @@ async function basvurulariYukle(){
 }
 
 
-// ─── SİLİNMİŞ İHRACAT KAYITLARI ────────────────────────────────────────────
-async function silinmisKayitlariYukle(){
-  const sb = sbCfg();
-  const el = document.getElementById('silinmisKayitlarIcerik');
-  if(!el) return;
-  el.innerHTML = '<p style="color:#6b7a99;padding:12px 0;">Yükleniyor…</p>';
-  try{
-    const key = sb.serviceKey || sb.key;
-    const r = await fetch(
-      sb.url + '/rest/v1/ihracatlar?deleted_at=not.is.null&order=deleted_at.desc&limit=200',
-      { headers:{'apikey':key,'Authorization':'Bearer '+key} }
-    );
-    const d = await r.json();
-    if(!r.ok){ el.innerHTML='<p style="color:#b91c1c;padding:12px;">Hata: '+JSON.stringify(d)+'</p>'; return; }
-    if(!Array.isArray(d)||d.length===0){
-      el.innerHTML='<div style="text-align:center;padding:32px;color:#6b7a99;font-size:.85rem;">✅ Silişmiş kayıt yok</div>';
-      return;
-    }
-    var rows = d.map(function(k){
-      var silTarih = k.deleted_at ? new Date(k.deleted_at).toLocaleString('tr-TR') : '—';
-      var ihTarih  = k.ihracat_tarihi ? new Date(k.ihracat_tarihi+'T00:00:00').toLocaleDateString('tr-TR') : '—';
-      return '<tr style="border-bottom:1px solid #e2e8f0;">'
-        +'<td style="padding:8px 10px;font-family:monospace;font-size:.78rem;">'+(k.beyanname_no||'—')+'</td>'
-        +'<td style="padding:8px 10px;font-size:.82rem;">'+(k.ulke||'—')+'</td>'
-        +'<td style="padding:8px 10px;font-size:.82rem;">'+(k.alici_firma||'—')+'</td>'
-        +'<td style="padding:8px 10px;font-size:.82rem;">'+ihTarih+'</td>'
-        +'<td style="padding:8px 10px;font-size:.78rem;color:#b45309;">'+silTarih+'</td>'
-        +'<td style="padding:8px 10px;">'
-          +'<button onclick="silinmisKaydiGeriYukle(\''+k.id+'\')" '
-          +'style="padding:4px 12px;background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">'
-          +'↩ Geri Yükle</button>'
-        +'</td>'
-        +'</tr>';
-    }).join('');
-    el.innerHTML = '<div style="overflow-x:auto;">'
-      +'<table style="width:100%;border-collapse:collapse;font-size:.82rem;">'
-      +'<thead><tr style="background:#0f172a;">'
-      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Beyanname</th>'
-      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Ülke</th>'
-      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Firma</th>'
-      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">İhracat Tarihi</th>'
-      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Silinme Tarihi</th>'
-      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">İşlem</th>'
-      +'</tr></thead>'
-      +'<tbody>'+rows+'</tbody></table></div>'
-      +'<p style="font-size:.75rem;color:#94a3b8;margin-top:10px;padding:0 4px;">'+d.length+' silişmiş kayıt</p>';
-  }catch(e){ el.innerHTML='<p style="color:#b91c1c;padding:12px;">Hata: '+e.message+'</p>'; }
-}
-
-async function silinmisKaydiGeriYukle(id){
-  if(!confirm('Bu kayıt geri yüklenecek. Emin misiniz?')) return;
-  const sb = sbCfg();
-  const key = sb.serviceKey || sb.key;
-  try{
-    const r = await fetch(sb.url+'/rest/v1/ihracatlar?id=eq.'+id,{
-      method:'PATCH',
-      headers:{'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body: JSON.stringify({deleted_at: null})
-    });
-    if(!r.ok){ const t=await r.text(); throw new Error(t); }
-    toast('✅ Kayıt geri yüklendi');
-    silinmisKayitlariYukle();
-  }catch(e){ toast('✗ Hata: '+e.message); }
-}
-
 async function girisLogYukle(){
   const sb=sbCfg();
   const el=document.getElementById('girisLogListesi');
@@ -3785,23 +3703,53 @@ function girisLogFiltrele(){
   const q = (document.getElementById('girisLogArama').value||'').toLowerCase().trim();
   const el = document.getElementById('girisLogListesi');
   if(!_girisLogTum.length) return;
+  _girisLogSayfa = 1; // Filtre değişince 1. sayfaya dön
   const filtreli = q ? _girisLogTum.filter(r=>r.email&&r.email.toLowerCase().includes(q)) : _girisLogTum;
   girisLogRender(filtreli, el);
 }
 
+let _girisLogSayfa = 1;
+const _GIRIS_LOG_SAYFA_BOYUT = 50;
+
 function girisLogRender(data, el){
   if(!data.length){ el.innerHTML='<p style="text-align:center;color:#6b7a99;padding:20px;">Kayıt yok.</p>'; return; }
-  el.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
+  var toplamSayfa = Math.max(1, Math.ceil(data.length / _GIRIS_LOG_SAYFA_BOYUT));
+  if(_girisLogSayfa > toplamSayfa) _girisLogSayfa = 1;
+  var bas = (_girisLogSayfa - 1) * _GIRIS_LOG_SAYFA_BOYUT;
+  var sayfa = data.slice(bas, bas + _GIRIS_LOG_SAYFA_BOYUT);
+  var tablo = '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
     +'<thead><tr style="background:#f0f4f8;">'
     +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">E-posta</th>'
     +'<th style="padding:10px 14px;text-align:left;color:#374162;font-weight:600;border-bottom:2px solid #dde3ef;">Giriş Tarihi & Saati</th>'
     +'</tr></thead><tbody>'
-    +data.map((row,i)=>{
-      const t=new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
-      return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'
+    +sayfa.map(function(row,i){
+      var t = new Date(row.giris_tarihi).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
+      return '<tr style="border-bottom:1px solid #edf2f7;background:'+(i%2===0?'#fff':'#f8fafc')+'">'  
         +'<td style="padding:10px 14px;color:#1e293b;font-weight:500;">'+row.email+'</td>'
         +'<td style="padding:10px 14px;color:#4a5568;">'+t+'</td></tr>';
     }).join('')+'</tbody></table>';
+  var nav = '';
+  if(toplamSayfa > 1){
+    nav = '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border-top:1px solid #e2e8f0;">'
+      + '<span style="font-size:.78rem;color:#64748b;">' + data.length + ' kayıt · Sayfa ' + _girisLogSayfa + '/' + toplamSayfa + '</span>'
+      + '<div style="display:flex;gap:6px;">'
+      + '<button onclick="girisLogSayfaDegistir(-1)" '+(_girisLogSayfa<=1?'disabled':'')+' style="padding:4px 12px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;font-size:.78rem;cursor:pointer;font-family:inherit;">&#8249; Önceki</button>'
+      + '<button onclick="girisLogSayfaDegistir(1)" '+(_girisLogSayfa>=toplamSayfa?'disabled':'')+' style="padding:4px 12px;border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;font-size:.78rem;cursor:pointer;font-family:inherit;">Sonraki &#8250;</button>'
+      + '</div></div>';
+  } else {
+    nav = '<div style="padding:6px 14px;font-size:.75rem;color:#94a3b8;">' + data.length + ' kayıt</div>';
+  }
+  el.innerHTML = tablo + nav;
+}
+
+function girisLogSayfaDegistir(yon){
+  var el = document.getElementById('girisLogListesi');
+  if(!el) return;
+  var q = (document.getElementById('girisLogArama').value||'').toLowerCase().trim();
+  var data = q ? _girisLogTum.filter(function(r){ return r.email&&r.email.toLowerCase().includes(q); }) : _girisLogTum;
+  var toplamSayfa = Math.max(1, Math.ceil(data.length / _GIRIS_LOG_SAYFA_BOYUT));
+  _girisLogSayfa = Math.max(1, Math.min(toplamSayfa, _girisLogSayfa + yon));
+  girisLogRender(data, el);
 }
 
 function girisLogExcelIndir(){

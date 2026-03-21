@@ -445,7 +445,7 @@ window.onload = function(){
   (function(){
     var defWrap = document.getElementById('fiyatKartWrap');
     if(defWrap && !defWrap.innerHTML){
-      defWrap.innerHTML = '<div class="fiyat-kart"><div class="fiyat-kart-ust"><span class="fiyat-label">Lisans Bedeli</span></div><div class="fiyat-tutar">1.000 TL</div><div class="fiyat-alt"><span class="fiyat-sure">1 Yıllık Lisans</span><span class="fiyat-kdv">KDV Dahil</span></div></div>';
+      defWrap.innerHTML = '<div class="fiyat-kart"><div class="fiyat-kart-ust"><span class="fiyat-label">Lisans Bedeli</span></div><div class="fiyat-tutar">1.000 TL</div><div class="fiyat-alt"><span class="fiyat-sure">1 Yıllık Lisans</span></div></div>';
     }
   })();
 
@@ -474,8 +474,7 @@ window.onload = function(){
           + '<div class="fiyat-tutar">'+tutar+'</div>'
           + '<div class="fiyat-alt">'
           + '<span class="fiyat-sure">'+sure+'</span>'
-          + (kdvDahil ? '<span class="fiyat-kdv">KDV Dahil</span>' : '')
-          + (met.fiyatKdvNot ? '<span class="fiyat-kdv-not">'+met.fiyatKdvNot+'</span>' : '')
+          + (met.fiyatKdvNot ? '<span class="fiyat-kdv-not" style="color:rgba(255,255,255,.65);font-size:.72rem;display:block;margin-top:3px;font-style:normal;">'+met.fiyatKdvNot+'</span>' : '')
           + '</div>'
           + '</div>';
       }
@@ -1082,7 +1081,7 @@ async function girisYap(){
             else{
               var _fTutar  = _lm.fiyatTutar  || '1.000 TL';
               var _fSure   = _lm.fiyatSure   || '1 Yıllık Lisans';
-              var _fKdv    = _lm.fiyatKdvDahil !== 'hayir';
+              // KDV Dahil rozeti kaldırıldı — altMetin (fiyatKdvNot) kullanılıyor
               var _fBadge  = _lm.fiyatBadge  || '';
               _fw.innerHTML =
                 '<div class="fiyat-kart">'
@@ -1091,7 +1090,7 @@ async function girisYap(){
                 + (_fBadge ? '<span class="fiyat-badge">'+_fBadge+'</span>' : '')
                 + '</div>'
                 + '<div class="fiyat-tutar">'+_fTutar+'</div>'
-                + '<div class="fiyat-alt"><span class="fiyat-sure">'+_fSure+'</span>'+(_fKdv ? '<span class="fiyat-kdv">KDV Dahil</span>' : '')+'</div>'
+                + '<div class="fiyat-alt"><span class="fiyat-sure">'+_fSure+'</span>'+(_lm.fiyatKdvNot?'<span style="color:rgba(255,255,255,.65);font-size:.72rem;display:block;margin-top:3px;">'+_lm.fiyatKdvNot+'</span>':'')+'</div>'
                 + '</div>';
             }
           }
