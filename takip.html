@@ -79,8 +79,8 @@ window.addEventListener('unhandledrejection', function(e){ e.preventDefault(); }
 if(!sessionStorage.getItem('govdag_token')){
   document.location.replace('./login.html');
 } else {
-  document.body.style.visibility='visible';
   document.addEventListener('DOMContentLoaded', function(){
+  document.body.style.opacity='1';
     document.body.style.opacity = '1';
     // Görünüm ayarlarını uygula
     try{
@@ -318,7 +318,7 @@ tr.kapali .sure-badge{background:var(--g100);color:var(--g400);}
 
 </style>
 </head>
-<body style="visibility:hidden">
+<body style="opacity:0;transition:opacity .15s">
 <!-- DUYURU BANNER -->
 <div id="sistemDuyuruBanner" style="display:none;position:relative;padding:11px 48px 11px 18px;font-size:.85rem;line-height:1.5;z-index:100;">
   <span id="sistemDuyuruMetin"></span>

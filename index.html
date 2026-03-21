@@ -81,7 +81,6 @@ function duyuruMevzuatGoster(cfg){
 if(!sessionStorage.getItem('govdag_token')){
   document.location.replace('./login.html');
 } else {
-  document.body.style.visibility='visible';
   document.addEventListener('DOMContentLoaded',function(){
     document.body.style.opacity='1';
     oturumSayacBaslat(); // Oturum sayacını başlat
@@ -710,7 +709,7 @@ window.addEventListener('unhandledrejection', function(e){
   <link rel="canonical" href="https://ibkbsorgulama.com">
   <meta name="google-site-verification" content="60ZYbfvQIKxDoLOFRsZaFV6bUodzzOO4qxRE9yzMOwY">
 </head>
-<body style="visibility:hidden">
+<body style="opacity:0;transition:opacity .15s">
 <!-- DUYURU BANNER -->
 <div id="sistemDuyuruBanner" style="display:none;position:relative;padding:11px 48px 11px 18px;font-size:.85rem;line-height:1.5;z-index:100;">
   <span id="sistemDuyuruMetin"></span>
