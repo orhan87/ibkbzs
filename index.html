@@ -277,12 +277,7 @@ if(!sessionStorage.getItem('govdag_token')){
               if(_sk) _sk.content = _g.seoKeywords;
             }
           }
-          // Bakim modu - senkron kontrol body başında yapılıyor
-          if(false && _cfg.bakim && _cfg.bakim.aktif){
-            var _bm = (_cfg.bakim && _cfg.bakim.mesaj) || 'Sistem bakimda.';
-            var _logo = (JSON.parse(localStorage.getItem('ibkb_config')||'{}').logo||'');
-            _bakimSayfasiGoster(_bm, _logo);
-          }
+          // Bakım modu — senkron kontrol body başında yapılıyor (HEAD'de)
         }catch(e){ /* cfg sync hatası sessiz */; }
       })();
       var hb = document.getElementById('heroBaslik');
@@ -725,15 +720,6 @@ function _bakimSayfasiGoster(mesaj, logo) {
 </script>
 </head>
 <body>
-<script>
-(function(){
-  try{
-    var _b=JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-    if(_b.bakim&&_b.bakim.aktif) _bakimSayfasiGoster(_b.bakim.mesaj||'',_b.logo||'');
-  }catch(e){}
-})();
-</script>
-
 <script>
 // SENKRON bakım kontrolü - flash önleme
 (function(){
