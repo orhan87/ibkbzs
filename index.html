@@ -17,6 +17,7 @@
 @keyframes _fadeIn{from{opacity:0}to{opacity:1}}
 body{opacity:0;}body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#1e293b;opacity:0;transition:opacity .3s;}</style>
 <script>
+
 function duyuruKapat(){
   var el = document.getElementById('sistemDuyuruBanner');
   if(el) el.style.display='none';
@@ -68,6 +69,7 @@ function duyuruMevzuatGoster(cfg){
       }
     }
   }
+
 }
 
 </script>
@@ -229,7 +231,6 @@ if(!sessionStorage.getItem('govdag_token')){
               var _tel = _m.iletisimTel || '+90 533 198 70 33';
               var _telR = _tel.replace(/[^+0-9]/g,'');
               _il.innerHTML = '<a href="mailto:'+_ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;">📧 '+_ep+'</a>'
-                + '<a href="tel:'+_telR+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;">📞 '+_tel+'</a>';
             }
           }
           // Duyuru
@@ -319,7 +320,6 @@ if(!sessionStorage.getItem('govdag_token')){
         banner.id = 'sistemDuyuruBanner';
         banner.style.cssText = 'background:'+r.bg+';border-bottom:2px solid '+r.border+';padding:10px 20px;display:flex;align-items:center;gap:10px;font-size:.83rem;color:'+r.color+';font-weight:600;';
         banner.innerHTML = '<span>'+r.ico+'</span><span style="flex:1;">'+cfgDuyuru.duyuru.metin+'</span>'
-          + '<button onclick="this.parentElement.remove()" type="button" style="background:none;border:none;cursor:pointer;font-size:1rem;color:'+r.color+';padding:0 4px;">✕</button>';
         document.body.insertBefore(banner, document.body.firstChild);
       }
     }catch(e){}
@@ -334,13 +334,13 @@ if(!sessionStorage.getItem('govdag_token')){
         var tel = met2.iletisimTel || '+90 533 198 70 33';
         var telRaw = tel.replace(/[^+0-9]/g,'');
         links.innerHTML = '<a href="mailto:'+ep+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+ep+'</a>'
-          + '<a href="tel:'+telRaw+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+tel+'</a>';
       }catch(e){
         var ep2 = 'destek@ibkbsorgulama.com';
         links.innerHTML = '<a href="mailto:'+ep2+'" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#2563eb;text-decoration:none;font-weight:500;">'+ep2+'</a>';
       }
     }
   });
+
 }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -700,51 +700,12 @@ window.addEventListener('unhandledrejection', function(e){
   <meta name="keywords" content="İBKB, ihracat bedeli kabul belgesi, TCMB, döviz satışı, ihracat zorunluluk, EK-2, EK-3, serbest bölge, KKTC, ihracat mevzuat">
   <link rel="canonical" href="https://ibkbsorgulama.com">
   <meta name="google-site-verification" content="60ZYbfvQIKxDoLOFRsZaFV6bUodzzOO4qxRE9yzMOwY">
-
-<script>
-fu
-</script>
-  document.open();
-  document.write(html);
-  document.close();
-}
-</script>
-<script>
-</script>
-<script>
-f
-</script>
-'
-    + '<div class="kart">'
-    + '<div class="ikon">\uD83D\uDD27</div>'
-    + '<h1>Sistem Bak\u0131mda</h1>'
-    + '<p class="mesaj">' + (mesaj || '') + '</p>'
-    + '<div class="badge"><span class="dot"></span>K\u0131sa s\u00fcre sonra tekrar deneyin</div>'
-    + '</div>'
-    + '<\/body><\/html>';
-  document.open(); document.write(html); document.close();
-}
 </script>
 
 <script>
 function _bakimSayfasiGoster(mesaj, logo) {
   var s = document.createElement('style');
   s.textContent = [
-    'body{overflow:hidden!important}',
-    '#_bm{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;',
-    'background:linear-gradient(135deg,#0f172a 0%,#1a2f55 50%,#0f172a 100%);font-family:"DM Sans",system-ui,sans-serif;padding:24px}',
-    '#_bk{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;',
-    'padding:52px 44px;max-width:460px;width:100%;text-align:center;',
-    'backdrop-filter:blur(12px);box-shadow:0 25px 60px rgba(0,0,0,.4)}',
-    '#_bi{width:64px;height:64px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);',
-    'border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.8rem}',
-    '#_bh{color:#fff;font-size:1.5rem;font-weight:700;margin-bottom:12px;letter-spacing:-.02em}',
-    '#_bp{color:#94a3b8;font-size:.95rem;line-height:1.7;margin-bottom:32px}',
-    '#_bb{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,.12);',
-    'border:1px solid rgba(37,99,235,.25);border-radius:100px;padding:8px 20px;color:#93c5fd;font-size:.82rem}',
-    '.dot{width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block;',
-    'animation:bl 1.4s ease-in-out infinite}',
-    '@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}'
   ].join('');
   document.head.appendChild(s);
   var d = document.createElement('div'); d.id = '_bm';
@@ -759,6 +720,7 @@ function _bakimSayfasiGoster(mesaj, logo) {
   k.appendChild(i); k.appendChild(h); k.appendChild(p); k.appendChild(b);
   d.appendChild(k); document.body.appendChild(d);
   document.title = 'Sistem Bakimda';
+
 }
 </script>
 </head>
