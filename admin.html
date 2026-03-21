@@ -165,8 +165,56 @@
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>var _LOGO_URI="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMWEyNTQwIi8+CiAgPHRleHQgeD0iMTQiIHk9IjM4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iMSI+xLBCS0I8L3RleHQ+CiAgPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iRE0gU2Fucywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC42KSIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+U09SR1VMQU1BIFZFPC90ZXh0PgogIDx0ZXh0IHg9IjgwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkRNIFNhbnMsIHN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGxldHRlci1zcGFjaW5nPSIwLjUiPsSwSFJBQ0FUIFRBS8SwUDwvdGV4dD4KICA8bGluZSB4MT0iNjgiIHkxPSIxMiIgeDI9IjY4IiB5Mj0iNDgiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+";</script>
+<script>
+function _bakimSayfasiGoster(mesaj, logo) {
+  if (document.getElementById('_bm')) return;
+  var s = document.createElement('style');
+  s.textContent = [
+    '#_bm{position:fixed;inset:0;z-index:99999;background:#0f172a;display:flex;align-items:center;justify-content:center;padding:24px;}',
+    '#_bk{text-align:center;max-width:480px;width:100%;}',
+    '#_blogo{height:44px;width:auto;margin-bottom:28px;opacity:.85;}',
+    '#_bi{font-size:2.8rem;margin-bottom:16px;display:block;}',
+    '#_bh{color:#fff;font-size:1.25rem;font-weight:700;margin:0 0 10px;}',
+    '#_bp{color:rgba(255,255,255,.55);font-size:.9rem;line-height:1.6;margin:0 0 24px;}',
+    '#_bb{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:8px 18px;border-radius:8px;color:rgba(255,255,255,.5);font-size:.8rem;}',
+    '.dot{width:6px;height:6px;border-radius:50%;background:#f59e0b;animation:_bpulse 1.4s ease-in-out infinite;}',
+    '@keyframes _bpulse{0%,100%{opacity:.3}50%{opacity:1}}'
+  ].join('');
+  document.head.appendChild(s);
+  var d = document.createElement('div'); d.id = '_bm';
+  var k = document.createElement('div'); k.id = '_bk';
+  if (logo) {
+    var lg = document.createElement('img'); lg.id = '_blogo'; lg.src = logo; lg.alt = '';
+    k.appendChild(lg);
+  }
+  var i = document.createElement('div'); i.id = '_bi'; i.textContent = '🔧';
+  var h = document.createElement('h1'); h.id = '_bh'; h.textContent = 'Sistem Bakımda';
+  var p = document.createElement('p'); p.id = '_bp'; p.textContent = mesaj || 'Yakında tekrar hizmetinizdeyiz.';
+  var b = document.createElement('div'); b.id = '_bb';
+  var dot = document.createElement('span'); dot.className = 'dot';
+  b.appendChild(dot);
+  b.appendChild(document.createTextNode(' Kısa süre sonra tekrar deneyin'));
+  k.appendChild(i); k.appendChild(h); k.appendChild(p); k.appendChild(b);
+  d.appendChild(k); document.body.appendChild(d);
+  document.title = 'Sistem Bakımda';
+}
+</script>
 </head>
 <body>
+<script>
+// SENKRON bakim kontrolu - flash olmadan icerigi durdurur
+(function(){
+  try{
+    var _sc = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    if(_sc.bakim && _sc.bakim.aktif){
+      document.body.style.opacity = '1';
+      _bakimSayfasiGoster(_sc.bakim.mesaj || '', _sc.logo || '');
+    } else {
+      document.body.style.animation = '_fadeIn .18s ease forwards';
+    }
+  }catch(e){ document.body.style.animation = '_fadeIn .18s ease forwards'; }
+})();
+</script>
 
 <!-- LOGIN -->
 <div id="loginScreen">
@@ -1101,6 +1149,22 @@ Sorgulama Yazılımı">
           <input type="text" id="girisLogArama" oninput="girisLogFiltrele()" placeholder="E-posta ile filtrele…" style="width:100%;max-width:320px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.83rem;font-family:inherit;">
         </div>
         <div id="girisLogListesi"><p style="padding:20px;color:#6b7a99;">Yükleniyor...</p></div>
+      </div>
+
+      <!-- ─── SİLİNMİŞ KAYITLAR ─────────────────────────────────────────── -->
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header">
+          <div>
+            <h3>🗑 Silinmiş İhracat Kayıtları</h3>
+            <p>Soft delete ile silinen kayıtlar — geri yüklenebilir</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary" onclick="silinmisKayitlariYukle()">🔄 Yenile</button>
+          </div>
+        </div>
+        <div id="silinmisKayitlarIcerik" style="padding:16px;">
+          <p style="color:#6b7a99;font-size:.85rem;">Sekmeye tıklayınca yüklenir…</p>
+        </div>
       </div>
     </div>
 
@@ -2170,7 +2234,7 @@ function tab(id, btn){
     }
     kullanicilariYukle(); basvurulariYukle();
   }
-  if(id==='raporlar')     { girisLogYukle(); istatistikYukle(); degisiklikLoguYukle(); }
+  if(id==='raporlar')     { girisLogYukle(); istatistikYukle(); degisiklikLoguYukle(); silinmisKayitlariYukle(); }
   if(id==='gorunum')      { gorununuYukle(); logoTabYukle(); }
   if(id==='icerik')       { icerikYukle(); }
   if(id==='yayin')        { yayinYukle(); }
@@ -3505,6 +3569,74 @@ async function basvurulariYukle(){
   }
 }
 
+
+// ─── SİLİNMİŞ İHRACAT KAYITLARI ────────────────────────────────────────────
+async function silinmisKayitlariYukle(){
+  const sb  = sbCfg();
+  const el  = document.getElementById('silinmisKayitlarIcerik');
+  if(!el) return;
+  el.innerHTML = '<p style="color:#6b7a99;padding:12px 0;">Yükleniyor…</p>';
+  try{
+    const key = sb.serviceKey || sb.key;
+    const r = await fetch(
+      sb.url + '/rest/v1/ihracatlar?deleted_at=not.is.null&order=deleted_at.desc&limit=200',
+      { headers:{'apikey':key,'Authorization':'Bearer '+key} }
+    );
+    const d = await r.json();
+    if(!r.ok){ el.innerHTML='<p style="color:#b91c1c;padding:12px;">Hata: '+JSON.stringify(d)+'</p>'; return; }
+    if(!Array.isArray(d)||d.length===0){
+      el.innerHTML='<div style="text-align:center;padding:32px;color:#6b7a99;font-size:.85rem;">✅ Silinmiş kayıt yok</div>';
+      return;
+    }
+    var rows = d.map(function(k){
+      var silTarih = k.deleted_at ? new Date(k.deleted_at).toLocaleString('tr-TR') : '—';
+      var ihTarih  = k.ihracat_tarihi
+        ? new Date(k.ihracat_tarihi+'T00:00:00').toLocaleDateString('tr-TR')
+        : '—';
+      return '<tr style="border-bottom:1px solid #e2e8f0;">'
+        +'<td style="padding:8px 10px;font-family:monospace;font-size:.78rem;">'+(k.beyanname_no||'—')+'</td>'
+        +'<td style="padding:8px 10px;font-size:.82rem;">'+(k.ulke||'—')+'</td>'
+        +'<td style="padding:8px 10px;font-size:.82rem;">'+(k.alici_firma||'—')+'</td>'
+        +'<td style="padding:8px 10px;font-size:.82rem;">'+ihTarih+'</td>'
+        +'<td style="padding:8px 10px;font-size:.78rem;color:#b45309;">'+silTarih+'</td>'
+        +'<td style="padding:8px 10px;">'
+          +'<button onclick="silinmisKaydiGeriYukle(''+k.id+'')" '
+          +'style="padding:4px 12px;background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;">'
+          +'↩ Geri Yükle</button>'
+        +'</td>'
+        +'</tr>';
+    }).join('');
+    el.innerHTML = '<div style="overflow-x:auto;">'
+      +'<table style="width:100%;border-collapse:collapse;font-size:.82rem;">'
+      +'<thead><tr style="background:#0f172a;">'
+      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Beyanname</th>'
+      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Ülke</th>'
+      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Firma</th>'
+      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">İhracat Tarihi</th>'
+      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">Silinme Tarihi</th>'
+      +'<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;text-transform:uppercase;">İşlem</th>'
+      +'</tr></thead>'
+      +'<tbody>'+rows+'</tbody></table></div>'
+      +'<p style="font-size:.75rem;color:#94a3b8;margin-top:10px;padding:0 4px;">'+d.length+' silinmiş kayıt · Geri yükleme deleted_at alanını temizler</p>';
+  }catch(e){ el.innerHTML='<p style="color:#b91c1c;padding:12px;">Hata: '+e.message+'</p>'; }
+}
+
+async function silinmisKaydiGeriYukle(id){
+  if(!confirm('Bu kayıt geri yüklenecek. Emin misiniz?')) return;
+  const sb  = sbCfg();
+  const key = sb.serviceKey || sb.key;
+  try{
+    const r = await fetch(sb.url+'/rest/v1/ihracatlar?id=eq.'+id,{
+      method:'PATCH',
+      headers:{'apikey':key,'Authorization':'Bearer '+key,
+               'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({deleted_at: null})
+    });
+    if(!r.ok){ const t=await r.text(); throw new Error(t); }
+    toast('✅ Kayıt geri yüklendi');
+    silinmisKayitlariYukle();
+  }catch(e){ toast('✗ Hata: '+e.message); }
+}
 
 async function girisLogYukle(){
   const sb=sbCfg();

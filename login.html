@@ -170,33 +170,52 @@ window.addEventListener('unhandledrejection', function(e){
 
 <script>
 function _bakimSayfasiGoster(mesaj, logo) {
+  if (document.getElementById('_bm')) return;
   var s = document.createElement('style');
   s.textContent = [
+    '#_bm{position:fixed;inset:0;z-index:99999;background:#0f172a;display:flex;align-items:center;justify-content:center;padding:24px;}',
+    '#_bk{text-align:center;max-width:480px;width:100%;}',
+    '#_blogo{height:44px;width:auto;margin-bottom:28px;opacity:.85;}',
+    '#_bi{font-size:2.8rem;margin-bottom:16px;display:block;}',
+    '#_bh{color:#fff;font-size:1.25rem;font-weight:700;margin:0 0 10px;}',
+    '#_bp{color:rgba(255,255,255,.55);font-size:.9rem;line-height:1.6;margin:0 0 24px;}',
+    '#_bb{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:8px 18px;border-radius:8px;color:rgba(255,255,255,.5);font-size:.8rem;}',
+    '.dot{width:6px;height:6px;border-radius:50%;background:#f59e0b;animation:_bpulse 1.4s ease-in-out infinite;}',
+    '@keyframes _bpulse{0%,100%{opacity:.3}50%{opacity:1}}'
   ].join('');
   document.head.appendChild(s);
   var d = document.createElement('div'); d.id = '_bm';
   var k = document.createElement('div'); k.id = '_bk';
-  var i = document.createElement('div'); i.id = '_bi'; i.textContent = '\uD83D\uDD27';
-  var h = document.createElement('h1'); h.id = '_bh'; h.textContent = 'Sistem Bak\u0131mda';
-  var p = document.createElement('p'); p.id = '_bp'; p.textContent = mesaj || '';
+  if (logo) {
+    var lg = document.createElement('img'); lg.id = '_blogo'; lg.src = logo; lg.alt = '';
+    k.appendChild(lg);
+  }
+  var i = document.createElement('div'); i.id = '_bi'; i.textContent = '🔧';
+  var h = document.createElement('h1'); h.id = '_bh'; h.textContent = 'Sistem Bakımda';
+  var p = document.createElement('p'); p.id = '_bp'; p.textContent = mesaj || 'Yakında tekrar hizmetinizdeyiz.';
   var b = document.createElement('div'); b.id = '_bb';
   var dot = document.createElement('span'); dot.className = 'dot';
   b.appendChild(dot);
-  b.appendChild(document.createTextNode(' K\u0131sa s\u00fcre sonra tekrar deneyin'));
+  b.appendChild(document.createTextNode(' Kısa süre sonra tekrar deneyin'));
   k.appendChild(i); k.appendChild(h); k.appendChild(p); k.appendChild(b);
   d.appendChild(k); document.body.appendChild(d);
-  document.title = 'Sistem Bakimda';
-
+  document.title = 'Sistem Bakımda';
 }
 </script>
 </head>
 <body>
 <script>
+// SENKRON bakim kontrolu - flash olmadan icerigi durdurur
 (function(){
   try{
-    var _b=JSON.parse(localStorage.getItem('ibkb_config')||'{}');
-    if(_b.bakim&&_b.bakim.aktif) _bakimSayfasiGoster(_b.bakim.mesaj||'',_b.logo||'');
-  }catch(e){}
+    var _sc = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+    if(_sc.bakim && _sc.bakim.aktif){
+      document.body.style.opacity = '1';
+      _bakimSayfasiGoster(_sc.bakim.mesaj || '', _sc.logo || '');
+    } else {
+      document.body.style.animation = '_fadeIn .18s ease forwards';
+    }
+  }catch(e){ document.body.style.animation = '_fadeIn .18s ease forwards'; }
 })();
 </script>
 
