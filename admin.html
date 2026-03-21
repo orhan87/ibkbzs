@@ -57,8 +57,8 @@
   main{max-width:1200px;margin:0 auto;padding:32px 2rem 60px;}
 
   /* TABS */
-  .tab-bar{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--g200);}
-  .tab-btn{padding:10px 20px;font-family:inherit;font-size:.9rem;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--g400);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+  .tab-bar{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--g200);overflow-x:auto;overflow-y:visible;white-space:nowrap;scrollbar-width:thin;padding-bottom:2px;}
+  .tab-btn{padding:10px 16px;font-family:inherit;font-size:.85rem;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--g400);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap;flex-shrink:0;}
   .tab-btn:hover{color:var(--navy);}
   .tab-btn.ak{color:var(--blue);border-bottom-color:var(--blue);}
   .tab-content{display:none;}
@@ -229,44 +229,6 @@
       <button class="tab-btn" onclick="tab('sistem',this)" id="tabSupabase">🔗 Sistem</button>
       <button class="tab-btn" onclick="tab('guvenlik',this)">🔑 Güvenlik</button>
     </div>
-
-
-      <!-- SUPABASE AYARLARI -->
-                <span id="sbDurum" style="font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;background:#f0f2f5;color:#8c97a8;">Yapılandırılmamış</span>
-        </div>
-        <div class="pc-body">
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Project URL</label>
-            <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
-            <p class="acik">Supabase → Project Settings → API → Project URL</p>
-          </div>
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Anon Key</label>
-            <input type="text" id="sb-key" placeholder="sb_publishable_...">
-            <p class="acik">Supabase → Project Settings → API → anon public</p>
-          </div>
-          <div class="fgg" style="margin-bottom:12px;">
-            <label>Supabase Service Role Key <span style="background:#fef3c7;color:#92400e;font-size:.65rem;padding:1px 7px;border-radius:8px;font-weight:700;margin-left:4px;">Başvurular için zorunlu</span></label>
-            <input type="password" id="sb-service-key" placeholder="sb_secret_...">
-            <p class="acik">Supabase → Project Settings → API → service_role (secret) — Yalnızca admin panelinde saklanır, dışarıya açılmaz.</p>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-            <button class="btn btn-primary" onclick="supabaseKaydet()">💾 Bağlantıyı Kaydet</button>
-            <button class="btn" onclick="supabaseTest()" id="btnSbTest" style="display:none;">🔍 Bağlantıyı Test Et</button>
-          </div>
-          <div id="sbTestSonuc" style="margin-top:10px;font-size:.82rem;display:none;padding:8px 12px;border-radius:7px;"></div>
-
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e6eb;">
-            <p style="font-size:.8rem;color:#6b7a99;line-height:1.7;">
-              <strong style="color:#4a5568;">Nasıl kurulur?</strong><br>
-              1. <a href="https://supabase.com" target="_blank" style="color:var(--blue);">supabase.com</a> adresine gidin ve ücretsiz hesap açın<br>
-              2. "New Project" ile yeni proje oluşturun<br>
-              3. Authentication → Providers → Email → "Enable email" açık olduğunu doğrulayın<br>
-              4. Authentication → Email → "Confirm email" → <strong>kapatın</strong> (OFF)<br>
-              5. Yukarıdaki URL ve Key'i kopyalayıp yapıştırın
-            </p>
-          </div>
-        </div>
     <div id="tab-dashboard" class="tab-content ak">
 
       
@@ -279,6 +241,7 @@
           <div id="dashboardIcerik" style="color:#8c97a8;font-size:.85rem;padding:8px 0;">Yükleniyor…</div>
         </div>
       </div>
+    </div>
     <div id="tab-kullanicilar" class="tab-content">
 
       <div class="panel-card" style="max-width:620px;" id="sbKullanici">
@@ -358,11 +321,26 @@
           </div>
         </div>
         <div class="pc-body">
+                    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="basvuruArama" placeholder="🔍  Ad, firma, e-posta veya talep ara…"
+              oninput="basvuruFiltrele()"
+              style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:.84rem;font-family:inherit;outline:none;">
+            <select id="basvuruTalepFiltre" onchange="basvuruFiltrele()"
+              style="padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:.84rem;font-family:inherit;background:#fff;">
+              <option value="">Tüm Talepler</option>
+              <option value="satin-alma">🛒 Satın Alma</option>
+              <option value="demo">🎥 Demo</option>
+              <option value="fiyat">💰 Fiyat</option>
+              <option value="kurumsal">🏢 Kurumsal</option>
+              <option value="diger">📝 Diğer</option>
+            </select>
+          </div>
           <div id="basvuruListesi" style="font-size:.87rem;">
             <div style="color:#8c97a8;padding:12px 0;">Yükleniyor…</div>
           </div>
         </div>
       </div>
+    </div>
     <div id="tab-ulkeler" class="tab-content">
 
       <div class="panel-card">
@@ -424,7 +402,6 @@
 
     <!-- SAYISAL DEĞERLER -->
 
-    </div>
     <div id="tab-sabitler" class="tab-content">
 
       <div class="panel-card">
@@ -493,7 +470,6 @@
 
     <!-- METİNLER -->
 
-    </div>
     <div id="tab-gorunum" class="tab-content">
 
       <div class="panel-card">
@@ -989,99 +965,99 @@
         </div>
       </div>
 
-    </div>
-
+<!-- EFT PANELİ -->
       <div class="panel-card">
         <div class="pc-head">
-          <div><h3>🏦 EFT / Banka Bilgileri</h3><p>Lisans ödemesi için EFT bilgilerini girin — başvuru onayında kullanıcıya mail ile gönderilir</p></div>
-          <button class="ob ob-dark" onclick="eftKaydet()">💾 Kaydet</button>
+          <div><h3>🏦 EFT / Banka Bilgileri</h3><p>Ödeme için kullanıcıya gösterilecek hesap bilgileri</p></div>
+          <div style="display:flex;gap:8px;">
+            <button class="ob ob-blue" onclick="eftOnizle()">👁 Önizle</button>
+            <button class="ob ob-dark" onclick="eftKaydet()">💾 Kaydet</button>
+          </div>
         </div>
         <div class="pc-body">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
             <div>
-              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Banka Adı</label>
-              <input type="text" id="eft-banka" placeholder="Ziraat Bankası" style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Banka Adı</label>
+              <input type="text" id="eft-banka" placeholder="Ziraat Bankası" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
             </div>
             <div>
-              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Hesap Sahibi</label>
-              <input type="text" id="eft-sahip" placeholder="gövdağ Yazılım Ltd. Şti." style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Hesap Sahibi</label>
+              <input type="text" id="eft-sahip" placeholder="GÖVDAĞ GIDA TİCARET LİMİTED ŞİRKETİ" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
             </div>
           </div>
           <div style="margin-bottom:14px;">
-            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">IBAN</label>
-            <input type="text" id="eft-iban" placeholder="TR00 0000 0000 0000 0000 0000 00" maxlength="32"
-              oninput="this.value=this.value.toUpperCase().replace(/[^TR0-9 ]/g,'').replace(/(.{4})/g,'$1 ').trim()"
-              style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:monospace;box-sizing:border-box;letter-spacing:.05em;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">IBAN</label>
+            <input type="text" id="eft-iban" placeholder="TR00 0000 0000 0000 0000 0000 00" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;letter-spacing:.04em;">
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
             <div>
-              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Lisans Ücreti</label>
-              <div style="display:flex;gap:6px;">
-                <input type="number" id="eft-ucret" placeholder="500" min="0" style="flex:1;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;box-sizing:border-box;">
-                <select id="eft-para" style="padding:9px 10px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;">
-                  <option>TRY</option><option>USD</option><option>EUR</option>
-                </select>
-              </div>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Ücret</label>
+              <input type="text" id="eft-ucret" placeholder="1.500 TL" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
             </div>
             <div>
-              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Lisans Süresi</label>
-              <select id="eft-sure" style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;">
-                <option value="1 yıl">1 Yıl</option>
-                <option value="6 ay">6 Ay</option>
-                <option value="3 ay">3 Ay</option>
-                <option value="ömür boyu">Ömür Boyu</option>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Para Birimi</label>
+              <select id="eft-para" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                <option value="TL">TL</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Süre</label>
+              <select id="eft-sure" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+                <option value="1 Yıl">1 Yıl</option>
+                <option value="6 Ay">6 Ay</option>
+                <option value="3 Ay">3 Ay</option>
+                <option value="1 Ay">1 Ay</option>
               </select>
             </div>
           </div>
-          <div style="margin-bottom:18px;">
-            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Ek Not (opsiyonel)</label>
-            <textarea id="eft-not" rows="2" placeholder="Ödeme açıklamasına adınızı ve telefon numaranızı yazmanızı rica ederiz."
-              style="width:100%;padding:9px 12px;border:1.5px solid var(--g300);border-radius:7px;font-size:.85rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Not / Açıklama</label>
+            <textarea id="eft-not" rows="2" placeholder="Ödeme açıklamasına firma adınızı yazınız" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;resize:vertical;"></textarea>
           </div>
-          <div id="eft-onizle" style="display:none;background:#f8fafc;border:1.5px solid var(--g200);border-radius:8px;padding:14px 16px;">
-            <div style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">📧 Kullanıcıya Gönderilecek Mail Önizlemesi</div>
+          <div id="eft-onizle" style="display:none;background:#f8fafc;border:1.5px solid var(--g200);border-radius:8px;padding:14px;margin-bottom:12px;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">📧 Mail Önizleme</div>
             <div id="eft-onizle-icerik" style="font-size:.82rem;color:var(--navy2);line-height:1.7;"></div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:4px;">
-            <button class="ob ob-blue" onclick="eftOnizle()">👁 Önizle</button>
-          </div>
         </div>
       </div>
 
-    <!-- LOGO & LOGIN -->
-
-      <div class="panel-card" style="margin-top:16px;">
-        <div class="pc-head"><div><h3>✉️ Kullanıcıya E-posta Gönder</h3><p>Seçili veya tüm kullanıcılara duyuru maili gönder (Resend ile)</p></div></div>
+<!-- E-POSTA PANEL -->
+      <div class="panel-card">
+        <div class="pc-head">
+          <div><h3>✉️ Kullanıcıya E-posta Gönder</h3><p>Kayıtlı kullanıcılara toplu veya tekil mail</p></div>
+        </div>
         <div class="pc-body">
-          <div class="metin-item">
-            <label>Alıcı</label>
-            <select id="mail-alici" style="width:100%;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:.85rem;background:#fff;font-family:inherit;" onchange="mailAliciDegisti(this.value)">
-              <option value="hepsi">👥 Tüm Aktif Kullanıcılar</option>
-              <option value="lisans">✅ Sadece Lisanslılar</option>
-              <option value="demo">🎥 Sadece Demo Kullanıcılar</option>
-              <option value="tekil">✉ Belirli E-posta Adresi</option>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Alıcı</label>
+            <select id="mail-alici" onchange="mailAliciDegisti(this.value)" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
+              <option value="hepsi">Tüm Kullanıcılar</option>
+              <option value="lisans">Sadece Lisans Kullanıcıları</option>
+              <option value="demo">Sadece Demo Kullanıcıları</option>
+              <option value="tekil">Tekil E-posta</option>
             </select>
           </div>
-          <div class="metin-item" id="mailTekilDiv" style="display:none;">
-            <label>E-posta Adresi</label>
-            <input type="email" id="mail-tekil-adres" placeholder="kullanici@firma.com">
+          <div id="mailTekilDiv" style="display:none;margin-bottom:14px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">E-posta Adresi</label>
+            <input type="email" id="mail-tekil-adres" placeholder="kullanici@sirket.com" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
           </div>
-          <div class="metin-item">
-            <label>Konu</label>
-            <input type="text" id="mail-konu" placeholder="Örn: gövdağ İBKB — Önemli Güncelleme" value="gövdağ İBKB — Önemli Bilgilendirme">
+          <div style="margin-bottom:14px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Konu</label>
+            <input type="text" id="mail-konu" placeholder="Mail konusu" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;">
           </div>
-          <div class="metin-item">
-            <label>Mesaj</label>
-            <textarea id="mail-mesaj" rows="4" placeholder="Kullanıcılara iletmek istediğiniz mesajı yazın…"></textarea>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:.72rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Mesaj (HTML destekler)</label>
+            <textarea id="mail-mesaj" rows="5" placeholder="Mail içeriği..." style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:7px;font-size:.85rem;font-family:inherit;resize:vertical;"></textarea>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;">
-            <button class="btn btn-primary" onclick="topluMailGonder()">✉️ Mail Gönder</button>
-            <span id="mailDurumEl" style="font-size:.82rem;color:#64748b;"></span>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button class="ob ob-dark" onclick="topluMailGonder()">📨 Gönder</button>
+            <span id="mailDurumEl" style="font-size:.82rem;color:var(--g500);"></span>
           </div>
         </div>
       </div>
 
-      <!-- SİSTEM DUYURUSU -->
+    </div>
 
     <div id="tab-raporlar" class="tab-content">
 
@@ -1138,6 +1114,7 @@
       <button class="btn" onclick="degisiklikLoguYukle()" style="font-size:.8rem;margin-bottom:12px;">↻ Yenile</button>
       <div id="degisiklikLogu" style="font-size:.82rem;"></div>
   </div>
+    </div>
     <div id="tab-sistem" class="tab-content">
 
       <div class="panel-card" style="max-width:560px;">
@@ -1216,13 +1193,11 @@
         </div>
       </div>
 
-    <!-- BAŞVURULAR -->
-
     </div>
 
+    <!-- BAŞVURULAR -->
 
   </main>
-</div>
 
 <div id="toast"></div>
 
@@ -1548,7 +1523,27 @@ async function girisYap(){
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('adminPanel').style.display='block';
       localStorage.setItem('ibkb_admin_email', 'orhankelahmet@gmail.com');
-      baslat().then(function(){ tab('dashboard', document.getElementById('tabDashboard')); dashboardYukle(); }).catch(function(){ tab('dashboard', document.getElementById('tabDashboard')); dashboardYukle(); });
+      baslat().then(function(){
+        tab('dashboard', document.getElementById('tabDashboard'));
+        dashboardYukle();
+        // Service key varsa kullanıcı panelini göster
+        try{
+          var _sb = sbCfg();
+          if(_sb && _sb.serviceKey){
+            var _sk = document.getElementById('sbKullanici');
+            var _sl = document.getElementById('sbListe');
+            var _sd = document.getElementById('sbDurum');
+            if(_sk) _sk.style.display='block';
+            if(_sl) _sl.style.display='block';
+            if(_sd){ _sd.textContent='Bağlı ✓'; _sd.style.background='#e8f5ef'; _sd.style.color='#1a7a4a'; }
+            var _bt = document.getElementById('btnSbTest');
+            if(_bt) _bt.style.display='inline-block';
+          }
+        }catch(e){}
+      }).catch(function(){
+        tab('dashboard', document.getElementById('tabDashboard'));
+        dashboardYukle();
+      });
     } else {
       const bf2 = bfDurumAl();
       bf2.sayi = (bf2.sayi || 0) + 1;
@@ -1967,13 +1962,126 @@ function loginMetinleriKaydet(){
 }
 
 // ─── SEKMELER ────────────────────────────────────────────────────────────────
+
+function icerikYukle(){
+  var cfg = depoyuYukle()||{};
+  var met = Object.assign({}, cfg.metinler||{});
+  var _e0=document.getElementById('m-tarihNot'); if(_e0) _e0.value=met['tarihNot']||'';
+  var _e1=document.getElementById('m-bedelNot'); if(_e1) _e1.value=met['bedelNot']||'';
+  var _e2=document.getElementById('m-ulkeNot'); if(_e2) _e2.value=met['ulkeNot']||'';
+  var _e3=document.getElementById('m-disclaimer'); if(_e3) _e3.value=met['disclaimer']||'';
+  var _e4=document.getElementById('m-ek2'); if(_e4) _e4.value=met['ek2']||'';
+  var _e5=document.getElementById('m-ek3'); if(_e5) _e5.value=met['ek3']||'';
+  var _e6=document.getElementById('m-ozel'); if(_e6) _e6.value=met['ozel']||'';
+  var _e7=document.getElementById('m-heroBaslik'); if(_e7) _e7.value=met['heroBaslik']||'';
+  var _e8=document.getElementById('m-siteBaslik'); if(_e8) _e8.value=met['siteBaslik']||'';
+  var _e9=document.getElementById('m-footerYazi'); if(_e9) _e9.value=met['footerYazi']||'';
+  var _e10=document.getElementById('m-iletisimEmail'); if(_e10) _e10.value=met['iletisimEmail']||'';
+  var _e11=document.getElementById('m-iletisimTel'); if(_e11) _e11.value=met['iletisimTel']||'';
+  var _e12=document.getElementById('m-destekUygulamaTalimat'); if(_e12) _e12.value=met['destekUygulamaTalimat']||'';
+  var _e13=document.getElementById('m-genelgePdf'); if(_e13) _e13.value=met['genelgePdf']||'';
+  var _e14=document.getElementById('m-loginBaslik'); if(_e14) _e14.value=met['loginBaslik']||'';
+  var _e15=document.getElementById('m-loginAlt'); if(_e15) _e15.value=met['loginAlt']||'';
+  var _e16=document.getElementById('m-tanitimMetin'); if(_e16) _e16.value=met['tanitimMetin']||'';
+  var _e17=document.getElementById('m-tanitimGoster'); if(_e17) _e17.value=met['tanitimGoster']||'';
+  var _e18=document.getElementById('m-loginEpostaLabel'); if(_e18) _e18.value=met['loginEpostaLabel']||'';
+  var _e19=document.getElementById('m-loginEpostaPlaceholder'); if(_e19) _e19.value=met['loginEpostaPlaceholder']||'';
+  var _e20=document.getElementById('m-loginParolaLabel'); if(_e20) _e20.value=met['loginParolaLabel']||'';
+  var _e21=document.getElementById('m-loginBtnYazi'); if(_e21) _e21.value=met['loginBtnYazi']||'';
+  var _e22=document.getElementById('m-loginEmail'); if(_e22) _e22.value=met['loginEmail']||'';
+  var _e23=document.getElementById('m-loginTel'); if(_e23) _e23.value=met['loginTel']||'';
+  var _e24=document.getElementById('m-loginFooter'); if(_e24) _e24.value=met['loginFooter']||'';
+  var _e25=document.getElementById('m-fiyatGoster'); if(_e25) _e25.value=met['fiyatGoster']||'';
+  var _e26=document.getElementById('m-fiyatTutar'); if(_e26) _e26.value=met['fiyatTutar']||'';
+  var _e27=document.getElementById('m-fiyatKdvDahil'); if(_e27) _e27.value=met['fiyatKdvDahil']||'';
+  var _e28=document.getElementById('m-fiyatSure'); if(_e28) _e28.value=met['fiyatSure']||'';
+  var _e29=document.getElementById('m-fiyatBadge'); if(_e29) _e29.value=met['fiyatBadge']||'';
+  // Görünüm yükleme (select'ler için)
+  var _tg=document.getElementById('m-tanitimGoster'); if(_tg&&met.tanitimGoster) _tg.value=met.tanitimGoster;
+  var _fg=document.getElementById('m-fiyatGoster'); if(_fg&&met.fiyatGoster) _fg.value=met.fiyatGoster;
+  var _fk=document.getElementById('m-fiyatKdvDahil'); if(_fk&&met.fiyatKdvDahil) _fk.value=met.fiyatKdvDahil;
+}
+
+function yayinYukle(){
+  var cfg = depoyuYukle()||{};
+  var d = cfg.duyuru||{};
+  var b = cfg.bakim||{};
+  var mv = cfg.mevzuat||{};
+  var _md=document.getElementById('m-duyuru'); if(_md) _md.value=d.metin||'';
+  var _mdt=document.getElementById('m-duyuruTip'); if(_mdt&&d.tip) _mdt.value=d.tip;
+  var _bm=document.getElementById('m-bakimMesaj'); if(_bm) _bm.value=b.mesaj||'';
+  var _ba=document.getElementById('m-bakimMod');
+  if(_ba) _ba.checked = b.aktif===true||b.aktif==='true';
+  var _mvB=document.getElementById('mv-bildirimMetni'); if(_mvB) _mvB.value=mv.bildirimMetni||'';
+  var _mvT=document.getElementById('mv-sonTarih'); if(_mvT) _mvT.value=mv.sonTarih||'';
+  var _mvO=document.getElementById('mv-tcmbOran'); if(_mvO) _mvO.value=mv.tcmbOran||'';
+}
+
+
+function basvuruFiltrele(){
+  var q = (document.getElementById('basvuruArama')||{value:''}).value.toLowerCase().trim();
+  var t = (document.getElementById('basvuruTalepFiltre')||{value:''}).value;
+  var data = window._basvuruTumu || [];
+  var filtered = data.filter(function(row){
+    if(t && row.talep !== t) return false;
+    if(!q) return true;
+    var hay = ((row.ad_soyad||'')+(row.firma||'')+(row.email||'')+(row.telefon||'')+(row.mesaj||'')).toLowerCase();
+    return hay.indexOf(q) >= 0;
+  });
+  var el = document.getElementById('basvuruListesi');
+  if(!el) return;
+  var tbody = el.querySelector('tbody');
+  if(!tbody){ basvurulariYukle(); return; }
+  function badge(talep){
+    if(talep==='demo') return '<span style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🎥 Demo</span>';
+    if(talep==='satin-alma') return '<span style="background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🛒 Satın Alma</span>';
+    if(talep==='kurumsal') return '<span style="background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">🏢 Kurumsal</span>';
+    if(talep==='fiyat') return '<span style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700;">💰 Fiyat</span>';
+    return talep||'—';
+  }
+  if(filtered.length === 0){
+    tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:#94a3b8;">Sonuç bulunamadı.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(function(row,i){
+    var t2 = new Date(row.tarih).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
+    var msg = row.mesaj ? '<span title="'+row.mesaj.replace(/"/g,"'")+'">'+row.mesaj.substring(0,40)+(row.mesaj.length>40?'…':'')+'</span>' : '<span style="color:#94a3b8;">—</span>';
+    var isDemo = row.talep==='demo';
+    var rowBg = isDemo ? '#fffbeb' : (i%2===0?'#fff':'#f8fafc');
+    var rid = (row.id||'').replace(/'/g,'');
+    return '<tr style="border-bottom:1px solid #edf2f7;background:'+rowBg+(isDemo?';border-left:3px solid #f59e0b;':'')+'">'
+      +'<td style="padding:9px 14px;color:#4a5568;white-space:nowrap;">'+t2+'</td>'
+      +'<td style="padding:9px 14px;color:#1e293b;font-weight:600;">'+row.ad_soyad+'</td>'
+      +'<td style="padding:9px 14px;color:#334155;">'+row.firma+'</td>'
+      +'<td style="padding:9px 14px;"><a href="mailto:'+row.email+'" style="color:#2563eb;text-decoration:none;">'+row.email+'</a></td>'
+      +'<td style="padding:9px 14px;color:#334155;">'+(row.telefon||'<span style="color:#94a3b8;">—</span>')+'</td>'
+      +'<td style="padding:9px 14px;">'+badge(row.talep||'')+'</td>'
+      +'<td style="padding:9px 14px;color:#4a5568;font-size:.8rem;max-width:160px;">'+msg+'</td>'
+      +'<td style="padding:9px 14px;text-align:center;">'
+      +'<div style="display:flex;gap:5px;justify-content:center;">'
+      +'<a href="mailto:'+row.email+'?subject=Re: İBKB Sorgulama Başvurunuz" style="font-size:.7rem;color:#1a56a0;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 10px;border-radius:6px;text-decoration:none;font-weight:600;">📧 Yanıtla</a>'
+      +'<button onclick="basvuruSil(this.dataset.id)" data-id="'+rid+'" style="font-size:.7rem;color:#b91c1c;background:#fef2f2;border:1px solid #fca5a5;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;">🗑 Sil</button>'
+      +'</div></td></tr>';
+  }).join('');
+}
+
+
 function tab(id, btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('ak'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ak'));
   if(id==='dashboard')    dashboardYukle();
-  if(id==='kullanicilar') { kullanicilariYukle(); basvurulariYukle(); }
+  if(id==='kullanicilar') {
+    var _sb2=sbCfg();
+    if(_sb2&&_sb2.serviceKey){
+      var _sl2=document.getElementById('sbListe'); if(_sl2) _sl2.style.display='block';
+      var _sk2=document.getElementById('sbKullanici'); if(_sk2) _sk2.style.display='block';
+    }
+    kullanicilariYukle(); basvurulariYukle();
+  }
   if(id==='raporlar')     { girisLogYukle(); istatistikYukle(); degisiklikLoguYukle(); }
   if(id==='gorunum')      { gorununuYukle(); logoTabYukle(); }
+  if(id==='icerik')       { icerikYukle(); }
+  if(id==='yayin')        { yayinYukle(); }
   if(id==='ticari')       { eftYukle(); }
   if(id==='sistem')       { try{ var sb=sbCfg(); if(sb){ var u=document.getElementById('sb-url'); var k=document.getElementById('sb-key'); var s=document.getElementById('sb-service-key'); if(u&&!u.value)u.value=sb.url||''; if(k&&!k.value)k.value=sb.key||''; if(s&&!s.value)s.value=sb.serviceKey||''; }}catch(e){} }
   var el = document.getElementById('tab-'+id);
@@ -2126,7 +2234,7 @@ async function degisiklikLoguYukle(){
   el.innerHTML = '<div style="color:#8c97a8;">Yükleniyor…</div>';
   try{
     var r = await fetch(_SC_URL + '?select=id,updated_at,updated_by&order=updated_at.desc&limit=50', {
-      headers:{'apikey':_SC_SVC,'apikey':_SC_SVC,'Authorization':'Bearer '+_SC_SVC,'Accept':'application/json'}
+      headers:{'apikey':_SC_SVC,'Authorization':'Bearer '+_SC_SVC,'Accept':'application/json'}
     });
     if(!r.ok) throw new Error('HTTP '+r.status);
     var rows = await r.json();
@@ -2338,9 +2446,12 @@ function supabaseKaydet(){
   document.getElementById('sbDurum').textContent='Bağlı ✓';
   document.getElementById('sbDurum').style.background='#e8f5ef';
   document.getElementById('sbDurum').style.color='#1a7a4a';
-  document.getElementById('btnSbTest').style.display='inline-block';
-  document.getElementById('sbKullanici').style.display='block';
-  document.getElementById('sbListe').style.display='block';
+  var _btnTest = document.getElementById('btnSbTest');
+  if(_btnTest) _btnTest.style.display='inline-block';
+  var _sbKul = document.getElementById('sbKullanici');
+  if(_sbKul) _sbKul.style.display='block';
+  var _sbLis = document.getElementById('sbListe');
+  if(_sbLis) _sbLis.style.display='block';
   kullanicilariYukle();
   toast('✅ Supabase yapılandırması kaydedildi');
 }
@@ -2459,19 +2570,19 @@ async function tamVeriYedekIndir(){
   try{
     // İhracat kayıtları
     var rIhr = await fetch(sb.url + '/rest/v1/ihracatlar?select=*&order=created_at.desc&limit=10000', {
-      headers:{'apikey':(sb.serviceKey||sb.key),'apikey':(sb.serviceKey||sb.key),'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+      headers:{'apikey':(sb.serviceKey||sb.key),'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var ihracatlar = rIhr.ok ? await rIhr.json() : [];
 
     // Sorgu geçmişi
     var rSrg = await fetch(sb.url + '/rest/v1/sorgular?select=*&order=tarih.desc&limit=10000', {
-      headers:{'apikey':(sb.serviceKey||sb.key),'apikey':(sb.serviceKey||sb.key),'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+      headers:{'apikey':(sb.serviceKey||sb.key),'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var sorgular = rSrg.ok ? await rSrg.json() : [];
 
     // Başvurular
     var rBsv = await fetch(sb.url + '/rest/v1/basvurular?select=*&order=tarih.desc&limit=10000', {
-      headers:{'apikey':(sb.serviceKey||sb.key),'apikey':(sb.serviceKey||sb.key),'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
+      headers:{'apikey':(sb.serviceKey||sb.key),'Authorization':'Bearer '+(sb.serviceKey||sb.key),'Accept':'application/json'}
     });
     var basvurular = rBsv.ok ? await rBsv.json() : [];
 
@@ -2534,7 +2645,7 @@ async function adminTamYedekIndir(){
     var sb = sbCfg();
     if(!sb){ toast('✗ Supabase bağlantısı yok'); return; }
     var key = sb.serviceKey || sb.key;
-    var headers = {'apikey':key,'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'};
+    var headers = {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'};
 
     // Paralel çek
     var [rIhracat, rSorgu, rBasv] = await Promise.all([
@@ -2606,13 +2717,13 @@ async function kullanicilariYukle(){
     // giris_log'dan giriş istatistiklerini çek
     const _svcK = sb.serviceKey || sb.key;
     const rLog=await fetch(sb.url+'/rest/v1/giris_log?select=email,giris_tarihi&order=giris_tarihi.desc&limit=1000',{
-      headers:{'apikey':_svcK,'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
+      headers:{'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
     });
     const logData = rLog.ok ? await rLog.json() : [];
 
     // sorgular tablosundan sorgu sayısını çek
     const rSrg=await fetch(sb.url+'/rest/v1/sorgular?select=email&limit=2000',{
-      headers:{'apikey':_svcK,'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
+      headers:{'apikey':_svcK,'Authorization':'Bearer '+_svcK,'Accept':'application/json'}
     });
     const srgData = rSrg.ok ? await rSrg.json() : [];
     const sorguMap={};
@@ -2621,7 +2732,7 @@ async function kullanicilariYukle(){
     // Başvurular tablosundan firma/tel/talep bilgilerini çek
     const svcKey2 = sb.serviceKey || sb.key;
     const rBas = await fetch(sb.url+'/rest/v1/basvurular?select=email,ad_soyad,firma,telefon,talep&order=tarih.desc&limit=500',{
-      headers:{'apikey':svcKey,'apikey':svcKey2,'apikey':svcKey2,'Authorization':'Bearer '+svcKey2,'Accept':'application/json'}
+      headers:{'apikey':svcKey2,'Authorization':'Bearer '+svcKey2,'Accept':'application/json'}
     });
     const basData = rBas.ok ? await rBas.json() : [];
     // Her email için en son başvuruyu al
@@ -3480,7 +3591,7 @@ async function dashboardYukle(){
 
   try{
     const key = sb ? (sb.serviceKey || sb.key) : null;
-    const headers = key ? {'apikey':key,'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'} : {};
+    const headers = key ? {'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'} : {};
 
     // Paralel fetch
     const [rUsers, rLog, rSorgu, rBasv, rIhracat] = await Promise.allSettled([
@@ -4029,7 +4140,7 @@ async function istatistikYukle(){
   try{
     const key = sb.serviceKey || sb.key;
     const r = await fetch(sb.url+'/rest/v1/sorgular?select=email,tarih,veri&order=tarih.desc&limit=2000',{
-      headers:{'apikey':key,'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'}
+      headers:{'apikey':key,'Authorization':'Bearer '+key,'Accept':'application/json'}
     });
     if(!r.ok){ el.innerHTML='<div style="color:#b91c1c;padding:12px;">Hata: '+r.status+'</div>'; return; }
     const rows = await r.json();
@@ -4221,9 +4332,6 @@ async function istatistikYukle(){
     });
   }
 </script>
-<script>
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register('/service-worker.js').catch(function(){});
-    });
-  }
+</div>
+</body>
+</html>
