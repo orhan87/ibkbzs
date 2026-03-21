@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.ico">
 <title>Modül Seçimi — İBKB SORGULAMA VE İHRACAT TAKİP YAZILIMI</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f172a">
@@ -89,6 +90,7 @@
   }
   .cikis-btn:hover{color:rgba(255,255,255,.6);}
 </style>
+<script>var _LOGO_URI="/logo.svg";</script>
 </head>
 <body>
 <script>
@@ -173,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // Logo
     var logoEl = document.getElementById('secimLogo');
     if(logoEl && cfg.logo && cfg.logo.length > 10) logoEl.src = cfg.logo;
+    else if(logoEl && typeof _LOGO_URI !== 'undefined' && _LOGO_URI) logoEl.src = _LOGO_URI;
     else if(logoEl) logoEl.style.display = 'none';
 
     // Duyuru
