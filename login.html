@@ -143,8 +143,8 @@
   .fiyat-badge{font-size:.65rem;font-weight:700;background:rgba(255,255,255,.18);color:#fff;padding:3px 10px;border-radius:20px;letter-spacing:.04em;}
   .fiyat-tutar{font-size:1.85rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.02em;margin:4px 0;}
   .fiyat-alt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;}
-  .fiyat-sure{font-size:.73rem;color:rgba(255,255,255,.6);font-weight:500;}
-  .fiyat-kdv{font-size:.65rem;background:rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:2px 8px;border-radius:10px;font-weight:600;}
+  .fiyat-sure{font-size:.73rem;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.04em;}
+  .fiyat-kdv{font-size:.65rem;color:rgba(255,255,255,.6);padding:2px 8px;border-radius:10px;font-weight:600;}
 </style>
 
 <script>var _LOGO_URI="";</script>
@@ -1174,7 +1174,11 @@ async function girisYap(){
     &nbsp;·&nbsp;
     <a href="./kullanim-kosullari.html" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">Kullanım Koşulları</a>
     &nbsp;·&nbsp
-    <a href="mailto:destek@ibkbsorgulama.com" style="color:rgba(255,255,255,.45);text-decoration:none;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.45)'">destek@ibkbsorgulama.com</a>
+    <a id="_emailLink" href="#" style="color:rgba(255,255,255,.45);text-decoration:none;"
+       onmouseover="this.style.color='rgba(255,255,255,.8)'"
+       onmouseout="this.style.color='rgba(255,255,255,.45)'"
+       onclick="return false;"></a>
+    <script>(function(){var e='destek';var d='ibkbsorgulama.com';var el=document.getElementById('_emailLink');if(el){el.href='mailto:'+e+'@'+d;el.textContent=e+'@'+d;el.onclick=null;}})()</script>
   </p>
 </footer>
 </body>

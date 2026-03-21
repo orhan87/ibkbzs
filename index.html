@@ -13,7 +13,8 @@
   <link rel="icon" type="image/png" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/favicon.ico">
 
-<style>body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#1e293b;opacity:0;transition:opacity .3s;}</style>
+<style>
+@keyframes _fadeIn{from{opacity:0}to{opacity:1}}body{animation:_fadeIn .18s ease forwards;}body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;color:#1e293b;opacity:0;transition:opacity .3s;}</style>
 <script>
 function duyuruKapat(){
   var el = document.getElementById('sistemDuyuruBanner');
@@ -82,7 +83,11 @@ if(!sessionStorage.getItem('govdag_token')){
   document.location.replace('./login.html');
 } else {
   document.addEventListener('DOMContentLoaded',function(){
-    document.body.style.opacity='1';
+    // Duyuru ve mevzuat - DOM hazır olduktan sonra göster
+    try{
+      var _cfgDcl = JSON.parse(localStorage.getItem('ibkb_config')||'{}');
+      duyuruMevzuatGoster(_cfgDcl);
+    }catch(e){}
     oturumSayacBaslat(); // Oturum sayacını başlat
     // URL parametrelerinden hesaplama formu doldur (İhracat Takip'ten gelen)
     try{
@@ -274,7 +279,6 @@ if(!sessionStorage.getItem('govdag_token')){
           if(_cfg.bakim && _cfg.bakim.aktif){
             var _bm = (_cfg.bakim && _cfg.bakim.mesaj) || 'Sistem bakimda.';
             var _logo = (JSON.parse(localStorage.getItem('ibkb_config')||'{}').logo||'');
-            document.body.style.visibility='visible';
             document.body.innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);font-family:DM Sans,sans-serif;padding:32px;">'
               + '<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:48px 40px;max-width:440px;width:100%;text-align:center;">'
               + (_logo ? '<img src="'+_logo+'" style="height:48px;margin-bottom:24px;" alt="Logo">' : '<div style="font-size:2.4rem;margin-bottom:20px;">🔧</div>')
@@ -709,7 +713,7 @@ window.addEventListener('unhandledrejection', function(e){
   <link rel="canonical" href="https://ibkbsorgulama.com">
   <meta name="google-site-verification" content="60ZYbfvQIKxDoLOFRsZaFV6bUodzzOO4qxRE9yzMOwY">
 </head>
-<body style="opacity:0;transition:opacity .15s">
+<body>
 <!-- DUYURU BANNER -->
 <div id="sistemDuyuruBanner" style="display:none;position:relative;padding:11px 48px 11px 18px;font-size:.85rem;line-height:1.5;z-index:100;">
   <span id="sistemDuyuruMetin"></span>
